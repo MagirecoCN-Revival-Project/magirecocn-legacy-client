@@ -26,13 +26,13 @@
 .method constructor <init>(JLjava/lang/String;Z)V
     .locals 0
 
-    .line 89
+    .line 91
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
-    .line 90
+    .line 92
     iput-wide p1, p0, Lio/kamihama/magianative/CNChunkedDownload$Probe;->total:J
 
-    .line 91
+    .line 93
     if-nez p3, :cond_0
 
     const-string p1, ""
@@ -47,9 +47,9 @@
     :goto_0
     iput-object p1, p0, Lio/kamihama/magianative/CNChunkedDownload$Probe;->etag:Ljava/lang/String;
 
-    .line 92
+    .line 94
     iput-boolean p4, p0, Lio/kamihama/magianative/CNChunkedDownload$Probe;->rangeSupported:Z
 
-    .line 93
+    .line 95
     return-void
 .end method

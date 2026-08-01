@@ -9,6 +9,13 @@ import java.util.Map;
 final class zzxi extends AbstractSet<Map.Entry> {
     final /* synthetic */ zzxk zza;
 
+    /* JADX DEBUG: Marked for inline */
+    /* JADX DEBUG: Method not inlined, still used in: [com.google.android.gms.internal.gtm.zzxk.entrySet():java.util.Set<java.util.Map$Entry<K extends java.lang.Comparable<K>, V>>] */
+    /* JADX INFO: Access modifiers changed from: package-private */
+    public /* synthetic */ zzxi(zzxk zzxkVar, zzxh zzxhVar) {
+        this.zza = zzxkVar;
+    }
+
     @Override // java.util.AbstractCollection, java.util.Collection, java.util.Set
     public final /* bridge */ /* synthetic */ boolean add(Object obj) {
         Map.Entry entry = (Map.Entry) obj;

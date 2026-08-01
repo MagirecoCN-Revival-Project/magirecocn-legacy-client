@@ -18,11 +18,6 @@ public final class zzq extends zzuz<zzq, zzo> implements zzwl {
     private zzq() {
     }
 
-    /* JADX DEBUG: Method not inlined, still used in: [com.google.android.gms.internal.gtm.zzo.<init>():void, com.google.android.gms.internal.gtm.zzo.<init>(com.google.android.gms.internal.gtm.zzn):void] */
-    public static /* synthetic */ zzq zza() {
-        return zza;
-    }
-
     @Override // com.google.android.gms.internal.gtm.zzuz
     public final Object zzb(int i, Object obj, Object obj2) {
         int i2 = i - 1;

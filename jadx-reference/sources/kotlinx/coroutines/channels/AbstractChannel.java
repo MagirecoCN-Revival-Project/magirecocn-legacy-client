@@ -272,7 +272,7 @@ public abstract class AbstractChannel<E> extends AbstractSendChannel<E> implemen
     @Override // kotlinx.coroutines.channels.ReceiveChannel
     /* renamed from: cancelInternal$kotlinx_coroutines_core, reason: merged with bridge method [inline-methods] */
     public final boolean cancel(Throwable cause) {
-        boolean close = cancel(cause);
+        boolean close = close(cause);
         onCancelIdempotent(close);
         return close;
     }

@@ -5,10 +5,9 @@ import java.util.Arrays;
 import javax.annotation.CheckForNull;
 import kotlin.UByte;
 
-/* JADX INFO: Access modifiers changed from: package-private */
 /* compiled from: com.android.billingclient:billing@@5.2.1 */
 /* loaded from: classes.dex */
-public final class zzaf extends zzx {
+final class zzaf extends zzx {
     static final zzx zza = new zzaf(null, new Object[0], 0);
     final transient Object[] zzb;
 

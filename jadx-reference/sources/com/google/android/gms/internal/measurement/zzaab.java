@@ -1,12 +1,12 @@
 package com.google.android.gms.internal.measurement;
 
-/* JADX INFO: Access modifiers changed from: package-private */
 /* loaded from: classes.dex */
-public class zzaab {
+class zzaab {
     private static final zzaab zzbtk;
     private static final zzaab zzbtl;
 
     static {
+        zzaac zzaacVar = null;
         zzbtk = new zzaad();
         zzbtl = new zzaae();
     }

@@ -24,7 +24,7 @@ smali_classes3/                 ← classes3.dex；全部由 patch/ 的 Java 编
 patch/src/main/java/            ← ★ 补丁源码，唯一事实来源
 jadx-reference/                 ← jadx 反编译产物（只读参考，不参与构建）
 tools/                          ← 断点续传 / 热更新的测试套件
-mirrors.json                    ← 下载线路列表样例
+mirrors.json                    ← 线上线路列表的快照（真实配置，非样例）
 ```
 
 ### 为什么 jadx 产物不参与构建
@@ -83,6 +83,40 @@ invoke-static {p0, p1, p2, p3}, Lio/kamihama/magianative/CNHotUpdate;->download(
 `CNHotUpdate` 只在 URL 确实指向主线资源根、且其后只剩一段文件名时才换线；
 其余地址一律原样使用。
 
+### 线上线路实测（2026-08-01）
+
+拿本仓库的 `CNChunkedDownload.probe()` 直接打线上四条线路，结果：
+
+| 线路 | 权重 | 探测结果 | ETag |
+|---|---|---|---|
+| `assets-cdn1.magireco.top` | 80 | ❌ **HTTP 403** | — |
+| `assets-cdn2.magireco.top` | 60 | ✅ 7437513 / 支持 Range | `"9eea8ff0491d9bd68e0b1a51c12ecf32"` |
+| `assets.magireco.top`（主线） | 40 | ✅ 7437513 / 支持 Range | `"6a01a2f8-717cc9"` |
+| GitHub Release（默认关闭） | 10 | ✅ 7437513 / 支持 Range | `"0x8DEAF40B1CE13E4"` |
+
+两个由此定下的设计决定：
+
+1. **ETag 只在同一条线路上比对。** 三条线路对同一文件给出的 ETag 格式互不相同
+   （nginx 的 inode-mtime、CDN 的 MD5、对象存储的版本号）。若跨线路照比，
+   每次自动换线都会判定「文件变了」并丢弃全部断点——换线与续传互相抵消。
+   现在断点元数据里记录写入时所用的完整 URL：URL 相同才比 ETag，
+   URL 不同（= 换了线）则只依赖总长度一致。三条线路的长度实测一致。
+
+   代价：跨线路续传时无法察觉两端内容不同。兜底是解压阶段的
+   `extractChecked`——内容对不上会抛 `ZipException`，随后删档重下。
+
+2. **`min_speed_kbps` 按「千比特每秒」解释。** 字段名里的 kbps 按惯例是 bit，
+   而线上配置是 `800`。若按 KiB/s 解释，阈值会变成 800 KiB/s ≈ 6.5 Mbit/s，
+   任何慢于此的用户每条线都会在 10 秒后被判「过慢」中断，4 次尝试耗尽即整包
+   安装失败。现按 bit 解释：800 kbps = 100 KB/s，是个合理下限。
+   **若原意就是 KB/s，请改代码而不是把线上值调大**，否则慢速用户会全量失败。
+
+> `assets-cdn1` 从构建环境访问是 100% 403（nginx 原样返回，与 UA / Referer 无关，
+> 连 `mirrors.json` 本身也是 403）。无法区分「对所有人都坏」还是「只挡机房 IP」。
+> 它是最高权重线路，所以每次安装的第一次尝试都会撞上它；好在
+> `switch_after_failures: 1` 会让它立刻进入 60 秒冷却，后续文件自动跳过，
+> 代价被限制在一次尝试 + 2 秒退避。
+
 ---
 
 ## 构建
@@ -122,8 +156,14 @@ python3 tools/server.py 2097152 8771          # 支持 Range 的测试服务器
 # 另开一个终端，按 tools/*.java 头部注释编译运行
 ```
 
-`ResumeTest` 覆盖 19 项断言（完整下载、短读拒绝、断点复用、临时文件丢失、
-ETag 变化、越界多发），`HotUpdateTest` 覆盖 12 项。
+`ResumeTest` 覆盖 23 项断言：完整下载、短读拒绝、断点复用、临时文件丢失、
+同线路 ETag 变化（拒绝复用）、越界多发、**跨线路续传（复用断点）**。
+`HotUpdateTest` 覆盖 12 项。
+
+测试服务器支持用控制端点在不改变请求 URL 的前提下改变服务端行为
+（`/settruncate?v=N` 截断、`/setetag?v=X` 换 ETag）——这很关键：
+用查询串制造差异会让 URL 变化，而 URL 变化在新规则下等同于「换线」，
+两种语义就区分不开了。
 
 ---
 

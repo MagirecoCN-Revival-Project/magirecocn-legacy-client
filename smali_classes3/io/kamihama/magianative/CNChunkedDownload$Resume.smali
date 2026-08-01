@@ -23,18 +23,23 @@
 
 .field total:J
 
+.field url:Ljava/lang/String;
+
 
 # direct methods
 .method private constructor <init>()V
     .locals 1
 
-    .line 107
+    .line 109
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
-    .line 110
+    .line 112
     const-string v0, ""
 
     iput-object v0, p0, Lio/kamihama/magianative/CNChunkedDownload$Resume;->etag:Ljava/lang/String;
+
+    .line 114
+    iput-object v0, p0, Lio/kamihama/magianative/CNChunkedDownload$Resume;->url:Ljava/lang/String;
 
     return-void
 .end method
@@ -42,7 +47,7 @@
 .method synthetic constructor <init>(Lio/kamihama/magianative/CNChunkedDownload$1;)V
     .locals 0
 
-    .line 107
+    .line 109
     invoke-direct {p0}, Lio/kamihama/magianative/CNChunkedDownload$Resume;-><init>()V
 
     return-void

@@ -23,9 +23,8 @@ public abstract class Utf8 {
         DEFAULT = utf8;
     }
 
-    /* JADX INFO: Access modifiers changed from: package-private */
     /* loaded from: classes.dex */
-    public static class DecodeUtil {
+    static class DecodeUtil {
         private static char highSurrogate(int i) {
             return (char) ((i >>> 10) + 55232);
         }
