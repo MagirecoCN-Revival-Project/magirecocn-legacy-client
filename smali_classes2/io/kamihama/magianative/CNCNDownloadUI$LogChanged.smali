@@ -21,7 +21,7 @@
 .method private constructor <init>()V
     .locals 0
 
-    .line 1094
+    .line 1096
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     return-void
@@ -30,7 +30,7 @@
 .method synthetic constructor <init>(Lio/kamihama/magianative/CNCNDownloadUI$1;)V
     .locals 0
 
-    .line 1094
+    .line 1096
     invoke-direct {p0}, Lio/kamihama/magianative/CNCNDownloadUI$LogChanged;-><init>()V
 
     return-void
@@ -41,9 +41,9 @@
 .method public run()V
     .locals 0
 
-    .line 1096
-    invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$900()V
+    .line 1098
+    invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1000()V
 
-    .line 1097
+    .line 1099
     return-void
 .end method

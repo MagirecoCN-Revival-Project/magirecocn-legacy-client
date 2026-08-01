@@ -21,7 +21,7 @@
 .method private constructor <init>()V
     .locals 0
 
-    .line 419
+    .line 429
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     return-void
@@ -30,7 +30,7 @@
 .method synthetic constructor <init>(Lio/kamihama/magianative/CNChunkedDownload$1;)V
     .locals 0
 
-    .line 419
+    .line 429
     invoke-direct {p0}, Lio/kamihama/magianative/CNChunkedDownload$ChunkThreadFactory;-><init>()V
 
     return-void
@@ -41,18 +41,18 @@
 .method public newThread(Ljava/lang/Runnable;)Ljava/lang/Thread;
     .locals 2
 
-    .line 421
+    .line 431
     new-instance v0, Ljava/lang/Thread;
 
     const-string v1, "cnv-chunk"
 
     invoke-direct {v0, p1, v1}, Ljava/lang/Thread;-><init>(Ljava/lang/Runnable;Ljava/lang/String;)V
 
-    .line 422
+    .line 432
     const/4 p1, 0x1
 
     invoke-virtual {v0, p1}, Ljava/lang/Thread;->setDaemon(Z)V
 
-    .line 423
+    .line 433
     return-object v0
 .end method

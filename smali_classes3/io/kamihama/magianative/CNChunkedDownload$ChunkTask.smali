@@ -69,7 +69,7 @@
 .method private constructor <init>()V
     .locals 0
 
-    .line 428
+    .line 438
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     return-void
@@ -78,7 +78,7 @@
 .method synthetic constructor <init>(Lio/kamihama/magianative/CNChunkedDownload$1;)V
     .locals 0
 
-    .line 428
+    .line 438
     invoke-direct {p0}, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;-><init>()V
 
     return-void
@@ -89,7 +89,7 @@
 .method public run()V
     .locals 22
 
-    .line 451
+    .line 461
     move-object/from16 v1, p0
 
     :try_start_0
@@ -145,15 +145,15 @@
 
     goto :goto_1
 
-    .line 454
+    .line 464
     :catchall_0
     move-exception v0
 
-    .line 455
+    .line 465
     :try_start_1
     iget-object v2, v1, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->firstErr:Ljava/util/concurrent/atomic/AtomicReference;
 
-    .line 456
+    .line 466
     instance-of v3, v0, Ljava/io/IOException;
 
     if-eqz v3, :cond_0
@@ -162,7 +162,7 @@
 
     goto :goto_0
 
-    .line 457
+    .line 467
     :cond_0
     new-instance v3, Ljava/io/IOException;
 
@@ -178,13 +178,13 @@
 
     move-object v0, v3
 
-    .line 455
+    .line 465
     :goto_0
     const/4 v3, 0x0
 
     invoke-static {v2, v3, v0}, Lio/kamihama/magianative/CNChunkedDownload$$ExternalSyntheticBackportWithForwarding0;->m(Ljava/util/concurrent/atomic/AtomicReference;Ljava/lang/Object;Ljava/lang/Object;)Z
 
-    .line 458
+    .line 468
     iget-object v0, v1, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->abort:Ljava/util/concurrent/atomic/AtomicBoolean;
 
     const/4 v2, 0x1
@@ -193,19 +193,19 @@
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_1
 
-    .line 460
+    .line 470
     :goto_1
     iget-object v0, v1, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->latch:Ljava/util/concurrent/CountDownLatch;
 
     invoke-virtual {v0}, Ljava/util/concurrent/CountDownLatch;->countDown()V
 
-    .line 461
+    .line 471
     nop
 
-    .line 462
+    .line 472
     return-void
 
-    .line 460
+    .line 470
     :catchall_1
     move-exception v0
 
@@ -213,6 +213,6 @@
 
     invoke-virtual {v2}, Ljava/util/concurrent/CountDownLatch;->countDown()V
 
-    .line 461
+    .line 471
     throw v0
 .end method

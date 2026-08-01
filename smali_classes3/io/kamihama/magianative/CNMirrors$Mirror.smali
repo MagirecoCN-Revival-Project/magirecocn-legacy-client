@@ -17,9 +17,13 @@
 # instance fields
 .field public final base:Ljava/lang/String;
 
+.field volatile baselineBps:J
+
 .field public final chunks:I
 
 .field volatile cooldownUntilNs:J
+
+.field volatile demoteUntilNs:J
 
 .field public final enabled:Z
 
@@ -32,41 +36,47 @@
 
 # direct methods
 .method constructor <init>(Ljava/lang/String;Ljava/lang/String;IIZ)V
-    .locals 2
+    .locals 4
 
-    .line 76
+    .line 103
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
-    .line 72
-    new-instance v0, Ljava/util/concurrent/atomic/AtomicInteger;
-
-    const/4 v1, 0x0
-
-    invoke-direct {v0, v1}, Ljava/util/concurrent/atomic/AtomicInteger;-><init>(I)V
-
-    iput-object v0, p0, Lio/kamihama/magianative/CNMirrors$Mirror;->failures:Ljava/util/concurrent/atomic/AtomicInteger;
-
-    .line 74
+    .line 95
     const-wide/16 v0, 0x0
 
+    iput-wide v0, p0, Lio/kamihama/magianative/CNMirrors$Mirror;->baselineBps:J
+
+    .line 97
+    iput-wide v0, p0, Lio/kamihama/magianative/CNMirrors$Mirror;->demoteUntilNs:J
+
+    .line 99
+    new-instance v2, Ljava/util/concurrent/atomic/AtomicInteger;
+
+    const/4 v3, 0x0
+
+    invoke-direct {v2, v3}, Ljava/util/concurrent/atomic/AtomicInteger;-><init>(I)V
+
+    iput-object v2, p0, Lio/kamihama/magianative/CNMirrors$Mirror;->failures:Ljava/util/concurrent/atomic/AtomicInteger;
+
+    .line 101
     iput-wide v0, p0, Lio/kamihama/magianative/CNMirrors$Mirror;->cooldownUntilNs:J
 
-    .line 77
+    .line 104
     iput-object p1, p0, Lio/kamihama/magianative/CNMirrors$Mirror;->name:Ljava/lang/String;
 
-    .line 78
+    .line 105
     iput-object p2, p0, Lio/kamihama/magianative/CNMirrors$Mirror;->base:Ljava/lang/String;
 
-    .line 79
+    .line 106
     iput p3, p0, Lio/kamihama/magianative/CNMirrors$Mirror;->weight:I
 
-    .line 80
+    .line 107
     iput p4, p0, Lio/kamihama/magianative/CNMirrors$Mirror;->chunks:I
 
-    .line 81
+    .line 108
     iput-boolean p5, p0, Lio/kamihama/magianative/CNMirrors$Mirror;->enabled:Z
 
-    .line 82
+    .line 109
     return-void
 .end method
 
@@ -75,7 +85,7 @@
 .method public effectiveChunks()I
     .locals 1
 
-    .line 91
+    .line 118
     iget v0, p0, Lio/kamihama/magianative/CNMirrors$Mirror;->chunks:I
 
     if-lez v0, :cond_0
@@ -94,7 +104,7 @@
 .method public toString()Ljava/lang/String;
     .locals 2
 
-    .line 95
+    .line 122
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
@@ -133,7 +143,7 @@
 .method public urlFor(Ljava/lang/String;)Ljava/lang/String;
     .locals 2
 
-    .line 86
+    .line 113
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V

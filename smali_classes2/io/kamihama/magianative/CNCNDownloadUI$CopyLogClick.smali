@@ -25,7 +25,7 @@
 .method constructor <init>(Landroid/app/Activity;)V
     .locals 0
 
-    .line 1012
+    .line 1013
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     iput-object p1, p0, Lio/kamihama/magianative/CNCNDownloadUI$CopyLogClick;->act:Landroid/app/Activity;
@@ -38,31 +38,31 @@
 .method public onClick(Landroid/view/View;)V
     .locals 3
 
-    .line 1015
+    .line 1016
     :try_start_0
     iget-object p1, p0, Lio/kamihama/magianative/CNCNDownloadUI$CopyLogClick;->act:Landroid/app/Activity;
 
     const-string v0, "clipboard"
 
-    .line 1016
+    .line 1017
     invoke-virtual {p1, v0}, Landroid/app/Activity;->getSystemService(Ljava/lang/String;)Ljava/lang/Object;
 
     move-result-object p1
 
     check-cast p1, Landroid/content/ClipboardManager;
 
-    .line 1017
+    .line 1018
     if-nez p1, :cond_0
 
     return-void
 
-    .line 1018
+    .line 1019
     :cond_0
     const-string v0, "magireco-cnv-log"
 
     const/4 v1, 0x1
 
-    invoke-static {v1}, Lio/kamihama/magianative/CNCNDownloadUI;->access$600(Z)Ljava/lang/String;
+    invoke-static {v1}, Lio/kamihama/magianative/CNCNDownloadUI;->access$700(Z)Ljava/lang/String;
 
     move-result-object v1
 
@@ -72,7 +72,7 @@
 
     invoke-virtual {p1, v0}, Landroid/content/ClipboardManager;->setPrimaryClip(Landroid/content/ClipData;)V
 
-    .line 1019
+    .line 1020
     iget-object p1, p0, Lio/kamihama/magianative/CNCNDownloadUI$CopyLogClick;->act:Landroid/app/Activity;
 
     new-instance v0, Ljava/lang/StringBuilder;
@@ -103,18 +103,18 @@
 
     move-result-object v0
 
-    invoke-static {p1, v0}, Lio/kamihama/magianative/CNCNDownloadUI;->access$500(Landroid/app/Activity;Ljava/lang/String;)V
+    invoke-static {p1, v0}, Lio/kamihama/magianative/CNCNDownloadUI;->access$600(Landroid/app/Activity;Ljava/lang/String;)V
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    .line 1022
+    .line 1023
     goto :goto_0
 
-    .line 1020
+    .line 1021
     :catchall_0
     move-exception p1
 
-    .line 1021
+    .line 1022
     iget-object v0, p0, Lio/kamihama/magianative/CNCNDownloadUI$CopyLogClick;->act:Landroid/app/Activity;
 
     new-instance v1, Ljava/lang/StringBuilder;
@@ -139,9 +139,9 @@
 
     move-result-object p1
 
-    invoke-static {v0, p1}, Lio/kamihama/magianative/CNCNDownloadUI;->access$500(Landroid/app/Activity;Ljava/lang/String;)V
+    invoke-static {v0, p1}, Lio/kamihama/magianative/CNCNDownloadUI;->access$600(Landroid/app/Activity;Ljava/lang/String;)V
 
-    .line 1023
+    .line 1024
     :goto_0
     return-void
 .end method

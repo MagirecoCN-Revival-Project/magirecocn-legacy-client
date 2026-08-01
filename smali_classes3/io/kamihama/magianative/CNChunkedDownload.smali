@@ -8,8 +8,8 @@
     value = {
         Lio/kamihama/magianative/CNChunkedDownload$Sink;,
         Lio/kamihama/magianative/CNChunkedDownload$Probe;,
-        Lio/kamihama/magianative/CNChunkedDownload$Resume;,
         Lio/kamihama/magianative/CNChunkedDownload$Result;,
+        Lio/kamihama/magianative/CNChunkedDownload$Resume;,
         Lio/kamihama/magianative/CNChunkedDownload$ChunkThreadFactory;,
         Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;
     }
@@ -53,7 +53,7 @@
 .method private static deleteQuietly(Ljava/io/File;)V
     .locals 2
 
-    .line 658
+    .line 668
     if-eqz p0, :cond_0
 
     invoke-virtual {p0}, Ljava/io/File;->exists()Z
@@ -68,7 +68,7 @@
 
     if-nez v0, :cond_0
 
-    .line 659
+    .line 669
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
@@ -91,20 +91,50 @@
 
     invoke-static {v0, p0}, Lio/kamihama/magianative/CNLog;->w(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 661
+    .line 671
     :cond_0
     return-void
 .end method
 
 .method public static download(Ljava/lang/String;Ljava/io/File;IZLio/kamihama/magianative/CNChunkedDownload$Probe;Lio/kamihama/magianative/CNChunkedDownload$Sink;)Lio/kamihama/magianative/CNChunkedDownload$Result;
-    .locals 40
+    .locals 7
     .annotation system Ldalvik/annotation/Throws;
         value = {
             Ljava/io/IOException;
         }
     .end annotation
 
-    .line 197
+    .line 196
+    const/4 v6, 0x0
+
+    move-object v0, p0
+
+    move-object v1, p1
+
+    move v2, p2
+
+    move v3, p3
+
+    move-object v4, p4
+
+    move-object v5, p5
+
+    invoke-static/range {v0 .. v6}, Lio/kamihama/magianative/CNChunkedDownload;->download(Ljava/lang/String;Ljava/io/File;IZLio/kamihama/magianative/CNChunkedDownload$Probe;Lio/kamihama/magianative/CNChunkedDownload$Sink;Lio/kamihama/magianative/CNMirrors$Mirror;)Lio/kamihama/magianative/CNChunkedDownload$Result;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method public static download(Ljava/lang/String;Ljava/io/File;IZLio/kamihama/magianative/CNChunkedDownload$Probe;Lio/kamihama/magianative/CNChunkedDownload$Sink;Lio/kamihama/magianative/CNMirrors$Mirror;)Lio/kamihama/magianative/CNChunkedDownload$Result;
+    .locals 39
+    .annotation system Ldalvik/annotation/Throws;
+        value = {
+            Ljava/io/IOException;
+        }
+    .end annotation
+
+    .line 207
     move-object/from16 v1, p1
 
     move-object/from16 v2, p4
@@ -115,29 +145,29 @@
 
     iget-wide v11, v2, Lio/kamihama/magianative/CNChunkedDownload$Probe;->total:J
 
-    .line 198
+    .line 208
     const-wide/16 v13, 0x0
 
     cmp-long v0, v11, v13
 
     if-lez v0, :cond_1a
 
-    .line 200
+    .line 210
     invoke-static/range {p1 .. p1}, Lio/kamihama/magianative/CNChunkedDownload;->partFileFor(Ljava/io/File;)Ljava/io/File;
 
     move-result-object v15
 
-    .line 201
+    .line 211
     invoke-static/range {p1 .. p1}, Lio/kamihama/magianative/CNChunkedDownload;->metaFileFor(Ljava/io/File;)Ljava/io/File;
 
     move-result-object v10
 
-    .line 203
+    .line 213
     invoke-virtual {v15}, Ljava/io/File;->getParentFile()Ljava/io/File;
 
     move-result-object v0
 
-    .line 204
+    .line 214
     if-eqz v0, :cond_1
 
     invoke-virtual {v0}, Ljava/io/File;->isDirectory()Z
@@ -160,7 +190,7 @@
 
     goto :goto_0
 
-    .line 205
+    .line 215
     :cond_0
     new-instance v1, Ljava/io/IOException;
 
@@ -186,7 +216,7 @@
 
     throw v1
 
-    .line 209
+    .line 219
     :cond_1
     :goto_0
     const/4 v9, 0x1
@@ -197,16 +227,16 @@
 
     const/4 v0, 0x1
 
-    .line 210
+    .line 220
     :cond_2
     nop
 
-    .line 211
+    .line 221
     invoke-static {v10}, Lio/kamihama/magianative/CNChunkedDownload;->readResume(Ljava/io/File;)Lio/kamihama/magianative/CNChunkedDownload$Resume;
 
     move-result-object v8
 
-    .line 212
+    .line 222
     const-string v6, " chunks="
 
     const-string v7, "MagiaCNChunk"
@@ -215,12 +245,12 @@
 
     if-eqz v8, :cond_5
 
-    .line 213
+    .line 223
     iget-object v14, v2, Lio/kamihama/magianative/CNChunkedDownload$Probe;->etag:Ljava/lang/String;
 
     move-object v5, v8
 
-    move-object/from16 v18, v4
+    move-object/from16 p6, v4
 
     move-object v13, v6
 
@@ -228,7 +258,7 @@
 
     move-wide v6, v11
 
-    move/from16 v19, v0
+    move/from16 v18, v0
 
     move-object v0, v8
 
@@ -238,7 +268,7 @@
 
     move-object/from16 v9, p0
 
-    move-object/from16 v20, v10
+    move-object/from16 v19, v10
 
     move-object v10, v15
 
@@ -246,19 +276,19 @@
 
     move-result-object v5
 
-    .line 214
+    .line 224
     if-nez v5, :cond_4
 
-    .line 216
+    .line 226
     iget v5, v0, Lio/kamihama/magianative/CNChunkedDownload$Resume;->chunks:I
 
-    .line 217
+    .line 227
     iget-object v0, v0, Lio/kamihama/magianative/CNChunkedDownload$Resume;->done:[J
 
-    .line 218
+    .line 228
     nop
 
-    .line 219
+    .line 229
     const/4 v6, 0x0
 
     const-wide/16 v7, 0x0
@@ -276,7 +306,7 @@
 
     goto :goto_1
 
-    .line 220
+    .line 230
     :cond_3
     new-instance v6, Ljava/lang/StringBuilder;
 
@@ -330,12 +360,12 @@
 
     invoke-static {v4, v6}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 222
+    .line 232
     move v10, v5
 
     goto :goto_3
 
-    .line 223
+    .line 233
     :cond_4
     new-instance v0, Ljava/lang/StringBuilder;
 
@@ -371,28 +401,28 @@
 
     invoke-static {v4, v0}, Lio/kamihama/magianative/CNLog;->w(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 224
-    invoke-static/range {v20 .. v20}, Lio/kamihama/magianative/CNChunkedDownload;->deleteQuietly(Ljava/io/File;)V
+    .line 234
+    invoke-static/range {v19 .. v19}, Lio/kamihama/magianative/CNChunkedDownload;->deleteQuietly(Ljava/io/File;)V
 
     goto :goto_2
 
-    .line 212
+    .line 222
     :cond_5
-    move/from16 v19, v0
+    move/from16 v18, v0
 
-    move-object/from16 v18, v4
+    move-object/from16 p6, v4
 
     move-object v13, v6
 
     move-object v4, v7
 
-    move-object/from16 v20, v10
+    move-object/from16 v19, v10
 
     const/4 v14, 0x1
 
-    .line 228
+    .line 238
     :goto_2
-    move/from16 v10, v19
+    move/from16 v10, v18
 
     const/4 v0, 0x0
 
@@ -401,7 +431,7 @@
 
     add-long v7, v11, v5
 
-    move-object/from16 v19, v15
+    move-object/from16 v18, v15
 
     const-wide/16 v14, 0x1
 
@@ -409,24 +439,24 @@
 
     div-long/2addr v7, v5
 
-    .line 229
+    .line 239
     new-array v9, v10, [J
 
-    .line 230
+    .line 240
     new-array v6, v10, [J
 
-    .line 231
+    .line 241
     new-instance v5, Ljava/util/concurrent/atomic/AtomicLongArray;
 
     invoke-direct {v5, v10}, Ljava/util/concurrent/atomic/AtomicLongArray;-><init>(I)V
 
-    .line 232
+    .line 242
     const/4 v14, 0x0
 
     :goto_4
     if-ge v14, v10, :cond_7
 
-    .line 233
+    .line 243
     move-object v15, v4
 
     int-to-long v3, v14
@@ -435,16 +465,16 @@
 
     aput-wide v3, v9, v14
 
-    .line 234
+    .line 244
     add-long/2addr v3, v7
 
-    const-wide/16 v21, 0x1
+    const-wide/16 v20, 0x1
 
-    sub-long v3, v3, v21
+    sub-long v3, v3, v20
 
-    move-wide/from16 v23, v7
+    move-wide/from16 v22, v7
 
-    sub-long v7, v11, v21
+    sub-long v7, v11, v20
 
     invoke-static {v3, v4, v7, v8}, Ljava/lang/Math;->min(JJ)J
 
@@ -452,7 +482,7 @@
 
     aput-wide v3, v6, v14
 
-    .line 235
+    .line 245
     if-eqz v0, :cond_6
 
     aget-wide v3, v0, v14
@@ -465,18 +495,18 @@
     :goto_5
     invoke-virtual {v5, v14, v3, v4}, Ljava/util/concurrent/atomic/AtomicLongArray;->set(IJ)V
 
-    .line 232
+    .line 242
     add-int/lit8 v14, v14, 0x1
 
     move-object/from16 v3, p5
 
     move-object v4, v15
 
-    move-wide/from16 v7, v23
+    move-wide/from16 v7, v22
 
     goto :goto_4
 
-    .line 240
+    .line 250
     :cond_7
     move-object v15, v4
 
@@ -484,11 +514,11 @@
 
     const-string v0, "rw"
 
-    move-object/from16 v4, v19
+    move-object/from16 v4, v18
 
     invoke-direct {v3, v4, v0}, Ljava/io/RandomAccessFile;-><init>(Ljava/io/File;Ljava/lang/String;)V
 
-    .line 242
+    .line 252
     :try_start_0
     invoke-virtual {v3}, Ljava/io/RandomAccessFile;->length()J
 
@@ -502,7 +532,7 @@
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_1
 
-    .line 244
+    .line 254
     :cond_8
     :try_start_1
     invoke-virtual {v3}, Ljava/io/RandomAccessFile;->close()V
@@ -514,26 +544,26 @@
     :catchall_0
     move-exception v0
 
-    .line 245
+    .line 255
     nop
 
-    .line 246
+    .line 256
     :goto_6
     iget-object v8, v2, Lio/kamihama/magianative/CNChunkedDownload$Probe;->etag:Ljava/lang/String;
 
     move-object v3, v5
 
-    move-object/from16 v5, v20
+    move-object/from16 v5, v19
 
     move-object v14, v6
 
     move-wide v6, v11
 
-    move-object/from16 v19, v9
+    move-object/from16 v18, v9
 
     move-object/from16 v9, p0
 
-    move-object/from16 v23, v15
+    move-object/from16 v22, v15
 
     move v15, v10
 
@@ -541,14 +571,14 @@
 
     invoke-static/range {v5 .. v10}, Lio/kamihama/magianative/CNChunkedDownload;->saveMeta(Ljava/io/File;JLjava/lang/String;Ljava/lang/String;Ljava/util/concurrent/atomic/AtomicLongArray;)V
 
-    .line 248
+    .line 258
     new-instance v0, Ljava/util/concurrent/atomic/AtomicLong;
 
     const-wide/16 v5, 0x0
 
     invoke-direct {v0, v5, v6}, Ljava/util/concurrent/atomic/AtomicLong;-><init>(J)V
 
-    .line 249
+    .line 259
     const/4 v5, 0x0
 
     :goto_7
@@ -564,23 +594,23 @@
 
     goto :goto_7
 
-    .line 251
+    .line 261
     :cond_9
     move-object/from16 v10, p5
 
     if-eqz v10, :cond_a
 
-    .line 252
+    .line 262
     invoke-interface {v10, v11, v12}, Lio/kamihama/magianative/CNChunkedDownload$Sink;->onTotal(J)V
 
-    .line 253
+    .line 263
     invoke-virtual {v0}, Ljava/util/concurrent/atomic/AtomicLong;->get()J
 
     move-result-wide v5
 
     invoke-interface {v10, v5, v6, v11, v12}, Lio/kamihama/magianative/CNChunkedDownload$Sink;->onProgress(JJ)V
 
-    .line 258
+    .line 268
     :cond_a
     invoke-virtual {v0}, Ljava/util/concurrent/atomic/AtomicLong;->get()J
 
@@ -590,18 +620,18 @@
 
     if-ltz v7, :cond_c
 
-    .line 259
+    .line 269
     invoke-static {v4, v1}, Lio/kamihama/magianative/CNChunkedDownload;->promote(Ljava/io/File;Ljava/io/File;)V
 
-    .line 260
-    invoke-static/range {v20 .. v20}, Lio/kamihama/magianative/CNChunkedDownload;->deleteQuietly(Ljava/io/File;)V
+    .line 270
+    invoke-static/range {v19 .. v19}, Lio/kamihama/magianative/CNChunkedDownload;->deleteQuietly(Ljava/io/File;)V
 
-    .line 261
+    .line 271
     if-eqz v10, :cond_b
 
     invoke-interface {v10, v11, v12, v11, v12}, Lio/kamihama/magianative/CNChunkedDownload$Sink;->onProgress(JJ)V
 
-    .line 262
+    .line 272
     :cond_b
     new-instance v0, Ljava/lang/StringBuilder;
 
@@ -631,11 +661,11 @@
 
     move-result-object v0
 
-    move-object/from16 v9, v23
+    move-object/from16 v9, v22
 
     invoke-static {v9, v0}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 263
+    .line 273
     new-instance v0, Lio/kamihama/magianative/CNChunkedDownload$Result;
 
     iget-object v1, v2, Lio/kamihama/magianative/CNChunkedDownload$Probe;->etag:Ljava/lang/String;
@@ -644,9 +674,9 @@
 
     return-object v0
 
-    .line 266
+    .line 276
     :cond_c
-    move-object/from16 v9, v23
+    move-object/from16 v9, v22
 
     new-instance v8, Ljava/util/concurrent/atomic/AtomicReference;
 
@@ -654,22 +684,22 @@
 
     invoke-direct {v8, v5}, Ljava/util/concurrent/atomic/AtomicReference;-><init>(Ljava/lang/Object;)V
 
-    .line 267
+    .line 277
     new-instance v5, Ljava/util/concurrent/atomic/AtomicBoolean;
 
     const/4 v6, 0x0
 
     invoke-direct {v5, v6}, Ljava/util/concurrent/atomic/AtomicBoolean;-><init>(Z)V
 
-    .line 269
+    .line 279
     new-instance v7, Ljava/util/concurrent/atomic/AtomicBoolean;
 
     invoke-direct {v7, v6}, Ljava/util/concurrent/atomic/AtomicBoolean;-><init>(Z)V
 
-    .line 270
+    .line 280
     new-instance v6, Ljava/util/concurrent/atomic/AtomicLong;
 
-    move-object/from16 v24, v8
+    move-object/from16 v23, v8
 
     invoke-static {}, Ljava/lang/System;->nanoTime()J
 
@@ -677,7 +707,7 @@
 
     invoke-direct {v6, v8, v9}, Ljava/util/concurrent/atomic/AtomicLong;-><init>(J)V
 
-    .line 271
+    .line 281
     new-instance v8, Ljava/util/concurrent/atomic/AtomicLong;
 
     invoke-static {}, Ljava/lang/System;->nanoTime()J
@@ -686,18 +716,18 @@
 
     invoke-direct {v8, v9, v10}, Ljava/util/concurrent/atomic/AtomicLong;-><init>(J)V
 
-    .line 272
+    .line 282
     new-instance v9, Ljava/util/concurrent/atomic/AtomicLong;
 
     move-object v10, v5
 
-    move-object/from16 v25, v6
+    move-object/from16 v24, v6
 
     const-wide/16 v5, 0x0
 
     invoke-direct {v9, v5, v6}, Ljava/util/concurrent/atomic/AtomicLong;-><init>(J)V
 
-    .line 274
+    .line 284
     new-instance v5, Lio/kamihama/magianative/CNChunkedDownload$ChunkThreadFactory;
 
     const/4 v6, 0x0
@@ -708,21 +738,21 @@
 
     move-result-object v5
 
-    .line 275
+    .line 285
     new-instance v6, Ljava/util/concurrent/CountDownLatch;
 
     invoke-direct {v6, v15}, Ljava/util/concurrent/CountDownLatch;-><init>(I)V
 
-    .line 277
-    move-object/from16 v26, v10
+    .line 287
+    move-object/from16 v25, v10
 
     const/4 v10, 0x0
 
     :goto_8
     if-ge v10, v15, :cond_d
 
-    .line 278
-    move-object/from16 v27, v13
+    .line 288
+    move-object/from16 v26, v13
 
     new-instance v13, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;
 
@@ -730,19 +760,19 @@
 
     invoke-direct {v13, v1}, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;-><init>(Lio/kamihama/magianative/CNChunkedDownload$1;)V
 
-    .line 279
+    .line 289
     move-object/from16 v1, p0
 
     iput-object v1, v13, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->url:Ljava/lang/String;
 
     iput-object v4, v13, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->part:Ljava/io/File;
 
-    .line 280
-    move-object/from16 v28, v4
+    .line 290
+    move-object/from16 v27, v4
 
-    move-object/from16 v29, v5
+    move-object/from16 v28, v5
 
-    aget-wide v4, v19, v10
+    aget-wide v4, v18, v10
 
     iput-wide v4, v13, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->start:J
 
@@ -750,106 +780,106 @@
 
     iput-wide v4, v13, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->end:J
 
-    .line 281
+    .line 291
     iput-object v3, v13, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->done:Ljava/util/concurrent/atomic/AtomicLongArray;
 
     iput v10, v13, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->idx:I
 
-    .line 282
+    .line 292
     move/from16 v4, p3
 
     iput-boolean v4, v13, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->direct:Z
 
-    move-object/from16 v5, v20
+    move-object/from16 v5, v19
 
     iput-object v5, v13, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->meta:Ljava/io/File;
 
-    .line 283
+    .line 293
     iput-wide v11, v13, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->total:J
 
     iget-object v1, v2, Lio/kamihama/magianative/CNChunkedDownload$Probe;->etag:Ljava/lang/String;
 
     iput-object v1, v13, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->etag:Ljava/lang/String;
 
-    .line 284
+    .line 294
     iput-object v0, v13, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->totalDone:Ljava/util/concurrent/atomic/AtomicLong;
 
-    .line 285
+    .line 295
     iput-object v8, v13, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->windowStart:Ljava/util/concurrent/atomic/AtomicLong;
 
     iput-object v9, v13, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->windowBytes:Ljava/util/concurrent/atomic/AtomicLong;
 
-    .line 286
-    move-object/from16 v1, v25
+    .line 296
+    move-object/from16 v1, v24
 
     iput-object v1, v13, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->lastMoveNs:Ljava/util/concurrent/atomic/AtomicLong;
 
-    move-object/from16 v4, v26
+    move-object/from16 v4, v25
 
     iput-object v4, v13, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->abort:Ljava/util/concurrent/atomic/AtomicBoolean;
 
-    .line 287
+    .line 297
     iput-object v7, v13, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->rangeIgnored:Ljava/util/concurrent/atomic/AtomicBoolean;
 
-    .line 288
-    move-object/from16 v20, v14
+    .line 298
+    move-object/from16 v19, v14
 
     move-object/from16 v14, p5
 
     iput-object v14, v13, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->sink:Lio/kamihama/magianative/CNChunkedDownload$Sink;
 
-    move-object/from16 v25, v8
+    move-object/from16 v24, v8
 
-    move-object/from16 v8, v24
+    move-object/from16 v8, v23
 
     iput-object v8, v13, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->firstErr:Ljava/util/concurrent/atomic/AtomicReference;
 
-    .line 289
+    .line 299
     iput-object v6, v13, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->latch:Ljava/util/concurrent/CountDownLatch;
 
-    .line 290
-    move-object/from16 v24, v5
+    .line 300
+    move-object/from16 v23, v5
 
-    move-object/from16 v5, v29
+    move-object/from16 v5, v28
 
     invoke-interface {v5, v13}, Ljava/util/concurrent/ExecutorService;->submit(Ljava/lang/Runnable;)Ljava/util/concurrent/Future;
 
-    .line 277
+    .line 287
     add-int/lit8 v10, v10, 0x1
 
-    move-object/from16 v14, v20
+    move-object/from16 v14, v19
 
-    move-object/from16 v20, v24
+    move-object/from16 v19, v23
 
-    move-object/from16 v13, v27
+    move-object/from16 v13, v26
 
-    move-object/from16 v4, v28
+    move-object/from16 v4, v27
 
-    move-object/from16 v24, v8
+    move-object/from16 v23, v8
 
-    move-object/from16 v8, v25
+    move-object/from16 v8, v24
 
-    move-object/from16 v25, v1
+    move-object/from16 v24, v1
 
     move-object/from16 v1, p1
 
     goto :goto_8
 
-    .line 294
+    .line 304
     :cond_d
     move-object/from16 v14, p5
 
-    move-object/from16 v28, v4
+    move-object/from16 v27, v4
 
-    move-object/from16 v27, v13
+    move-object/from16 v26, v13
 
-    move-object/from16 v8, v24
+    move-object/from16 v8, v23
 
-    move-object/from16 v1, v25
+    move-object/from16 v1, v24
 
-    move-object/from16 v4, v26
+    move-object/from16 v4, v25
 
-    move-object/from16 v24, v20
+    move-object/from16 v23, v19
 
     sget-object v9, Ljava/util/concurrent/TimeUnit;->SECONDS:Ljava/util/concurrent/TimeUnit;
 
@@ -857,7 +887,7 @@
 
     move-result v10
 
-    move-wide/from16 v19, v11
+    move-wide/from16 v18, v11
 
     int-to-long v10, v10
 
@@ -865,39 +895,39 @@
 
     move-result-wide v9
 
-    .line 299
+    .line 309
     invoke-static {}, Lio/kamihama/magianative/CNMirrors;->minSpeedKbps()I
 
     move-result v11
 
     int-to-long v11, v11
 
-    const-wide/16 v25, 0x3e8
+    const-wide/16 v24, 0x3e8
 
-    mul-long v11, v11, v25
+    mul-long v11, v11, v24
 
-    const-wide/16 v29, 0x8
+    const-wide/16 v28, 0x8
 
-    div-long v11, v11, v29
+    div-long v11, v11, v28
 
-    .line 300
+    .line 310
     invoke-static {}, Ljava/lang/System;->nanoTime()J
 
-    move-result-wide v31
+    move-result-wide v30
 
-    .line 301
+    .line 311
     invoke-virtual {v0}, Ljava/util/concurrent/atomic/AtomicLong;->get()J
 
-    move-result-wide v33
+    move-result-wide v32
 
-    .line 303
+    .line 313
     :goto_9
     :try_start_2
     sget-object v13, Ljava/util/concurrent/TimeUnit;->SECONDS:Ljava/util/concurrent/TimeUnit;
     :try_end_2
-    .catch Ljava/lang/InterruptedException; {:try_start_2 .. :try_end_2} :catch_5
+    .catch Ljava/lang/InterruptedException; {:try_start_2 .. :try_end_2} :catch_4
 
-    move-object/from16 v35, v3
+    move-object/from16 v34, v3
 
     const-wide/16 v2, 0x1
 
@@ -908,78 +938,67 @@
 
     if-nez v13, :cond_13
 
-    .line 304
+    .line 314
     invoke-static {}, Ljava/lang/System;->nanoTime()J
 
-    move-result-wide v21
-    :try_end_3
-    .catch Ljava/lang/InterruptedException; {:try_start_3 .. :try_end_3} :catch_4
+    move-result-wide v20
 
-    .line 305
+    .line 315
     if-eqz v14, :cond_e
 
-    :try_start_4
     invoke-interface/range {p5 .. p5}, Lio/kamihama/magianative/CNChunkedDownload$Sink;->isCancelled()Z
 
     move-result v13
 
     if-eqz v13, :cond_e
 
-    .line 306
+    .line 316
     const/4 v1, 0x1
 
     invoke-virtual {v4, v1}, Ljava/util/concurrent/atomic/AtomicBoolean;->set(Z)V
 
-    .line 307
+    .line 317
     new-instance v0, Ljava/io/IOException;
-    :try_end_4
-    .catch Ljava/lang/InterruptedException; {:try_start_4 .. :try_end_4} :catch_0
+    :try_end_3
+    .catch Ljava/lang/InterruptedException; {:try_start_3 .. :try_end_3} :catch_3
 
-    move-object/from16 v13, v18
+    move-object/from16 v13, p6
 
-    :try_start_5
+    :try_start_4
     invoke-direct {v0, v13}, Ljava/io/IOException;-><init>(Ljava/lang/String;)V
 
     const/4 v1, 0x0
 
     invoke-static {v8, v1, v0}, Lio/kamihama/magianative/CNChunkedDownload$$ExternalSyntheticBackportWithForwarding0;->m(Ljava/util/concurrent/atomic/AtomicReference;Ljava/lang/Object;Ljava/lang/Object;)Z
 
-    .line 308
-    move-object/from16 v38, v7
+    .line 318
+    move-object/from16 p6, v7
 
     const-wide/16 v16, 0x0
 
-    goto/16 :goto_c
-
-    .line 331
-    :catch_0
-    move-exception v0
-
-    move-object/from16 v13, v18
-
     goto/16 :goto_b
 
-    .line 305
+    .line 315
     :cond_e
-    move-object/from16 v13, v18
+    move-object/from16 v13, p6
 
-    .line 310
+    .line 320
     invoke-virtual {v1}, Ljava/util/concurrent/atomic/AtomicLong;->get()J
 
-    move-result-wide v36
+    move-result-wide v35
 
-    sub-long v36, v21, v36
+    sub-long v35, v20, v35
 
-    cmp-long v18, v36, v9
+    cmp-long v37, v35, v9
 
-    if-lez v18, :cond_f
+    if-lez v37, :cond_f
 
-    .line 311
+    .line 321
     const/4 v1, 0x1
 
     invoke-virtual {v4, v1}, Ljava/util/concurrent/atomic/AtomicBoolean;->set(Z)V
 
-    .line 312
+    .line 322
     new-instance v0, Ljava/io/IOException;
 
     new-instance v1, Ljava/lang/StringBuilder;
@@ -992,7 +1011,7 @@
 
     move-result-object v1
 
-    .line 313
+    .line 323
     invoke-static {}, Lio/kamihama/magianative/CNMirrors;->stallSeconds()I
 
     move-result v2
@@ -1013,45 +1032,45 @@
 
     invoke-direct {v0, v1}, Ljava/io/IOException;-><init>(Ljava/lang/String;)V
 
-    .line 312
+    .line 322
     const/4 v1, 0x0
 
     invoke-static {v8, v1, v0}, Lio/kamihama/magianative/CNChunkedDownload$$ExternalSyntheticBackportWithForwarding0;->m(Ljava/util/concurrent/atomic/AtomicReference;Ljava/lang/Object;Ljava/lang/Object;)Z
-    :try_end_5
-    .catch Ljava/lang/InterruptedException; {:try_start_5 .. :try_end_5} :catch_3
+    :try_end_4
+    .catch Ljava/lang/InterruptedException; {:try_start_4 .. :try_end_4} :catch_2
 
-    .line 314
-    move-object/from16 v38, v7
+    .line 324
+    move-object/from16 p6, v7
 
     const-wide/16 v16, 0x0
 
-    goto/16 :goto_c
+    goto/16 :goto_b
 
-    .line 316
+    .line 326
     :cond_f
-    sub-long v2, v21, v31
+    sub-long v2, v20, v30
 
-    .line 317
+    .line 327
     const-wide/16 v16, 0x0
 
-    cmp-long v18, v11, v16
+    cmp-long v37, v11, v16
 
-    if-lez v18, :cond_11
+    if-lez v37, :cond_11
 
-    move-object/from16 v18, v1
+    move-object/from16 v37, v1
 
-    :try_start_6
+    :try_start_5
     sget-object v1, Ljava/util/concurrent/TimeUnit;->SECONDS:Ljava/util/concurrent/TimeUnit;
-    :try_end_6
-    .catch Ljava/lang/InterruptedException; {:try_start_6 .. :try_end_6} :catch_2
+    :try_end_5
+    .catch Ljava/lang/InterruptedException; {:try_start_5 .. :try_end_5} :catch_1
 
-    move-object/from16 v39, v6
+    move-object/from16 v38, v6
 
-    move-object/from16 v38, v7
+    move-object/from16 p6, v7
 
     const-wide/16 v6, 0xa
 
-    :try_start_7
+    :try_start_6
     invoke-virtual {v1, v6, v7}, Ljava/util/concurrent/TimeUnit;->toNanos(J)J
 
     move-result-wide v6
@@ -1060,37 +1079,37 @@
 
     if-ltz v1, :cond_12
 
-    .line 318
+    .line 328
     invoke-virtual {v0}, Ljava/util/concurrent/atomic/AtomicLong;->get()J
 
     move-result-wide v6
 
-    sub-long v6, v6, v33
+    sub-long v6, v6, v32
 
-    .line 319
+    .line 329
     long-to-double v6, v6
 
     long-to-double v1, v2
 
-    const-wide v31, 0x41cdcd6500000000L    # 1.0E9
+    const-wide v30, 0x41cdcd6500000000L    # 1.0E9
 
-    div-double v1, v1, v31
+    div-double v1, v1, v30
 
     div-double/2addr v6, v1
 
     double-to-long v1, v6
 
-    .line 320
+    .line 330
     cmp-long v3, v1, v11
 
     if-gez v3, :cond_10
 
-    .line 321
+    .line 331
     const/4 v3, 0x1
 
     invoke-virtual {v4, v3}, Ljava/util/concurrent/atomic/AtomicBoolean;->set(Z)V
 
-    .line 322
+    .line 332
     new-instance v0, Ljava/io/IOException;
 
     new-instance v3, Ljava/lang/StringBuilder;
@@ -1103,9 +1122,9 @@
 
     move-result-object v3
 
-    mul-long v1, v1, v29
+    mul-long v1, v1, v28
 
-    div-long v1, v1, v25
+    div-long v1, v1, v24
 
     invoke-virtual {v3, v1, v2}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
 
@@ -1117,7 +1136,7 @@
 
     move-result-object v1
 
-    .line 324
+    .line 334
     invoke-static {}, Lio/kamihama/magianative/CNMirrors;->minSpeedKbps()I
 
     move-result v2
@@ -1138,121 +1157,119 @@
 
     invoke-direct {v0, v1}, Ljava/io/IOException;-><init>(Ljava/lang/String;)V
 
-    .line 322
+    .line 332
     const/4 v1, 0x0
 
     invoke-static {v8, v1, v0}, Lio/kamihama/magianative/CNChunkedDownload$$ExternalSyntheticBackportWithForwarding0;->m(Ljava/util/concurrent/atomic/AtomicReference;Ljava/lang/Object;Ljava/lang/Object;)Z
 
-    .line 325
-    goto :goto_c
+    .line 335
+    goto :goto_b
 
-    .line 327
+    .line 337
     :cond_10
     nop
 
-    .line 328
+    .line 338
     invoke-virtual {v0}, Ljava/util/concurrent/atomic/AtomicLong;->get()J
 
     move-result-wide v1
-    :try_end_7
-    .catch Ljava/lang/InterruptedException; {:try_start_7 .. :try_end_7} :catch_1
+    :try_end_6
+    .catch Ljava/lang/InterruptedException; {:try_start_6 .. :try_end_6} :catch_0
 
-    move-wide/from16 v33, v1
+    move-wide/from16 v32, v1
 
-    move-wide/from16 v31, v21
+    move-wide/from16 v30, v20
 
     goto :goto_a
 
-    .line 331
-    :catch_1
-    move-exception v0
-
-    goto :goto_f
-
-    :catch_2
-    move-exception v0
-
-    move-object/from16 v38, v7
-
-    goto :goto_f
-
-    .line 317
-    :cond_11
-    move-object/from16 v18, v1
-
-    move-object/from16 v39, v6
-
-    move-object/from16 v38, v7
-
-    .line 330
-    :cond_12
-    :goto_a
-    move-object/from16 v2, p4
-
-    move-object/from16 v1, v18
-
-    move-object/from16 v3, v35
-
-    move-object/from16 v7, v38
-
-    move-object/from16 v6, v39
-
-    move-object/from16 v18, v13
-
-    goto/16 :goto_9
-
-    .line 331
-    :catch_3
-    move-exception v0
-
-    :goto_b
-    move-object/from16 v38, v7
-
-    goto :goto_e
-
-    .line 303
-    :cond_13
-    move-object/from16 v38, v7
-
-    const-wide/16 v16, 0x0
-
-    .line 335
-    :goto_c
-    goto :goto_10
-
-    .line 331
-    :catch_4
+    .line 341
+    :catch_0
     move-exception v0
 
     goto :goto_d
 
-    :catch_5
+    :catch_1
     move-exception v0
 
-    move-object/from16 v35, v3
+    move-object/from16 p6, v7
 
-    :goto_d
-    move-object/from16 v38, v7
+    goto :goto_d
 
-    move-object/from16 v13, v18
+    .line 327
+    :cond_11
+    move-object/from16 v37, v1
 
-    :goto_e
+    move-object/from16 v38, v6
+
+    move-object/from16 p6, v7
+
+    .line 340
+    :cond_12
+    :goto_a
+    move-object/from16 v2, p4
+
+    move-object/from16 v7, p6
+
+    move-object/from16 p6, v13
+
+    move-object/from16 v3, v34
+
+    move-object/from16 v1, v37
+
+    move-object/from16 v6, v38
+
+    goto/16 :goto_9
+
+    .line 341
+    :catch_2
+    move-exception v0
+
+    goto :goto_c
+
+    .line 313
+    :cond_13
+    move-object/from16 p6, v7
+
     const-wide/16 v16, 0x0
 
-    .line 332
-    :goto_f
+    .line 345
+    :goto_b
+    goto :goto_e
+
+    .line 341
+    :catch_3
+    move-exception v0
+
+    move-object/from16 v13, p6
+
+    goto :goto_c
+
+    :catch_4
+    move-exception v0
+
+    move-object/from16 v13, p6
+
+    move-object/from16 v34, v3
+
+    :goto_c
+    move-object/from16 p6, v7
+
+    const-wide/16 v16, 0x0
+
+    .line 342
+    :goto_d
     invoke-static {}, Ljava/lang/Thread;->currentThread()Ljava/lang/Thread;
 
     move-result-object v0
 
     invoke-virtual {v0}, Ljava/lang/Thread;->interrupt()V
 
-    .line 333
+    .line 343
     const/4 v1, 0x1
 
     invoke-virtual {v4, v1}, Ljava/util/concurrent/atomic/AtomicBoolean;->set(Z)V
 
-    .line 334
+    .line 344
     new-instance v0, Ljava/io/IOException;
 
     invoke-direct {v0, v13}, Ljava/io/IOException;-><init>(Ljava/lang/String;)V
@@ -1261,73 +1278,73 @@
 
     invoke-static {v8, v1, v0}, Lio/kamihama/magianative/CNChunkedDownload$$ExternalSyntheticBackportWithForwarding0;->m(Ljava/util/concurrent/atomic/AtomicReference;Ljava/lang/Object;Ljava/lang/Object;)Z
 
-    .line 337
-    :goto_10
+    .line 347
+    :goto_e
     invoke-interface {v5}, Ljava/util/concurrent/ExecutorService;->shutdownNow()Ljava/util/List;
 
-    .line 338
-    :try_start_8
+    .line 348
+    :try_start_7
     sget-object v0, Ljava/util/concurrent/TimeUnit;->SECONDS:Ljava/util/concurrent/TimeUnit;
 
     const-wide/16 v1, 0x5
 
     invoke-interface {v5, v1, v2, v0}, Ljava/util/concurrent/ExecutorService;->awaitTermination(JLjava/util/concurrent/TimeUnit;)Z
-    :try_end_8
-    .catch Ljava/lang/InterruptedException; {:try_start_8 .. :try_end_8} :catch_6
+    :try_end_7
+    .catch Ljava/lang/InterruptedException; {:try_start_7 .. :try_end_7} :catch_5
 
-    goto :goto_11
+    goto :goto_f
 
-    :catch_6
+    :catch_5
     move-exception v0
 
-    .line 340
-    :goto_11
+    .line 350
+    :goto_f
     move-object/from16 v1, p4
 
     iget-object v0, v1, Lio/kamihama/magianative/CNChunkedDownload$Probe;->etag:Ljava/lang/String;
 
-    move-object/from16 v2, v24
+    move-object/from16 v2, v23
 
     move-object v5, v2
 
-    move-object/from16 v3, v38
+    move-object/from16 v3, p6
 
     const/4 v4, 0x0
 
-    move-wide/from16 v6, v19
+    move-wide/from16 v6, v18
 
     move-object v11, v8
 
     move-object v8, v0
 
-    move-object/from16 v12, v23
+    move-object/from16 v12, v22
 
     move-object/from16 v9, p0
 
     move-object v13, v14
 
-    move-object/from16 v10, v35
+    move-object/from16 v10, v34
 
     invoke-static/range {v5 .. v10}, Lio/kamihama/magianative/CNChunkedDownload;->saveMeta(Ljava/io/File;JLjava/lang/String;Ljava/lang/String;Ljava/util/concurrent/atomic/AtomicLongArray;)V
 
-    .line 342
+    .line 352
     invoke-virtual {v11}, Ljava/util/concurrent/atomic/AtomicReference;->get()Ljava/lang/Object;
 
     move-result-object v0
 
     check-cast v0, Ljava/io/IOException;
 
-    .line 343
+    .line 353
     if-eqz v0, :cond_15
 
-    .line 344
+    .line 354
     invoke-virtual {v3}, Ljava/util/concurrent/atomic/AtomicBoolean;->get()Z
 
     move-result v1
 
     if-eqz v1, :cond_14
 
-    .line 347
+    .line 357
     new-instance v1, Ljava/lang/StringBuilder;
 
     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
@@ -1352,29 +1369,29 @@
 
     invoke-static {v12, v1}, Lio/kamihama/magianative/CNLog;->w(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 348
+    .line 358
     invoke-static {v2}, Lio/kamihama/magianative/CNChunkedDownload;->deleteQuietly(Ljava/io/File;)V
 
-    .line 349
-    invoke-static/range {v28 .. v28}, Lio/kamihama/magianative/CNChunkedDownload;->deleteQuietly(Ljava/io/File;)V
+    .line 359
+    invoke-static/range {v27 .. v27}, Lio/kamihama/magianative/CNChunkedDownload;->deleteQuietly(Ljava/io/File;)V
 
-    .line 351
+    .line 361
     :cond_14
     throw v0
 
-    .line 356
+    .line 366
     :cond_15
     nop
 
-    .line 357
+    .line 367
     move-wide/from16 v3, v16
 
     const/4 v5, 0x0
 
-    :goto_12
+    :goto_10
     if-ge v5, v15, :cond_16
 
-    move-object/from16 v6, v35
+    move-object/from16 v6, v34
 
     invoke-virtual {v6, v5}, Ljava/util/concurrent/atomic/AtomicLongArray;->get(I)J
 
@@ -1384,57 +1401,57 @@
 
     add-int/lit8 v5, v5, 0x1
 
-    goto :goto_12
+    goto :goto_10
 
-    .line 358
+    .line 368
     :cond_16
     const-string v0, " / "
 
-    cmp-long v5, v3, v19
+    cmp-long v5, v3, v18
 
     if-nez v5, :cond_19
 
-    .line 361
-    invoke-virtual/range {v28 .. v28}, Ljava/io/File;->length()J
+    .line 371
+    invoke-virtual/range {v27 .. v27}, Ljava/io/File;->length()J
 
     move-result-wide v3
 
-    .line 362
-    cmp-long v5, v3, v19
+    .line 372
+    cmp-long v5, v3, v18
 
     if-nez v5, :cond_18
 
-    .line 366
+    .line 376
     move-object/from16 v3, p1
 
-    move-object/from16 v4, v28
+    move-object/from16 v4, v27
 
     invoke-static {v4, v3}, Lio/kamihama/magianative/CNChunkedDownload;->promote(Ljava/io/File;Ljava/io/File;)V
 
-    .line 367
+    .line 377
     invoke-static {v2}, Lio/kamihama/magianative/CNChunkedDownload;->deleteQuietly(Ljava/io/File;)V
 
-    .line 368
+    .line 378
     if-eqz v13, :cond_17
 
-    .line 369
-    move-wide/from16 v5, v19
+    .line 379
+    move-wide/from16 v5, v18
 
     invoke-interface {v13, v5, v6, v5, v6}, Lio/kamihama/magianative/CNChunkedDownload$Sink;->onProgress(JJ)V
 
-    .line 370
+    .line 380
     const/4 v0, 0x0
 
     invoke-interface {v13, v0}, Lio/kamihama/magianative/CNChunkedDownload$Sink;->onSpeed(F)V
 
-    goto :goto_13
+    goto :goto_11
 
-    .line 368
+    .line 378
     :cond_17
-    move-wide/from16 v5, v19
+    move-wide/from16 v5, v18
 
-    .line 372
-    :goto_13
+    .line 382
+    :goto_11
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
@@ -1463,7 +1480,7 @@
 
     move-result-object v0
 
-    move-object/from16 v2, v27
+    move-object/from16 v2, v26
 
     invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -1479,7 +1496,7 @@
 
     invoke-static {v12, v0}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 374
+    .line 384
     new-instance v0, Lio/kamihama/magianative/CNChunkedDownload$Result;
 
     iget-object v1, v1, Lio/kamihama/magianative/CNChunkedDownload$Probe;->etag:Ljava/lang/String;
@@ -1488,9 +1505,9 @@
 
     return-object v0
 
-    .line 363
+    .line 373
     :cond_18
-    move-wide/from16 v5, v19
+    move-wide/from16 v5, v18
 
     new-instance v1, Ljava/io/IOException;
 
@@ -1524,9 +1541,9 @@
 
     throw v1
 
-    .line 359
+    .line 369
     :cond_19
-    move-wide/from16 v5, v19
+    move-wide/from16 v5, v18
 
     new-instance v1, Ljava/io/IOException;
 
@@ -1560,27 +1577,27 @@
 
     throw v1
 
-    .line 244
+    .line 254
     :catchall_1
     move-exception v0
 
     move-object v1, v0
 
-    :try_start_9
+    :try_start_8
     invoke-virtual {v3}, Ljava/io/RandomAccessFile;->close()V
-    :try_end_9
-    .catchall {:try_start_9 .. :try_end_9} :catchall_2
+    :try_end_8
+    .catchall {:try_start_8 .. :try_end_8} :catchall_2
 
-    goto :goto_14
+    goto :goto_12
 
     :catchall_2
     move-exception v0
 
-    .line 245
-    :goto_14
+    .line 255
+    :goto_12
     throw v1
 
-    .line 198
+    .line 208
     :cond_1a
     new-instance v0, Ljava/io/IOException;
 
@@ -1632,7 +1649,7 @@
         }
     .end annotation
 
-    .line 475
+    .line 485
     move-wide/from16 v0, p4
 
     move/from16 v2, p7
@@ -1649,23 +1666,23 @@
 
     add-long v12, v3, v5
 
-    .line 476
+    .line 486
     invoke-virtual/range {p6 .. p7}, Ljava/util/concurrent/atomic/AtomicLongArray;->get(I)J
 
     move-result-wide v3
 
-    .line 477
+    .line 487
     cmp-long v5, v3, v12
 
     if-ltz v5, :cond_0
 
     return-void
 
-    .line 479
+    .line 489
     :cond_0
     add-long v3, p2, v3
 
-    .line 480
+    .line 490
     move-object/from16 v14, p0
 
     move/from16 v5, p8
@@ -1674,12 +1691,12 @@
 
     move-result-object v15
 
-    .line 481
+    .line 491
     const-string v5, "GET"
 
     invoke-virtual {v15, v5}, Ljava/net/HttpURLConnection;->setRequestMethod(Ljava/lang/String;)V
 
-    .line 482
+    .line 492
     new-instance v5, Ljava/lang/StringBuilder;
 
     invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
@@ -1712,7 +1729,7 @@
 
     invoke-virtual {v15, v1, v0}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 483
+    .line 493
     if-eqz v9, :cond_1
 
     invoke-virtual/range {p12 .. p12}, Ljava/lang/String;->length()I
@@ -1721,28 +1738,28 @@
 
     if-lez v0, :cond_1
 
-    .line 485
+    .line 495
     const-string v0, "If-Range"
 
     invoke-virtual {v15, v0, v9}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 487
+    .line 497
     :cond_1
     invoke-virtual {v15}, Ljava/net/HttpURLConnection;->connect()V
 
-    .line 488
+    .line 498
     invoke-virtual {v15}, Ljava/net/HttpURLConnection;->getResponseCode()I
 
     move-result v1
 
-    .line 489
+    .line 499
     const/16 v0, 0xce
 
     const-string v8, "\u5206\u7247 "
 
     if-eq v1, v0, :cond_3
 
-    .line 490
+    .line 500
     :try_start_0
     invoke-virtual {v15}, Ljava/net/HttpURLConnection;->disconnect()V
     :try_end_0
@@ -1753,20 +1770,20 @@
     :catchall_0
     move-exception v0
 
-    .line 491
+    .line 501
     :goto_0
     const/16 v0, 0xc8
 
     if-ne v1, v0, :cond_2
 
-    .line 497
+    .line 507
     const/4 v0, 0x1
 
     move-object/from16 v1, p18
 
     invoke-virtual {v1, v0}, Ljava/util/concurrent/atomic/AtomicBoolean;->set(Z)V
 
-    .line 498
+    .line 508
     new-instance v0, Ljava/io/IOException;
 
     new-instance v1, Ljava/lang/StringBuilder;
@@ -1795,7 +1812,7 @@
 
     throw v0
 
-    .line 500
+    .line 510
     :cond_2
     new-instance v0, Ljava/io/IOException;
 
@@ -1829,7 +1846,7 @@
 
     throw v0
 
-    .line 504
+    .line 514
     :cond_3
     const-string v0, "Content-Range"
 
@@ -1841,7 +1858,7 @@
 
     move-result-wide v5
 
-    .line 505
+    .line 515
     const-wide/16 v0, 0x0
 
     cmp-long v7, v5, v0
@@ -1854,7 +1871,7 @@
 
     goto :goto_2
 
-    .line 506
+    .line 516
     :cond_4
     :try_start_1
     invoke-virtual {v15}, Ljava/net/HttpURLConnection;->disconnect()V
@@ -1866,7 +1883,7 @@
     :catchall_1
     move-exception v0
 
-    .line 507
+    .line 517
     :goto_1
     new-instance v0, Ljava/io/IOException;
 
@@ -1910,15 +1927,15 @@
 
     throw v0
 
-    .line 511
+    .line 521
     :cond_5
     :goto_2
     nop
 
-    .line 512
+    .line 522
     nop
 
-    .line 514
+    .line 524
     :try_start_2
     new-instance v7, Ljava/io/BufferedInputStream;
 
@@ -1932,7 +1949,7 @@
     :try_end_2
     .catchall {:try_start_2 .. :try_end_2} :catchall_d
 
-    .line 515
+    .line 525
     :try_start_3
     new-instance v6, Ljava/io/RandomAccessFile;
 
@@ -1944,21 +1961,21 @@
     :try_end_3
     .catchall {:try_start_3 .. :try_end_3} :catchall_c
 
-    .line 516
+    .line 526
     :try_start_4
     invoke-virtual {v6, v3, v4}, Ljava/io/RandomAccessFile;->seek(J)V
 
-    .line 517
+    .line 527
     const v0, 0x8000
 
     new-array v0, v0, [B
 
-    .line 518
+    .line 528
     invoke-static {}, Ljava/lang/System;->nanoTime()J
 
     move-result-wide v3
 
-    .line 520
+    .line 530
     :goto_3
     invoke-virtual {v7, v0}, Ljava/io/InputStream;->read([B)I
 
@@ -1968,12 +1985,12 @@
 
     if-eq v1, v5, :cond_f
 
-    .line 521
+    .line 531
     if-nez v1, :cond_6
 
     goto :goto_3
 
-    .line 522
+    .line 532
     :cond_6
     invoke-virtual/range {p17 .. p17}, Ljava/util/concurrent/atomic/AtomicBoolean;->get()Z
 
@@ -1983,7 +2000,7 @@
 
     if-nez v5, :cond_e
 
-    .line 523
+    .line 533
     if-eqz v11, :cond_8
 
     :try_start_5
@@ -2006,7 +2023,7 @@
     :try_end_5
     .catchall {:try_start_5 .. :try_end_5} :catchall_2
 
-    .line 560
+    .line 570
     :catchall_2
     move-exception v0
 
@@ -2022,7 +2039,7 @@
 
     goto/16 :goto_d
 
-    .line 526
+    .line 536
     :cond_8
     :goto_4
     :try_start_6
@@ -2038,7 +2055,7 @@
 
     sub-long v7, v12, v16
 
-    .line 527
+    .line 537
     move-object/from16 v16, v15
 
     int-to-long v14, v1
@@ -2050,7 +2067,7 @@
 
     long-to-int v1, v7
 
-    .line 528
+    .line 538
     if-gtz v1, :cond_9
 
     move-object/from16 v15, p5
@@ -2065,13 +2082,13 @@
 
     goto/16 :goto_8
 
-    .line 529
+    .line 539
     :cond_9
     const/4 v5, 0x0
 
     invoke-virtual {v6, v0, v5, v1}, Ljava/io/RandomAccessFile;->write([BII)V
 
-    .line 531
+    .line 541
     int-to-long v7, v1
 
     move-object/from16 v1, p6
@@ -2080,7 +2097,7 @@
 
     move-result-wide v14
 
-    .line 532
+    .line 542
     move-object/from16 v5, p13
 
     move-object/from16 v17, v0
@@ -2089,26 +2106,26 @@
 
     move-result-wide v0
 
-    .line 533
+    .line 543
     move-wide/from16 v18, v12
 
     invoke-static {}, Ljava/lang/System;->nanoTime()J
 
     move-result-wide v12
 
-    .line 534
+    .line 544
     move-object/from16 v9, p16
 
     invoke-virtual {v9, v12, v13}, Ljava/util/concurrent/atomic/AtomicLong;->set(J)V
 
-    .line 536
+    .line 546
     invoke-virtual {v10, v7, v8}, Ljava/util/concurrent/atomic/AtomicLong;->addAndGet(J)J
 
     move-result-wide v7
     :try_end_7
     .catchall {:try_start_7 .. :try_end_7} :catchall_6
 
-    .line 537
+    .line 547
     move-object/from16 p18, v6
 
     :try_start_8
@@ -2116,7 +2133,7 @@
 
     move-result-wide v5
 
-    .line 538
+    .line 548
     sub-long v20, v12, v5
 
     const-wide/32 v22, 0xf4240
@@ -2127,7 +2144,7 @@
     :try_end_8
     .catchall {:try_start_8 .. :try_end_8} :catchall_5
 
-    .line 539
+    .line 549
     const-wide/16 v20, 0x1f4
 
     cmp-long v22, v14, v20
@@ -2143,23 +2160,23 @@
 
     if-eqz v5, :cond_b
 
-    .line 540
+    .line 550
     const-wide/16 v5, 0x0
 
     invoke-virtual {v10, v5, v6}, Ljava/util/concurrent/atomic/AtomicLong;->set(J)V
     :try_end_9
     .catchall {:try_start_9 .. :try_end_9} :catchall_4
 
-    .line 541
+    .line 551
     if-eqz v11, :cond_a
 
-    .line 542
+    .line 552
     move-wide/from16 v9, p10
 
     :try_start_a
     invoke-interface {v11, v0, v1, v9, v10}, Lio/kamihama/magianative/CNChunkedDownload$Sink;->onProgress(JJ)V
 
-    .line 543
+    .line 553
     long-to-double v0, v7
 
     const-wide v7, 0x408f400000000000L    # 1000.0
@@ -2176,26 +2193,26 @@
 
     double-to-float v0, v0
 
-    .line 544
+    .line 554
     invoke-interface {v11, v0}, Lio/kamihama/magianative/CNChunkedDownload$Sink;->onSpeed(F)V
     :try_end_a
     .catchall {:try_start_a .. :try_end_a} :catchall_3
 
     goto :goto_6
 
-    .line 560
+    .line 570
     :catchall_3
     move-exception v0
 
     goto :goto_5
 
-    .line 541
+    .line 551
     :cond_a
     move-wide/from16 v9, p10
 
     goto :goto_6
 
-    .line 560
+    .line 570
     :catchall_4
     move-exception v0
 
@@ -2210,13 +2227,13 @@
 
     goto/16 :goto_d
 
-    .line 539
+    .line 549
     :cond_b
     move-wide/from16 v9, p10
 
     const-wide/16 v5, 0x0
 
-    .line 547
+    .line 557
     :goto_6
     sub-long v0, v12, v3
 
@@ -2226,7 +2243,7 @@
 
     if-lez v14, :cond_c
 
-    .line 548
+    .line 558
     move-object/from16 v3, p9
 
     move-wide v0, v5
@@ -2248,12 +2265,12 @@
     :try_start_b
     invoke-static/range {v3 .. v8}, Lio/kamihama/magianative/CNChunkedDownload;->saveMeta(Ljava/io/File;JLjava/lang/String;Ljava/lang/String;Ljava/util/concurrent/atomic/AtomicLongArray;)V
 
-    .line 549
+    .line 559
     move-wide v3, v12
 
     goto :goto_7
 
-    .line 547
+    .line 557
     :cond_c
     move-object/from16 v15, p5
 
@@ -2261,7 +2278,7 @@
 
     move-object/from16 v14, p18
 
-    .line 551
+    .line 561
     :goto_7
     move-wide/from16 v5, p1
 
@@ -2271,7 +2288,7 @@
 
     goto :goto_8
 
-    .line 552
+    .line 562
     :cond_d
     move-object/from16 v9, p12
 
@@ -2293,7 +2310,7 @@
 
     goto/16 :goto_3
 
-    .line 560
+    .line 570
     :catchall_5
     move-exception v0
 
@@ -2316,7 +2333,7 @@
 
     goto/16 :goto_c
 
-    .line 522
+    .line 532
     :cond_e
     move-wide/from16 v9, p10
 
@@ -2334,7 +2351,7 @@
 
     throw v0
 
-    .line 520
+    .line 530
     :cond_f
     move-wide/from16 v9, p10
 
@@ -2348,7 +2365,7 @@
 
     move-object v15, v7
 
-    .line 555
+    .line 565
     :goto_8
     invoke-virtual/range {p6 .. p7}, Ljava/util/concurrent/atomic/AtomicLongArray;->get(I)J
 
@@ -2356,12 +2373,12 @@
     :try_end_b
     .catchall {:try_start_b .. :try_end_b} :catchall_a
 
-    .line 556
+    .line 566
     cmp-long v0, v3, v18
 
     if-ltz v0, :cond_10
 
-    .line 560
+    .line 570
     move-object/from16 p13, p9
 
     move-wide/from16 p14, p10
@@ -2374,7 +2391,7 @@
 
     invoke-static/range {p13 .. p18}, Lio/kamihama/magianative/CNChunkedDownload;->saveMeta(Ljava/io/File;JLjava/lang/String;Ljava/lang/String;Ljava/util/concurrent/atomic/AtomicLongArray;)V
 
-    .line 561
+    .line 571
     :try_start_c
     invoke-virtual {v14}, Ljava/io/RandomAccessFile;->close()V
     :try_end_c
@@ -2385,7 +2402,7 @@
     :catchall_7
     move-exception v0
 
-    .line 562
+    .line 572
     :goto_9
     :try_start_d
     invoke-virtual {v15}, Ljava/io/InputStream;->close()V
@@ -2397,7 +2414,7 @@
     :catchall_8
     move-exception v0
 
-    .line 563
+    .line 573
     :goto_a
     :try_start_e
     invoke-virtual/range {v16 .. v16}, Ljava/net/HttpURLConnection;->disconnect()V
@@ -2409,14 +2426,14 @@
     :catchall_9
     move-exception v0
 
-    .line 564
+    .line 574
     nop
 
-    .line 565
+    .line 575
     :goto_b
     return-void
 
-    .line 557
+    .line 567
     :cond_10
     :try_start_f
     new-instance v0, Ljava/io/IOException;
@@ -2465,7 +2482,7 @@
     :try_end_f
     .catchall {:try_start_f .. :try_end_f} :catchall_a
 
-    .line 560
+    .line 570
     :catchall_a
     move-exception v0
 
@@ -2530,7 +2547,7 @@
 
     invoke-static/range {p13 .. p18}, Lio/kamihama/magianative/CNChunkedDownload;->saveMeta(Ljava/io/File;JLjava/lang/String;Ljava/lang/String;Ljava/util/concurrent/atomic/AtomicLongArray;)V
 
-    .line 561
+    .line 571
     if-eqz v5, :cond_11
 
     :try_start_10
@@ -2543,7 +2560,7 @@
     :catchall_e
     move-exception v0
 
-    .line 562
+    .line 572
     :cond_11
     :goto_e
     if-eqz v15, :cond_12
@@ -2558,7 +2575,7 @@
     :catchall_f
     move-exception v0
 
-    .line 563
+    .line 573
     :cond_12
     :goto_f
     :try_start_12
@@ -2571,7 +2588,7 @@
     :catchall_10
     move-exception v0
 
-    .line 564
+    .line 574
     :goto_10
     throw v1
 .end method
@@ -2649,12 +2666,12 @@
 .method private static parseLong(Ljava/lang/String;J)J
     .locals 4
 
-    .line 664
+    .line 674
     if-nez p0, :cond_0
 
     return-wide p1
 
-    .line 666
+    .line 676
     :cond_0
     :try_start_0
     invoke-virtual {p0}, Ljava/lang/String;->trim()Ljava/lang/String;
@@ -2667,7 +2684,7 @@
     :try_end_0
     .catch Ljava/lang/NumberFormatException; {:try_start_0 .. :try_end_0} :catch_0
 
-    .line 667
+    .line 677
     const-wide/16 v2, 0x0
 
     cmp-long p0, v0, v2
@@ -2679,11 +2696,11 @@
     :cond_1
     return-wide p1
 
-    .line 668
+    .line 678
     :catch_0
     move-exception p0
 
-    .line 669
+    .line 679
     return-wide p1
 .end method
 
@@ -3086,7 +3103,7 @@
         }
     .end annotation
 
-    .line 649
+    .line 659
     invoke-virtual {p1}, Ljava/io/File;->exists()Z
 
     move-result v0
@@ -3101,7 +3118,7 @@
 
     goto :goto_0
 
-    .line 650
+    .line 660
     :cond_0
     new-instance p0, Ljava/io/IOException;
 
@@ -3127,7 +3144,7 @@
 
     throw p0
 
-    .line 652
+    .line 662
     :cond_1
     :goto_0
     invoke-virtual {p0, p1}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
@@ -3136,10 +3153,10 @@
 
     if-eqz v0, :cond_2
 
-    .line 655
+    .line 665
     return-void
 
-    .line 653
+    .line 663
     :cond_2
     new-instance v0, Ljava/io/IOException;
 
@@ -3179,14 +3196,14 @@
 .method private static rangeStart(Ljava/lang/String;)J
     .locals 4
 
-    .line 675
+    .line 685
     const-wide/16 v0, -0x1
 
     if-nez p0, :cond_0
 
     return-wide v0
 
-    .line 676
+    .line 686
     :cond_0
     invoke-virtual {p0}, Ljava/lang/String;->trim()Ljava/lang/String;
 
@@ -3198,7 +3215,7 @@
 
     move-result-object p0
 
-    .line 677
+    .line 687
     const-string v2, "bytes "
 
     invoke-virtual {p0, v2}, Ljava/lang/String;->startsWith(Ljava/lang/String;)Z
@@ -3209,7 +3226,7 @@
 
     return-wide v0
 
-    .line 678
+    .line 688
     :cond_1
     const/16 v2, 0x2d
 
@@ -3219,12 +3236,12 @@
 
     move-result v2
 
-    .line 679
+    .line 689
     if-gez v2, :cond_2
 
     return-wide v0
 
-    .line 680
+    .line 690
     :cond_2
     invoke-virtual {p0, v3, v2}, Ljava/lang/String;->substring(II)Ljava/lang/String;
 
@@ -3244,7 +3261,7 @@
 
     monitor-enter v0
 
-    .line 605
+    .line 615
     :try_start_0
     invoke-virtual {p0}, Ljava/io/File;->isFile()Z
 
@@ -3268,11 +3285,11 @@
 
     goto/16 :goto_c
 
-    .line 606
+    .line 616
     :cond_0
     nop
 
-    .line 608
+    .line 618
     :try_start_1
     new-instance v1, Ljava/io/BufferedReader;
 
@@ -3290,13 +3307,13 @@
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_7
 
-    .line 610
+    .line 620
     :try_start_2
     invoke-virtual {v1}, Ljava/io/BufferedReader;->readLine()Ljava/lang/String;
 
     move-result-object p0
 
-    .line 611
+    .line 621
     const-string v3, "CNVPROG3"
 
     invoke-virtual {v3, p0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
@@ -3307,7 +3324,7 @@
 
     if-nez p0, :cond_1
 
-    .line 637
+    .line 647
     :try_start_3
     invoke-virtual {v1}, Ljava/io/BufferedReader;->close()V
     :try_end_3
@@ -3318,13 +3335,13 @@
     :catchall_0
     move-exception p0
 
-    .line 611
+    .line 621
     :goto_0
     monitor-exit v0
 
     return-object v2
 
-    .line 612
+    .line 622
     :cond_1
     :try_start_4
     invoke-virtual {v1}, Ljava/io/BufferedReader;->readLine()Ljava/lang/String;
@@ -3333,10 +3350,10 @@
     :try_end_4
     .catchall {:try_start_4 .. :try_end_4} :catchall_6
 
-    .line 613
+    .line 623
     if-nez p0, :cond_2
 
-    .line 637
+    .line 647
     :try_start_5
     invoke-virtual {v1}, Ljava/io/BufferedReader;->close()V
     :try_end_5
@@ -3347,13 +3364,13 @@
     :catchall_1
     move-exception p0
 
-    .line 613
+    .line 623
     :goto_1
     monitor-exit v0
 
     return-object v2
 
-    .line 614
+    .line 624
     :cond_2
     :try_start_6
     invoke-virtual {p0}, Ljava/lang/String;->trim()Ljava/lang/String;
@@ -3366,7 +3383,7 @@
 
     move-result-object p0
 
-    .line 615
+    .line 625
     array-length v3, p0
     :try_end_6
     .catchall {:try_start_6 .. :try_end_6} :catchall_6
@@ -3375,7 +3392,7 @@
 
     if-ge v3, v4, :cond_3
 
-    .line 637
+    .line 647
     :try_start_7
     invoke-virtual {v1}, Ljava/io/BufferedReader;->close()V
     :try_end_7
@@ -3386,20 +3403,20 @@
     :catchall_2
     move-exception p0
 
-    .line 615
+    .line 625
     :goto_2
     monitor-exit v0
 
     return-object v2
 
-    .line 617
+    .line 627
     :cond_3
     :try_start_8
     new-instance v3, Lio/kamihama/magianative/CNChunkedDownload$Resume;
 
     invoke-direct {v3, v2}, Lio/kamihama/magianative/CNChunkedDownload$Resume;-><init>(Lio/kamihama/magianative/CNChunkedDownload$1;)V
 
-    .line 618
+    .line 628
     const/4 v4, 0x0
 
     aget-object v5, p0, v4
@@ -3410,7 +3427,7 @@
 
     iput-wide v5, v3, Lio/kamihama/magianative/CNChunkedDownload$Resume;->total:J
 
-    .line 619
+    .line 629
     const/4 v5, 0x1
 
     aget-object p0, p0, v5
@@ -3421,7 +3438,7 @@
 
     iput p0, v3, Lio/kamihama/magianative/CNChunkedDownload$Resume;->chunks:I
 
-    .line 620
+    .line 630
     iget-wide v6, v3, Lio/kamihama/magianative/CNChunkedDownload$Resume;->total:J
 
     const-wide/16 v8, 0x0
@@ -3442,13 +3459,13 @@
 
     goto :goto_8
 
-    .line 622
+    .line 632
     :cond_4
     invoke-virtual {v1}, Ljava/io/BufferedReader;->readLine()Ljava/lang/String;
 
     move-result-object p0
 
-    .line 623
+    .line 633
     if-nez p0, :cond_5
 
     const-string p0, ""
@@ -3463,12 +3480,12 @@
     :goto_3
     iput-object p0, v3, Lio/kamihama/magianative/CNChunkedDownload$Resume;->etag:Ljava/lang/String;
 
-    .line 624
+    .line 634
     invoke-virtual {v1}, Ljava/io/BufferedReader;->readLine()Ljava/lang/String;
 
     move-result-object p0
 
-    .line 625
+    .line 635
     if-nez p0, :cond_6
 
     const-string p0, ""
@@ -3483,14 +3500,14 @@
     :goto_4
     iput-object p0, v3, Lio/kamihama/magianative/CNChunkedDownload$Resume;->url:Ljava/lang/String;
 
-    .line 627
+    .line 637
     iget p0, v3, Lio/kamihama/magianative/CNChunkedDownload$Resume;->chunks:I
 
     new-array p0, p0, [J
 
     iput-object p0, v3, Lio/kamihama/magianative/CNChunkedDownload$Resume;->done:[J
 
-    .line 628
+    .line 638
     nop
 
     :goto_5
@@ -3498,17 +3515,17 @@
 
     if-ge v4, p0, :cond_8
 
-    .line 629
+    .line 639
     invoke-virtual {v1}, Ljava/io/BufferedReader;->readLine()Ljava/lang/String;
 
     move-result-object p0
     :try_end_8
     .catchall {:try_start_8 .. :try_end_8} :catchall_6
 
-    .line 630
+    .line 640
     if-nez p0, :cond_7
 
-    .line 637
+    .line 647
     :try_start_9
     invoke-virtual {v1}, Ljava/io/BufferedReader;->close()V
     :try_end_9
@@ -3519,13 +3536,13 @@
     :catchall_3
     move-exception p0
 
-    .line 630
+    .line 640
     :goto_6
     monitor-exit v0
 
     return-object v2
 
-    .line 631
+    .line 641
     :cond_7
     :try_start_a
     iget-object v5, v3, Lio/kamihama/magianative/CNChunkedDownload$Resume;->done:[J
@@ -3542,16 +3559,16 @@
     :try_end_a
     .catchall {:try_start_a .. :try_end_a} :catchall_6
 
-    .line 628
+    .line 638
     add-int/lit8 v4, v4, 0x1
 
     goto :goto_5
 
-    .line 633
+    .line 643
     :cond_8
     nop
 
-    .line 637
+    .line 647
     :try_start_b
     invoke-virtual {v1}, Ljava/io/BufferedReader;->close()V
     :try_end_b
@@ -3562,13 +3579,13 @@
     :catchall_4
     move-exception p0
 
-    .line 633
+    .line 643
     :goto_7
     monitor-exit v0
 
     return-object v3
 
-    .line 637
+    .line 647
     :cond_9
     :goto_8
     :try_start_c
@@ -3581,13 +3598,13 @@
     :catchall_5
     move-exception p0
 
-    .line 620
+    .line 630
     :goto_9
     monitor-exit v0
 
     return-object v2
 
-    .line 634
+    .line 644
     :catchall_6
     move-exception p0
 
@@ -3598,11 +3615,11 @@
 
     move-object v1, v2
 
-    .line 635
+    .line 645
     :goto_a
     nop
 
-    .line 637
+    .line 647
     if-eqz v1, :cond_a
 
     :try_start_d
@@ -3615,21 +3632,21 @@
     :catchall_8
     move-exception p0
 
-    .line 635
+    .line 645
     :cond_a
     :goto_b
     monitor-exit v0
 
     return-object v2
 
-    .line 605
+    .line 615
     :cond_b
     :goto_c
     monitor-exit v0
 
     return-object v2
 
-    .line 604
+    .line 614
     :catchall_9
     move-exception p0
 
@@ -3641,7 +3658,7 @@
 .method private static resumeRejectReason(Lio/kamihama/magianative/CNChunkedDownload$Resume;JLjava/lang/String;Ljava/lang/String;Ljava/io/File;)Ljava/lang/String;
     .locals 9
 
-    .line 382
+    .line 392
     iget-wide v0, p0, Lio/kamihama/magianative/CNChunkedDownload$Resume;->total:J
 
     const-string v2, " != "
@@ -3650,7 +3667,7 @@
 
     if-eqz v3, :cond_0
 
-    .line 383
+    .line 393
     new-instance p3, Ljava/lang/StringBuilder;
 
     invoke-direct {p3}, Ljava/lang/StringBuilder;-><init>()V
@@ -3681,7 +3698,7 @@
 
     return-object p0
 
-    .line 385
+    .line 395
     :cond_0
     iget v0, p0, Lio/kamihama/magianative/CNChunkedDownload$Resume;->chunks:I
 
@@ -3703,7 +3720,7 @@
 
     goto/16 :goto_3
 
-    .line 390
+    .line 400
     :cond_1
     invoke-virtual {p5}, Ljava/io/File;->isFile()Z
 
@@ -3711,12 +3728,12 @@
 
     if-nez v0, :cond_2
 
-    .line 391
+    .line 401
     const-string p0, "\u4e34\u65f6\u6587\u4ef6\u4e0d\u5b58\u5728"
 
     return-object p0
 
-    .line 393
+    .line 403
     :cond_2
     invoke-virtual {p5}, Ljava/io/File;->length()J
 
@@ -3726,7 +3743,7 @@
 
     if-eqz v0, :cond_3
 
-    .line 394
+    .line 404
     new-instance p0, Ljava/lang/StringBuilder;
 
     invoke-direct {p0}, Ljava/lang/StringBuilder;-><init>()V
@@ -3759,7 +3776,7 @@
 
     return-object p0
 
-    .line 401
+    .line 411
     :cond_3
     iget-object p5, p0, Lio/kamihama/magianative/CNChunkedDownload$Resume;->url:Ljava/lang/String;
 
@@ -3784,7 +3801,7 @@
     :cond_4
     const/4 v1, 0x0
 
-    .line 402
+    .line 412
     :goto_0
     if-eqz v1, :cond_5
 
@@ -3806,19 +3823,19 @@
 
     iget-object p4, p0, Lio/kamihama/magianative/CNChunkedDownload$Resume;->etag:Ljava/lang/String;
 
-    .line 403
+    .line 413
     invoke-virtual {p4, p3}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
 
     move-result p3
 
     if-nez p3, :cond_5
 
-    .line 404
+    .line 414
     const-string p0, "ETag \u5df2\u53d8\u5316"
 
     return-object p0
 
-    .line 406
+    .line 416
     :cond_5
     iget p3, p0, Lio/kamihama/magianative/CNChunkedDownload$Resume;->chunks:I
 
@@ -3836,7 +3853,7 @@
 
     div-long/2addr p3, v3
 
-    .line 407
+    .line 417
     nop
 
     :goto_1
@@ -3844,12 +3861,12 @@
 
     if-ge v0, p5, :cond_8
 
-    .line 408
+    .line 418
     int-to-long v3, v0
 
     mul-long v3, v3, p3
 
-    .line 409
+    .line 419
     add-long v5, v3, p3
 
     sub-long/2addr v5, v1
@@ -3860,12 +3877,12 @@
 
     move-result-wide v5
 
-    .line 410
+    .line 420
     sub-long/2addr v5, v3
 
     add-long/2addr v5, v1
 
-    .line 411
+    .line 421
     iget-object p5, p0, Lio/kamihama/magianative/CNChunkedDownload$Resume;->done:[J
 
     aget-wide v3, p5, v0
@@ -3886,13 +3903,13 @@
 
     goto :goto_2
 
-    .line 407
+    .line 417
     :cond_6
     add-int/lit8 v0, v0, 0x1
 
     goto :goto_1
 
-    .line 412
+    .line 422
     :cond_7
     :goto_2
     new-instance p1, Ljava/lang/StringBuilder;
@@ -3939,13 +3956,13 @@
 
     return-object p0
 
-    .line 415
+    .line 425
     :cond_8
     const/4 p0, 0x0
 
     return-object p0
 
-    .line 386
+    .line 396
     :cond_9
     :goto_3
     const-string p0, "\u5206\u7247\u4fe1\u606f\u635f\u574f"
@@ -3956,14 +3973,14 @@
 .method private static sanitize(Ljava/lang/String;)Ljava/lang/String;
     .locals 2
 
-    .line 644
+    .line 654
     if-nez p0, :cond_0
 
     const-string p0, ""
 
     return-object p0
 
-    .line 645
+    .line 655
     :cond_0
     const/16 v0, 0xd
 
@@ -3993,7 +4010,7 @@
 
     monitor-enter v0
 
-    .line 579
+    .line 589
     :try_start_0
     new-instance v1, Ljava/io/File;
 
@@ -4023,10 +4040,10 @@
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_7
 
-    .line 580
+    .line 590
     nop
 
-    .line 582
+    .line 592
     const/4 v2, 0x0
 
     :try_start_1
@@ -4044,13 +4061,13 @@
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_2
 
-    .line 583
+    .line 593
     :try_start_2
     new-instance v4, Ljava/lang/StringBuilder;
 
     invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
 
-    .line 584
+    .line 594
     const-string v6, "CNVPROG3"
 
     invoke-virtual {v4, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
@@ -4061,7 +4078,7 @@
 
     invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(C)Ljava/lang/StringBuilder;
 
-    .line 585
+    .line 595
     invoke-virtual {v4, p1, p2}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
 
     move-result-object p1
@@ -4082,7 +4099,7 @@
 
     invoke-virtual {p1, v7}, Ljava/lang/StringBuilder;->append(C)Ljava/lang/StringBuilder;
 
-    .line 586
+    .line 596
     invoke-static {p3}, Lio/kamihama/magianative/CNChunkedDownload;->sanitize(Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object p1
@@ -4093,7 +4110,7 @@
 
     invoke-virtual {p1, v7}, Ljava/lang/StringBuilder;->append(C)Ljava/lang/StringBuilder;
 
-    .line 587
+    .line 597
     invoke-static {p4}, Lio/kamihama/magianative/CNChunkedDownload;->sanitize(Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object p1
@@ -4104,7 +4121,7 @@
 
     invoke-virtual {p1, v7}, Ljava/lang/StringBuilder;->append(C)Ljava/lang/StringBuilder;
 
-    .line 588
+    .line 598
     nop
 
     :goto_0
@@ -4128,7 +4145,7 @@
 
     goto :goto_0
 
-    .line 589
+    .line 599
     :cond_0
     invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
@@ -4136,12 +4153,12 @@
 
     invoke-virtual {v3, p1}, Ljava/io/Writer;->write(Ljava/lang/String;)V
 
-    .line 590
+    .line 600
     invoke-virtual {v3}, Ljava/io/Writer;->flush()V
     :try_end_2
     .catchall {:try_start_2 .. :try_end_2} :catchall_1
 
-    .line 596
+    .line 606
     :try_start_3
     invoke-virtual {v3}, Ljava/io/Writer;->close()V
     :try_end_3
@@ -4152,7 +4169,7 @@
     :catchall_0
     move-exception p1
 
-    .line 598
+    .line 608
     :goto_1
     :try_start_4
     invoke-virtual {v1, p0}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
@@ -4161,10 +4178,10 @@
 
     if-nez p1, :cond_1
 
-    .line 599
+    .line 609
     invoke-static {p0}, Lio/kamihama/magianative/CNChunkedDownload;->deleteQuietly(Ljava/io/File;)V
 
-    .line 600
+    .line 610
     invoke-virtual {v1, p0}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
 
     move-result p0
@@ -4175,13 +4192,13 @@
     :try_end_4
     .catchall {:try_start_4 .. :try_end_4} :catchall_7
 
-    .line 602
+    .line 612
     :cond_1
     monitor-exit v0
 
     return-void
 
-    .line 591
+    .line 601
     :catchall_1
     move-exception p0
 
@@ -4192,7 +4209,7 @@
 
     move-object v3, v2
 
-    .line 592
+    .line 602
     :goto_2
     if-eqz v3, :cond_2
 
@@ -4211,14 +4228,14 @@
     :cond_2
     move-object v2, v3
 
-    .line 593
+    .line 603
     :goto_3
     :try_start_6
     invoke-static {v1}, Lio/kamihama/magianative/CNChunkedDownload;->deleteQuietly(Ljava/io/File;)V
     :try_end_6
     .catchall {:try_start_6 .. :try_end_6} :catchall_5
 
-    .line 596
+    .line 606
     if-eqz v2, :cond_3
 
     :try_start_7
@@ -4231,14 +4248,14 @@
     :catchall_4
     move-exception p0
 
-    .line 594
+    .line 604
     :cond_3
     :goto_4
     monitor-exit v0
 
     return-void
 
-    .line 596
+    .line 606
     :catchall_5
     move-exception p0
 
@@ -4254,7 +4271,7 @@
     :catchall_6
     move-exception p1
 
-    .line 597
+    .line 607
     :cond_4
     :goto_5
     :try_start_9
@@ -4262,7 +4279,7 @@
     :try_end_9
     .catchall {:try_start_9 .. :try_end_9} :catchall_7
 
-    .line 578
+    .line 588
     :catchall_7
     move-exception p0
 
@@ -4274,14 +4291,14 @@
 .method private static totalFromContentRange(Ljava/lang/String;)J
     .locals 3
 
-    .line 685
+    .line 695
     const-wide/16 v0, -0x1
 
     if-nez p0, :cond_0
 
     return-wide v0
 
-    .line 686
+    .line 696
     :cond_0
     invoke-virtual {p0}, Ljava/lang/String;->trim()Ljava/lang/String;
 
@@ -4293,19 +4310,19 @@
 
     move-result-object p0
 
-    .line 687
+    .line 697
     const/16 v2, 0x2f
 
     invoke-virtual {p0, v2}, Ljava/lang/String;->indexOf(I)I
 
     move-result v2
 
-    .line 688
+    .line 698
     if-gez v2, :cond_1
 
     return-wide v0
 
-    .line 689
+    .line 699
     :cond_1
     add-int/lit8 v2, v2, 0x1
 

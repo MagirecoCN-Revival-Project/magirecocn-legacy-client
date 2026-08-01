@@ -703,17 +703,17 @@
 
     move-result-object v0
 
-    iget-object p4, p4, Lio/kamihama/magianative/CNMirrors$Mirror;->name:Ljava/lang/String;
+    iget-object v1, p4, Lio/kamihama/magianative/CNMirrors$Mirror;->name:Ljava/lang/String;
 
-    invoke-virtual {v0, p4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object p4
+    move-result-object v0
 
-    invoke-virtual {p4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
-    move-result-object p4
+    move-result-object v0
 
-    invoke-static {v3, p4}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
+    invoke-static {v3, v0}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
 
     .line 147
     iget-wide v0, v6, Lio/kamihama/magianative/CNChunkedDownload$Probe;->total:J
@@ -724,9 +724,9 @@
 
     div-double/2addr v0, v2
 
-    double-to-float p4, v0
+    double-to-float v0, v0
 
-    invoke-static {p2, p4}, Lio/kamihama/magianative/CNCNDownloadUI;->setFileSize(IF)V
+    invoke-static {p2, v0}, Lio/kamihama/magianative/CNCNDownloadUI;->setFileSize(IF)V
 
     .line 148
     new-instance v7, Lio/kamihama/magianative/CNHotUpdate$HotSink;
@@ -739,7 +739,9 @@
 
     move v5, p3
 
-    invoke-static/range {v2 .. v7}, Lio/kamihama/magianative/CNChunkedDownload;->download(Ljava/lang/String;Ljava/io/File;IZLio/kamihama/magianative/CNChunkedDownload$Probe;Lio/kamihama/magianative/CNChunkedDownload$Sink;)Lio/kamihama/magianative/CNChunkedDownload$Result;
+    move-object v8, p4
+
+    invoke-static/range {v2 .. v8}, Lio/kamihama/magianative/CNChunkedDownload;->download(Ljava/lang/String;Ljava/io/File;IZLio/kamihama/magianative/CNChunkedDownload$Probe;Lio/kamihama/magianative/CNChunkedDownload$Sink;Lio/kamihama/magianative/CNMirrors$Mirror;)Lio/kamihama/magianative/CNChunkedDownload$Result;
 
     .line 150
     return-void

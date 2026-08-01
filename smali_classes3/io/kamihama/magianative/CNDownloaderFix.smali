@@ -2415,19 +2415,19 @@
     .end annotation
 
     .line 542
-    move-object v0, p0
+    move-object v6, p0
 
-    move-object/from16 v1, p1
+    move-object/from16 v0, p1
 
-    move/from16 v2, p3
+    move/from16 v1, p3
 
     move/from16 v3, p4
 
     invoke-virtual/range {p2 .. p2}, Ljava/io/File;->isFile()Z
 
-    move-result v4
+    move-result v2
 
-    if-eqz v4, :cond_0
+    if-eqz v2, :cond_0
 
     .line 543
     new-instance v0, Lio/kamihama/magianative/CNDownloaderFix$DownloadMetadata;
@@ -2448,20 +2448,20 @@
     :cond_0
     invoke-virtual/range {p0 .. p1}, Lio/kamihama/magianative/CNMirrors$Mirror;->urlFor(Ljava/lang/String;)Ljava/lang/String;
 
-    move-result-object v4
+    move-result-object v2
 
     .line 547
     invoke-virtual {p0}, Lio/kamihama/magianative/CNMirrors$Mirror;->effectiveChunks()I
 
-    move-result v5
+    move-result v4
 
     .line 549
-    const/4 v6, 0x1
+    const/4 v5, 0x1
 
-    if-le v5, v6, :cond_3
+    if-le v4, v5, :cond_3
 
     .line 550
-    invoke-static {v4, v3}, Lio/kamihama/magianative/CNChunkedDownload;->probe(Ljava/lang/String;Z)Lio/kamihama/magianative/CNChunkedDownload$Probe;
+    invoke-static {v2, v3}, Lio/kamihama/magianative/CNChunkedDownload;->probe(Ljava/lang/String;Z)Lio/kamihama/magianative/CNChunkedDownload$Probe;
 
     move-result-object v7
 
@@ -2501,7 +2501,7 @@
     div-long/2addr v13, v11
 
     .line 556
-    int-to-long v11, v5
+    int-to-long v11, v4
 
     cmp-long v8, v13, v11
 
@@ -2513,50 +2513,50 @@
 
     move-result-wide v11
 
-    long-to-int v5, v11
+    long-to-int v4, v11
 
     .line 558
     :cond_1
-    if-le v5, v6, :cond_2
+    if-le v4, v5, :cond_2
 
     .line 559
-    new-instance v6, Ljava/lang/StringBuilder;
+    new-instance v5, Ljava/lang/StringBuilder;
 
-    invoke-direct {v6}, Ljava/lang/StringBuilder;-><init>()V
+    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
 
     const-string v8, "chunked-download file="
 
-    invoke-virtual {v6, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v5, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v6
+    move-result-object v5
 
-    invoke-virtual {v6, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v1
-
-    invoke-virtual {v1, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v1
-
-    iget-object v0, v0, Lio/kamihama/magianative/CNMirrors$Mirror;->name:Ljava/lang/String;
-
-    invoke-virtual {v1, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v5, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v0
 
-    const-string v1, " chunks="
-
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v0, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v0
 
-    invoke-virtual {v0, v5}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    iget-object v5, v6, Lio/kamihama/magianative/CNMirrors$Mirror;->name:Ljava/lang/String;
+
+    invoke-virtual {v0, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v0
 
-    const-string v1, " bytes="
+    const-string v5, " chunks="
 
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v0, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    invoke-virtual {v0, v4}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    const-string v5, " bytes="
+
+    invoke-virtual {v0, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v0
 
@@ -2566,9 +2566,9 @@
 
     move-result-object v0
 
-    const-string v1, " direct="
+    const-string v5, " direct="
 
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v0, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v0
 
@@ -2583,35 +2583,35 @@
     invoke-static {v10, v0}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
 
     .line 561
-    iget-wide v0, v7, Lio/kamihama/magianative/CNChunkedDownload$Probe;->total:J
+    iget-wide v8, v7, Lio/kamihama/magianative/CNChunkedDownload$Probe;->total:J
 
-    invoke-static {v2, v0, v1}, Lio/kamihama/magianative/CNDownloaderFix;->updateSize(IJ)V
+    invoke-static {v1, v8, v9}, Lio/kamihama/magianative/CNDownloaderFix;->updateSize(IJ)V
 
     .line 562
-    iget-wide v0, v7, Lio/kamihama/magianative/CNChunkedDownload$Probe;->total:J
+    iget-wide v8, v7, Lio/kamihama/magianative/CNChunkedDownload$Probe;->total:J
 
-    const-wide/16 v8, 0x0
+    const-wide/16 v10, 0x0
 
-    invoke-static {v2, v8, v9, v0, v1}, Lio/kamihama/magianative/CNDownloaderFix;->updateProgress(IJJ)V
+    invoke-static {v1, v10, v11, v8, v9}, Lio/kamihama/magianative/CNDownloaderFix;->updateProgress(IJJ)V
 
     .line 563
-    new-instance v6, Lio/kamihama/magianative/CNDownloaderFix$ArchiveSink;
+    new-instance v5, Lio/kamihama/magianative/CNDownloaderFix$ArchiveSink;
 
-    invoke-direct {v6, v2}, Lio/kamihama/magianative/CNDownloaderFix$ArchiveSink;-><init>(I)V
+    invoke-direct {v5, v1}, Lio/kamihama/magianative/CNDownloaderFix$ArchiveSink;-><init>(I)V
 
-    move-object v0, v4
+    move-object v0, v2
 
     move-object/from16 v1, p2
 
-    move v2, v5
+    move v2, v4
 
     move/from16 v3, p4
 
     move-object v4, v7
 
-    move-object v5, v6
+    move-object v6, p0
 
-    invoke-static/range {v0 .. v5}, Lio/kamihama/magianative/CNChunkedDownload;->download(Ljava/lang/String;Ljava/io/File;IZLio/kamihama/magianative/CNChunkedDownload$Probe;Lio/kamihama/magianative/CNChunkedDownload$Sink;)Lio/kamihama/magianative/CNChunkedDownload$Result;
+    invoke-static/range {v0 .. v6}, Lio/kamihama/magianative/CNChunkedDownload;->download(Ljava/lang/String;Ljava/io/File;IZLio/kamihama/magianative/CNChunkedDownload$Probe;Lio/kamihama/magianative/CNChunkedDownload$Sink;Lio/kamihama/magianative/CNMirrors$Mirror;)Lio/kamihama/magianative/CNChunkedDownload$Result;
 
     move-result-object v0
 
@@ -2628,33 +2628,33 @@
 
     .line 568
     :cond_2
-    new-instance v5, Ljava/lang/StringBuilder;
+    new-instance v4, Ljava/lang/StringBuilder;
 
-    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
+    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v6, "range-unsupported-or-small file="
+    const-string v5, "range-unsupported-or-small file="
 
-    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v5
+    move-result-object v4
 
-    invoke-virtual {v5, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v1
-
-    invoke-virtual {v1, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v1
-
-    iget-object v0, v0, Lio/kamihama/magianative/CNMirrors$Mirror;->name:Ljava/lang/String;
-
-    invoke-virtual {v1, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v4, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v0
 
-    const-string v1, " \u2192 \u5355\u7ebf\u7a0b\u7eed\u4f20"
+    invoke-virtual {v0, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v0
+
+    iget-object v4, v6, Lio/kamihama/magianative/CNMirrors$Mirror;->name:Ljava/lang/String;
+
+    invoke-virtual {v0, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    const-string v4, " \u2192 \u5355\u7ebf\u7a0b\u7eed\u4f20"
+
+    invoke-virtual {v0, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v0
 
@@ -2668,7 +2668,7 @@
     :cond_3
     move-object/from16 v0, p2
 
-    invoke-static {v4, v0, v2, v3}, Lio/kamihama/magianative/CNDownloaderFix;->downloadOnce(Ljava/lang/String;Ljava/io/File;IZ)Lio/kamihama/magianative/CNDownloaderFix$DownloadMetadata;
+    invoke-static {v2, v0, v1, v3}, Lio/kamihama/magianative/CNDownloaderFix;->downloadOnce(Ljava/lang/String;Ljava/io/File;IZ)Lio/kamihama/magianative/CNDownloaderFix$DownloadMetadata;
 
     move-result-object v0
 
