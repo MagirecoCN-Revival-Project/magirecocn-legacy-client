@@ -26,18 +26,18 @@
 .method constructor <init>(JJJ)V
     .locals 0
 
-    .line 1081
+    .line 1099
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
-    .line 1082
+    .line 1100
     iput-wide p1, p0, Lio/kamihama/magianative/CNDownloaderFix$ContentRange;->start:J
 
-    .line 1083
+    .line 1101
     iput-wide p3, p0, Lio/kamihama/magianative/CNDownloaderFix$ContentRange;->end:J
 
-    .line 1084
+    .line 1102
     iput-wide p5, p0, Lio/kamihama/magianative/CNDownloaderFix$ContentRange;->total:J
 
-    .line 1085
+    .line 1103
     return-void
 .end method

@@ -1,6 +1,6 @@
 Signature-Version: 1.0
 Created-By: 1.0 (Android)
-SHA-256-Digest-Manifest: XsgpKYEbZvQw1yIRqxc9ofldWTDKTZJy0b3CYVDBtaM=
+SHA-256-Digest-Manifest: 0/I7qnySyzZ0GG0dmU1kJ5OT7JB8doRUw8ZJmFyYNxY=
 X-Android-APK-Signed: 2, 3
 
 Name: AndroidManifest.xml
@@ -1233,10 +1233,10 @@ Name: classes.dex
 SHA-256-Digest: eQW4VGArrF9S/Z4e7ga4RMjcsrX+tYhCHai27f19J+A=
 
 Name: classes2.dex
-SHA-256-Digest: FTHU5kGkz1qUu5RKOG20+bBXd0N4OLAMuSKZnqyI0qU=
+SHA-256-Digest: cpAMba2dG0Wu06l3FtvCuGJciGwSltZEM540EbmC9ZQ=
 
 Name: classes3.dex
-SHA-256-Digest: rNIy7ZizFTlnJ6jIbwYuTTaDcRctcX6W5pkK0rZ0kFI=
+SHA-256-Digest: /WKd2r0ylWT80MvpKw48TzP7TtJPi3ggdjOzKcATibc=
 
 Name: com/android/vending/billing/IInAppBillingService.aidl
 SHA-256-Digest: IY+tc0JfcJ9N315kzGj4Nh9SB9Pt+7WisXCFD3PB1qE=

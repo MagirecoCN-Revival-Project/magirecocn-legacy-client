@@ -21,7 +21,7 @@
 .method private constructor <init>()V
     .locals 0
 
-    .line 685
+    .line 698
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     return-void
@@ -30,7 +30,7 @@
 .method synthetic constructor <init>(Lio/kamihama/magianative/CNDownloaderFix$1;)V
     .locals 0
 
-    .line 685
+    .line 698
     invoke-direct {p0}, Lio/kamihama/magianative/CNDownloaderFix$SpeedWatchdog;-><init>()V
 
     return-void
@@ -41,25 +41,44 @@
 .method public run()V
     .locals 11
 
-    .line 687
+    .line 703
+    :try_start_0
+    invoke-static {}, Lio/kamihama/magianative/RestClient;->getCurrentActivity()Landroid/app/Activity;
+
+    move-result-object v0
+
+    invoke-static {v0}, Lio/kamihama/magianative/CNCNDownloadUI;->ensureVisible(Landroid/app/Activity;)V
+    :try_end_0
+    .catchall {:try_start_0 .. :try_end_0} :catchall_0
+
+    goto :goto_0
+
+    .line 704
+    :catchall_0
+    move-exception v0
+
+    :goto_0
+    nop
+
+    .line 705
     invoke-static {}, Ljava/lang/System;->nanoTime()J
 
     move-result-wide v0
 
-    .line 688
+    .line 706
     nop
 
-    .line 689
+    .line 707
     const/4 v2, 0x0
 
     const/4 v9, 0x0
 
-    :goto_0
+    :goto_1
     const/16 v3, 0xf
 
     if-ge v2, v3, :cond_2
 
-    .line 690
+    .line 708
     invoke-static {}, Lio/kamihama/magianative/CNDownloaderFix;->access$500()Ljava/util/concurrent/atomic/AtomicIntegerArray;
 
     move-result-object v3
@@ -70,9 +89,9 @@
 
     if-nez v3, :cond_0
 
-    goto :goto_1
+    goto :goto_2
 
-    .line 691
+    .line 709
     :cond_0
     invoke-static {}, Lio/kamihama/magianative/CNDownloaderFix;->access$200()Ljava/util/concurrent/atomic/AtomicLongArray;
 
@@ -82,7 +101,7 @@
 
     move-result-wide v5
 
-    .line 692
+    .line 710
     const-wide/16 v3, 0x0
 
     cmp-long v7, v5, v3
@@ -99,7 +118,7 @@
 
     if-ltz v10, :cond_1
 
-    .line 693
+    .line 711
     invoke-static {}, Lio/kamihama/magianative/CNDownloaderFix;->access$200()Ljava/util/concurrent/atomic/AtomicLongArray;
 
     move-result-object v3
@@ -114,12 +133,12 @@
 
     if-eqz v3, :cond_1
 
-    .line 694
+    .line 712
     const/4 v3, 0x0
 
     invoke-static {v2, v3}, Lio/kamihama/magianative/CNCNDownloadUI;->setDownloadSpeed(IF)V
 
-    .line 695
+    .line 713
     new-instance v3, Ljava/lang/StringBuilder;
 
     invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
@@ -148,26 +167,26 @@
 
     invoke-static {v4, v3}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 696
+    .line 714
     const/4 v3, 0x1
 
     const/4 v9, 0x1
 
-    .line 689
+    .line 707
     :cond_1
-    :goto_1
+    :goto_2
     add-int/lit8 v2, v2, 0x1
 
-    goto :goto_0
+    goto :goto_1
 
-    .line 699
+    .line 717
     :cond_2
     if-eqz v9, :cond_3
 
-    .line 700
+    .line 718
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->throttledUpdate()V
 
-    .line 702
+    .line 720
     :cond_3
     return-void
 .end method
