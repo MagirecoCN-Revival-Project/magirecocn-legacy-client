@@ -27,7 +27,7 @@
 .method constructor <init>(Landroid/app/Activity;Ljava/lang/String;)V
     .locals 0
 
-    .line 784
+    .line 786
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     iput-object p1, p0, Lio/kamihama/magianative/CNCNDownloadUI$CreditLinkClick;->act:Landroid/app/Activity;
@@ -42,12 +42,12 @@
 .method public onClick(Landroid/view/View;)V
     .locals 6
 
-    .line 787
+    .line 789
     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
 
     move-result-wide v0
 
-    .line 788
+    .line 790
     iget-object p1, p0, Lio/kamihama/magianative/CNCNDownloadUI$CreditLinkClick;->url:Ljava/lang/String;
 
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$300()Ljava/lang/String;
@@ -60,7 +60,7 @@
 
     if-eqz p1, :cond_0
 
-    .line 789
+    .line 791
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$400()J
 
     move-result-wide v2
@@ -80,21 +80,21 @@
     :cond_0
     const/4 p1, 0x0
 
-    .line 790
+    .line 792
     :goto_0
     const-string v2, "\u754c\u9762"
 
     if-nez p1, :cond_1
 
-    .line 791
+    .line 793
     iget-object p1, p0, Lio/kamihama/magianative/CNCNDownloadUI$CreditLinkClick;->url:Ljava/lang/String;
 
     invoke-static {p1}, Lio/kamihama/magianative/CNCNDownloadUI;->access$302(Ljava/lang/String;)Ljava/lang/String;
 
-    .line 792
+    .line 794
     invoke-static {v0, v1}, Lio/kamihama/magianative/CNCNDownloadUI;->access$402(J)J
 
-    .line 793
+    .line 795
     new-instance p1, Ljava/lang/StringBuilder;
 
     invoke-direct {p1}, Ljava/lang/StringBuilder;-><init>()V
@@ -117,7 +117,7 @@
 
     invoke-static {v2, p1}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 794
+    .line 796
     iget-object p1, p0, Lio/kamihama/magianative/CNCNDownloadUI$CreditLinkClick;->act:Landroid/app/Activity;
 
     new-instance v0, Ljava/lang/StringBuilder;
@@ -148,21 +148,21 @@
 
     invoke-static {p1, v0}, Lio/kamihama/magianative/CNCNDownloadUI;->access$500(Landroid/app/Activity;Ljava/lang/String;)V
 
-    .line 795
+    .line 797
     return-void
 
-    .line 797
+    .line 799
     :cond_1
     const/4 p1, 0x0
 
     invoke-static {p1}, Lio/kamihama/magianative/CNCNDownloadUI;->access$302(Ljava/lang/String;)Ljava/lang/String;
 
-    .line 798
+    .line 800
     const-wide/16 v0, 0x0
 
     invoke-static {v0, v1}, Lio/kamihama/magianative/CNCNDownloadUI;->access$402(J)J
 
-    .line 799
+    .line 801
     new-instance p1, Ljava/lang/StringBuilder;
 
     invoke-direct {p1}, Ljava/lang/StringBuilder;-><init>()V
@@ -185,7 +185,7 @@
 
     invoke-static {v2, p1}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 801
+    .line 803
     :try_start_0
     new-instance p1, Landroid/content/Intent;
 
@@ -199,26 +199,26 @@
 
     invoke-direct {p1, v0, v1}, Landroid/content/Intent;-><init>(Ljava/lang/String;Landroid/net/Uri;)V
 
-    .line 802
+    .line 804
     const/high16 v0, 0x10000000
 
     invoke-virtual {p1, v0}, Landroid/content/Intent;->addFlags(I)Landroid/content/Intent;
 
-    .line 803
+    .line 805
     iget-object v0, p0, Lio/kamihama/magianative/CNCNDownloadUI$CreditLinkClick;->act:Landroid/app/Activity;
 
     invoke-virtual {v0, p1}, Landroid/app/Activity;->startActivity(Landroid/content/Intent;)V
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    .line 807
+    .line 809
     goto :goto_1
 
-    .line 804
+    .line 806
     :catchall_0
     move-exception p1
 
-    .line 805
+    .line 807
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
@@ -241,7 +241,7 @@
 
     invoke-static {v2, v0, p1}, Lio/kamihama/magianative/CNLog;->w(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    .line 806
+    .line 808
     iget-object p1, p0, Lio/kamihama/magianative/CNCNDownloadUI$CreditLinkClick;->act:Landroid/app/Activity;
 
     new-instance v0, Ljava/lang/StringBuilder;
@@ -266,7 +266,7 @@
 
     invoke-static {p1, v0}, Lio/kamihama/magianative/CNCNDownloadUI;->access$500(Landroid/app/Activity;Ljava/lang/String;)V
 
-    .line 808
+    .line 810
     :goto_1
     return-void
 .end method

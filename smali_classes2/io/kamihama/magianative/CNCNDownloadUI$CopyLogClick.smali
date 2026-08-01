@@ -25,7 +25,7 @@
 .method constructor <init>(Landroid/app/Activity;)V
     .locals 0
 
-    .line 1010
+    .line 1012
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     iput-object p1, p0, Lio/kamihama/magianative/CNCNDownloadUI$CopyLogClick;->act:Landroid/app/Activity;
@@ -38,29 +38,31 @@
 .method public onClick(Landroid/view/View;)V
     .locals 3
 
-    .line 1013
+    .line 1015
     :try_start_0
     iget-object p1, p0, Lio/kamihama/magianative/CNCNDownloadUI$CopyLogClick;->act:Landroid/app/Activity;
 
     const-string v0, "clipboard"
 
-    .line 1014
+    .line 1016
     invoke-virtual {p1, v0}, Landroid/app/Activity;->getSystemService(Ljava/lang/String;)Ljava/lang/Object;
 
     move-result-object p1
 
     check-cast p1, Landroid/content/ClipboardManager;
 
-    .line 1015
+    .line 1017
     if-nez p1, :cond_0
 
     return-void
 
-    .line 1016
+    .line 1018
     :cond_0
     const-string v0, "magireco-cnv-log"
 
-    invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$600()Ljava/lang/String;
+    const/4 v1, 0x1
+
+    invoke-static {v1}, Lio/kamihama/magianative/CNCNDownloadUI;->access$600(Z)Ljava/lang/String;
 
     move-result-object v1
 
@@ -70,7 +72,7 @@
 
     invoke-virtual {p1, v0}, Landroid/content/ClipboardManager;->setPrimaryClip(Landroid/content/ClipData;)V
 
-    .line 1017
+    .line 1019
     iget-object p1, p0, Lio/kamihama/magianative/CNCNDownloadUI$CopyLogClick;->act:Landroid/app/Activity;
 
     new-instance v0, Ljava/lang/StringBuilder;
@@ -105,14 +107,14 @@
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    .line 1020
+    .line 1022
     goto :goto_0
 
-    .line 1018
+    .line 1020
     :catchall_0
     move-exception p1
 
-    .line 1019
+    .line 1021
     iget-object v0, p0, Lio/kamihama/magianative/CNCNDownloadUI$CopyLogClick;->act:Landroid/app/Activity;
 
     new-instance v1, Ljava/lang/StringBuilder;
@@ -139,7 +141,7 @@
 
     invoke-static {v0, p1}, Lio/kamihama/magianative/CNCNDownloadUI;->access$500(Landroid/app/Activity;Ljava/lang/String;)V
 
-    .line 1021
+    .line 1023
     :goto_0
     return-void
 .end method

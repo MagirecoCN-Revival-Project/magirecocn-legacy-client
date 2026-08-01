@@ -21,7 +21,7 @@
 .method private constructor <init>()V
     .locals 0
 
-    .line 234
+    .line 243
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     return-void
@@ -30,7 +30,7 @@
 .method synthetic constructor <init>(Lio/kamihama/magianative/CNLog$1;)V
     .locals 0
 
-    .line 234
+    .line 243
     invoke-direct {p0}, Lio/kamihama/magianative/CNLog$LogcatReader;-><init>()V
 
     return-void
@@ -39,7 +39,7 @@
 .method private isOwnLine(Ljava/lang/String;)Z
     .locals 3
 
-    .line 261
+    .line 270
     const/4 v0, 0x0
 
     const/4 v1, 0x0
@@ -53,7 +53,7 @@
 
     if-ge v1, v2, :cond_1
 
-    .line 262
+    .line 271
     invoke-static {}, Lio/kamihama/magianative/CNLog;->access$200()[Ljava/lang/String;
 
     move-result-object v2
@@ -70,13 +70,13 @@
 
     return p1
 
-    .line 261
+    .line 270
     :cond_0
     add-int/lit8 v1, v1, 0x1
 
     goto :goto_0
 
-    .line 264
+    .line 273
     :cond_1
     return v0
 .end method
@@ -86,10 +86,10 @@
 .method public run()V
     .locals 7
 
-    .line 236
+    .line 245
     const-string v0, "\u65e5\u5fd7"
 
-    .line 238
+    .line 247
     const/4 v1, 0x0
 
     :try_start_0
@@ -131,30 +131,30 @@
 
     invoke-direct {v2, v3}, Ljava/lang/ProcessBuilder;-><init>([Ljava/lang/String;)V
 
-    .line 240
+    .line 249
     invoke-virtual {v2, v5}, Ljava/lang/ProcessBuilder;->redirectErrorStream(Z)Ljava/lang/ProcessBuilder;
 
-    .line 241
+    .line 250
     invoke-virtual {v2}, Ljava/lang/ProcessBuilder;->start()Ljava/lang/Process;
 
     move-result-object v2
 
-    .line 242
+    .line 251
     invoke-static {v2}, Lio/kamihama/magianative/CNLog;->access$102(Ljava/lang/Process;)Ljava/lang/Process;
 
-    .line 243
+    .line 252
     const-string v3, "INFO"
 
     const-string v4, "logcat \u56de\u6536\u5df2\u542f\u52a8"
 
     invoke-static {v0, v3, v4, v1}, Lio/kamihama/magianative/CNLog;->write(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    .line 244
+    .line 253
     new-instance v3, Ljava/io/BufferedReader;
 
     new-instance v4, Ljava/io/InputStreamReader;
 
-    .line 245
+    .line 254
     invoke-virtual {v2}, Ljava/lang/Process;->getInputStream()Ljava/io/InputStream;
 
     move-result-object v2
@@ -167,7 +167,7 @@
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_2
 
-    .line 247
+    .line 256
     :goto_0
     :try_start_1
     invoke-virtual {v3}, Ljava/io/BufferedReader;->readLine()Ljava/lang/String;
@@ -176,7 +176,7 @@
 
     if-eqz v2, :cond_2
 
-    .line 248
+    .line 257
     invoke-static {}, Lio/kamihama/magianative/CNLog;->access$100()Ljava/lang/Process;
 
     move-result-object v4
@@ -185,7 +185,7 @@
 
     goto :goto_1
 
-    .line 249
+    .line 258
     :cond_0
     invoke-direct {p0, v2}, Lio/kamihama/magianative/CNLog$LogcatReader;->isOwnLine(Ljava/lang/String;)Z
 
@@ -195,7 +195,7 @@
 
     goto :goto_0
 
-    .line 250
+    .line 259
     :cond_1
     invoke-static {v2}, Lio/kamihama/magianative/CNLog;->writeRaw(Ljava/lang/String;)V
     :try_end_1
@@ -203,7 +203,7 @@
 
     goto :goto_0
 
-    .line 255
+    .line 264
     :cond_2
     :goto_1
     :try_start_2
@@ -218,7 +218,7 @@
 
     goto :goto_4
 
-    .line 252
+    .line 261
     :catchall_1
     move-exception v2
 
@@ -229,7 +229,7 @@
 
     move-object v3, v1
 
-    .line 253
+    .line 262
     :goto_2
     :try_start_3
     const-string v4, "WARN"
@@ -261,7 +261,7 @@
     :catchall_3
     move-exception v0
 
-    .line 255
+    .line 264
     :goto_3
     if-eqz v3, :cond_3
 
@@ -270,7 +270,7 @@
     :try_end_4
     .catchall {:try_start_4 .. :try_end_4} :catchall_0
 
-    .line 257
+    .line 266
     :cond_3
     :goto_4
     return-void

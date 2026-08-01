@@ -14,11 +14,11 @@
         Lio/kamihama/magianative/CNCNDownloadUI$RetryClick;,
         Lio/kamihama/magianative/CNCNDownloadUI$SlotViews;,
         Lio/kamihama/magianative/CNCNDownloadUI$ScrollToBottom;,
+        Lio/kamihama/magianative/CNCNDownloadUI$RenderLog;,
         Lio/kamihama/magianative/CNCNDownloadUI$EnsureVisible;,
         Lio/kamihama/magianative/CNCNDownloadUI$HideRunnable;,
         Lio/kamihama/magianative/CNCNDownloadUI$UpdateRunnable;,
         Lio/kamihama/magianative/CNCNDownloadUI$CreateUIRunnable;,
-        Lio/kamihama/magianative/CNCNDownloadUI$RenderLog;,
         Lio/kamihama/magianative/CNCNDownloadUI$LogChanged;,
         Lio/kamihama/magianative/CNCNDownloadUI$ApplyBitmap;
     }
@@ -83,6 +83,12 @@
 .field private static final KIND_TITLE:I = 0x0
 
 .field private static final LOGO_ASSET:Ljava/lang/String; = "cnv/logo.png"
+
+.field private static final LOG_DIRTY:Ljava/util/concurrent/atomic/AtomicBoolean;
+
+.field private static final LOG_REFRESH_MS:J = 0xfaL
+
+.field private static final PANEL_LOG_LINES:I = 0x12c
 
 .field private static final PREFS_NAME:Ljava/lang/String; = "cnv_bootstrap_ui"
 
@@ -288,140 +294,149 @@
     sput-boolean v0, Lio/kamihama/magianative/CNCNDownloadUI;->darkMode:Z
 
     .line 174
-    const/16 v0, 0x8
+    const/16 v1, 0x8
 
-    new-array v0, v0, [I
+    new-array v1, v1, [I
 
-    fill-array-data v0, :array_0
+    fill-array-data v1, :array_0
 
-    sput-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->CONTRIB_PALETTE:[I
+    sput-object v1, Lio/kamihama/magianative/CNCNDownloadUI;->CONTRIB_PALETTE:[I
 
     .line 186
-    const/16 v0, 0xd
+    const/16 v1, 0xd
 
-    new-array v0, v0, [I
+    new-array v1, v1, [I
 
-    fill-array-data v0, :array_1
+    fill-array-data v1, :array_1
 
-    sput-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->CREDIT_KINDS:[I
+    sput-object v1, Lio/kamihama/magianative/CNCNDownloadUI;->CREDIT_KINDS:[I
 
     .line 191
-    const-string v1, "\u9b54\u6cd5\u7eaa\u5f55Totentanz\u4e2d\u6587\u5316"
+    const-string v2, "\u9b54\u6cd5\u7eaa\u5f55Totentanz\u4e2d\u6587\u5316"
 
-    const-string v2, "\u3010\u6838\u5fc3\u9006\u5411\u5f00\u53d1\u3011MadeInMagius\u3010B\u7ad9ID\u3011"
+    const-string v3, "\u3010\u6838\u5fc3\u9006\u5411\u5f00\u53d1\u3011MadeInMagius\u3010B\u7ad9ID\u3011"
 
-    const-string v3, "(\u72ec\u7acb\u5b8c\u6210\u6c49\u5316\u5f15\u64ce\u4ee5\u53ca\u4e0b\u8f7d\u7cfb\u7edf\u548c\u65e5\u670d\u56fd\u670d\u8d44\u6e90\u5408\u5e76)"
+    const-string v4, "(\u72ec\u7acb\u5b8c\u6210\u6c49\u5316\u5f15\u64ce\u4ee5\u53ca\u4e0b\u8f7d\u7cfb\u7edf\u548c\u65e5\u670d\u56fd\u670d\u8d44\u6e90\u5408\u5e76)"
 
-    const-string v4, "\u5176\u4ed6\u4e2a\u4eba\u7f51\u7ad9"
+    const-string v5, "\u5176\u4ed6\u4e2a\u4eba\u7f51\u7ad9"
 
-    const-string v5, "magireader.pages.dev\u3010\u9b54\u6cd5\u7eaa\u5f55\u5267\u60c5\u4e2d\u65e5\u53cc\u8bed\u9605\u8bfb\u7f51\u7ad9\u3011"
+    const-string v6, "magireader.pages.dev\u3010\u9b54\u6cd5\u7eaa\u5f55\u5267\u60c5\u4e2d\u65e5\u53cc\u8bed\u9605\u8bfb\u7f51\u7ad9\u3011"
 
-    const-string v6, "magiaexedralive2dviewer.pages.dev\u3010MagiaExedra\u548c\u9b54\u6cd5\u7eaa\u5f55Live2D\u7f51\u7ad9\u3011"
+    const-string v7, "magiaexedralive2dviewer.pages.dev\u3010MagiaExedra\u548c\u9b54\u6cd5\u7eaa\u5f55Live2D\u7f51\u7ad9\u3011"
 
-    const-string v7, "magireco-call-search-cn.pages.dev\u3010\u9b54\u6cd5\u5c11\u5973\u79f0\u547c\u5173\u7cfb\u641c\u7d22\u4e0e\u8eab\u9ad8\u5bf9\u6bd4\u7f51\u7ad9\u3011"
+    const-string v8, "magireco-call-search-cn.pages.dev\u3010\u9b54\u6cd5\u5c11\u5973\u79f0\u547c\u5173\u7cfb\u641c\u7d22\u4e0e\u8eab\u9ad8\u5bf9\u6bd4\u7f51\u7ad9\u3011"
 
-    const-string v8, "\u3010\u534f\u52a9\u4e0e\u9e23\u8c22\u3011"
+    const-string v9, "\u3010\u534f\u52a9\u4e0e\u9e23\u8c22\u3011"
 
-    const-string v9, "\u56fd\u670d\u6587\u4ef6\u4e4b\u5916\u7684\u7ffb\u8bd1\u548c\u6821\u5bf9\uff1a\u6c34\u94f6h2oag\u3010\u9605\u8bfb\u5668\u7f51\u7ad9\u4e3a\u4e3b\uff0c\u8d44\u6e90\u5df2\u540c\u6b65\u81f3\u6e38\u620f\u3011"
+    const-string v10, "\u56fd\u670d\u6587\u4ef6\u4e4b\u5916\u7684\u7ffb\u8bd1\u548c\u6821\u5bf9\uff1a\u6c34\u94f6h2oag\u3010\u9605\u8bfb\u5668\u7f51\u7ad9\u4e3a\u4e3b\uff0c\u8d44\u6e90\u5df2\u540c\u6b65\u81f3\u6e38\u620f\u3011"
 
-    const-string v10, "\u4e0b\u8f7d\u52a0\u901f\u53ca\u8d44\u6e90\u81ea\u52a8\u5316\u63a8\u9001\uff1aCyberNova"
+    const-string v11, "\u4e0b\u8f7d\u52a0\u901f\u53ca\u8d44\u6e90\u81ea\u52a8\u5316\u63a8\u9001\uff1aCyberNova"
 
-    const-string v11, "\u56fd\u670d\u6570\u636e\u7559\u5b58\uff1asegfault"
+    const-string v12, "\u56fd\u670d\u6570\u636e\u7559\u5b58\uff1asegfault"
 
-    const-string v12, "\u9879\u76ee\u5b98\u7f51\uff1awww.magireco.top\u3010\u901a\u5f80\u5176\u4ed6\u4e2a\u4eba\u7f51\u7ad9\u548c\u63d0\u4f9b\u8054\u7cfb\u65b9\u5f0f\u3011"
+    const-string v13, "\u9879\u76ee\u5b98\u7f51\uff1awww.magireco.top\u3010\u901a\u5f80\u5176\u4ed6\u4e2a\u4eba\u7f51\u7ad9\u548c\u63d0\u4f9b\u8054\u7cfb\u65b9\u5f0f\u3011"
 
-    const-string v13, "bilibili\u89c6\u9891\u6559\u7a0b\uff1aBV1faRiBBExk"
+    const-string v14, "bilibili\u89c6\u9891\u6559\u7a0b\uff1aBV1faRiBBExk"
 
-    filled-new-array/range {v1 .. v13}, [Ljava/lang/String;
+    filled-new-array/range {v2 .. v14}, [Ljava/lang/String;
 
-    move-result-object v0
+    move-result-object v1
 
-    sput-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->CREDIT_TEXTS:[Ljava/lang/String;
+    sput-object v1, Lio/kamihama/magianative/CNCNDownloadUI;->CREDIT_TEXTS:[Ljava/lang/String;
 
     .line 213
-    const-string v1, ""
+    const-string v2, ""
 
-    const-string v2, "https://b23.tv/aNjcz1p"
-
-    const-string v3, ""
+    const-string v3, "https://b23.tv/aNjcz1p"
 
     const-string v4, ""
 
-    const-string v5, "https://magireader.pages.dev"
+    const-string v5, ""
 
-    const-string v6, "https://magiaexedralive2dviewer.pages.dev"
+    const-string v6, "https://magireader.pages.dev"
 
-    const-string v7, "https://magireco-call-search-cn.pages.dev"
+    const-string v7, "https://magiaexedralive2dviewer.pages.dev"
 
-    const-string v8, ""
+    const-string v8, "https://magireco-call-search-cn.pages.dev"
 
-    const-string v9, "https://b23.tv/ovvbrNw"
+    const-string v9, ""
 
-    const-string v10, "https://b23.tv/9vyRcI8"
+    const-string v10, "https://b23.tv/ovvbrNw"
 
-    const-string v11, "https://b23.tv/xjXW9DI"
+    const-string v11, "https://b23.tv/9vyRcI8"
 
-    const-string v12, "https://www.magireco.top"
+    const-string v12, "https://b23.tv/xjXW9DI"
 
-    const-string v13, "https://www.bilibili.com/video/BV1faRiBBExk"
+    const-string v13, "https://www.magireco.top"
 
-    filled-new-array/range {v1 .. v13}, [Ljava/lang/String;
+    const-string v14, "https://www.bilibili.com/video/BV1faRiBBExk"
 
-    move-result-object v0
+    filled-new-array/range {v2 .. v14}, [Ljava/lang/String;
 
-    sput-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->CREDIT_URLS:[Ljava/lang/String;
+    move-result-object v1
+
+    sput-object v1, Lio/kamihama/magianative/CNCNDownloadUI;->CREDIT_URLS:[Ljava/lang/String;
 
     .line 236
-    const-string v1, ""
+    const-string v2, ""
 
-    const-string v2, "MadeInMagius"
-
-    const-string v3, ""
+    const-string v3, "MadeInMagius"
 
     const-string v4, ""
 
-    const-string v5, "magireader.pages.dev"
+    const-string v5, ""
 
-    const-string v6, "magiaexedralive2dviewer.pages.dev"
+    const-string v6, "magireader.pages.dev"
 
-    const-string v7, "magireco-call-search-cn.pages.dev"
+    const-string v7, "magiaexedralive2dviewer.pages.dev"
 
-    const-string v8, ""
+    const-string v8, "magireco-call-search-cn.pages.dev"
 
-    const-string v9, "\u6c34\u94f6h2oag"
+    const-string v9, ""
 
-    const-string v10, "CyberNova"
+    const-string v10, "\u6c34\u94f6h2oag"
 
-    const-string v11, "segfault"
+    const-string v11, "CyberNova"
 
-    const-string v12, "www.magireco.top"
+    const-string v12, "segfault"
 
-    const-string v13, "BV1faRiBBExk"
+    const-string v13, "www.magireco.top"
 
-    filled-new-array/range {v1 .. v13}, [Ljava/lang/String;
+    const-string v14, "BV1faRiBBExk"
 
-    move-result-object v0
+    filled-new-array/range {v2 .. v14}, [Ljava/lang/String;
 
-    sput-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->CREDIT_LINK_SPANS:[Ljava/lang/String;
+    move-result-object v1
+
+    sput-object v1, Lio/kamihama/magianative/CNCNDownloadUI;->CREDIT_LINK_SPANS:[Ljava/lang/String;
 
     .line 264
-    const/4 v0, 0x0
+    const/4 v1, 0x0
 
-    sput-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->pendingUrl:Ljava/lang/String;
+    sput-object v1, Lio/kamihama/magianative/CNCNDownloadUI;->pendingUrl:Ljava/lang/String;
 
     .line 266
-    const-wide/16 v0, 0x0
+    const-wide/16 v1, 0x0
 
-    sput-wide v0, Lio/kamihama/magianative/CNCNDownloadUI;->pendingAtMs:J
+    sput-wide v1, Lio/kamihama/magianative/CNCNDownloadUI;->pendingAtMs:J
 
     .line 301
-    new-instance v0, Ljava/util/ArrayList;
+    new-instance v1, Ljava/util/ArrayList;
 
-    invoke-direct {v0}, Ljava/util/ArrayList;-><init>()V
+    invoke-direct {v1}, Ljava/util/ArrayList;-><init>()V
 
-    sput-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->slotList:Ljava/util/List;
+    sput-object v1, Lio/kamihama/magianative/CNCNDownloadUI;->slotList:Ljava/util/List;
+
+    .line 1080
+    new-instance v1, Ljava/util/concurrent/atomic/AtomicBoolean;
+
+    invoke-direct {v1, v0}, Ljava/util/concurrent/atomic/AtomicBoolean;-><init>(Z)V
+
+    sput-object v1, Lio/kamihama/magianative/CNCNDownloadUI;->LOG_DIRTY:Ljava/util/concurrent/atomic/AtomicBoolean;
 
     return-void
+
+    nop
 
     :array_0
     .array-data 4
@@ -480,7 +495,16 @@
     return-void
 .end method
 
-.method static synthetic access$1000()Landroid/widget/ScrollView;
+.method static synthetic access$1000()Ljava/util/concurrent/atomic/AtomicBoolean;
+    .locals 1
+
+    .line 54
+    sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->LOG_DIRTY:Ljava/util/concurrent/atomic/AtomicBoolean;
+
+    return-object v0
+.end method
+
+.method static synthetic access$1100()Landroid/widget/ScrollView;
     .locals 1
 
     .line 54
@@ -489,7 +513,7 @@
     return-object v0
 .end method
 
-.method static synthetic access$1002(Landroid/widget/ScrollView;)Landroid/widget/ScrollView;
+.method static synthetic access$1102(Landroid/widget/ScrollView;)Landroid/widget/ScrollView;
     .locals 0
 
     .line 54
@@ -498,7 +522,7 @@
     return-object p0
 .end method
 
-.method static synthetic access$1100(I)I
+.method static synthetic access$1200(I)I
     .locals 0
 
     .line 54
@@ -509,7 +533,7 @@
     return p0
 .end method
 
-.method static synthetic access$1200()V
+.method static synthetic access$1300()V
     .locals 0
 
     .line 54
@@ -518,7 +542,7 @@
     return-void
 .end method
 
-.method static synthetic access$1300()Landroid/app/Activity;
+.method static synthetic access$1400()Landroid/app/Activity;
     .locals 1
 
     .line 54
@@ -527,7 +551,7 @@
     return-object v0
 .end method
 
-.method static synthetic access$1302(Landroid/app/Activity;)Landroid/app/Activity;
+.method static synthetic access$1402(Landroid/app/Activity;)Landroid/app/Activity;
     .locals 0
 
     .line 54
@@ -536,7 +560,7 @@
     return-object p0
 .end method
 
-.method static synthetic access$1400()Z
+.method static synthetic access$1500()Z
     .locals 1
 
     .line 54
@@ -545,7 +569,7 @@
     return v0
 .end method
 
-.method static synthetic access$1402(Z)Z
+.method static synthetic access$1502(Z)Z
     .locals 0
 
     .line 54
@@ -554,7 +578,7 @@
     return p0
 .end method
 
-.method static synthetic access$1500(Z)V
+.method static synthetic access$1600(Z)V
     .locals 0
 
     .line 54
@@ -563,7 +587,7 @@
     return-void
 .end method
 
-.method static synthetic access$1600(Landroid/app/Activity;)Landroid/widget/FrameLayout;
+.method static synthetic access$1700(Landroid/app/Activity;)Landroid/widget/FrameLayout;
     .locals 0
 
     .line 54
@@ -574,22 +598,13 @@
     return-object p0
 .end method
 
-.method static synthetic access$1700()V
+.method static synthetic access$1800()V
     .locals 0
 
     .line 54
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->renderAll()V
 
     return-void
-.end method
-
-.method static synthetic access$1902(Landroid/widget/TextView;)Landroid/widget/TextView;
-    .locals 0
-
-    .line 54
-    sput-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->vPhase:Landroid/widget/TextView;
-
-    return-object p0
 .end method
 
 .method static synthetic access$200()V
@@ -605,7 +620,7 @@
     .locals 0
 
     .line 54
-    sput-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->vStatus:Landroid/widget/TextView;
+    sput-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->vPhase:Landroid/widget/TextView;
 
     return-object p0
 .end method
@@ -614,7 +629,7 @@
     .locals 0
 
     .line 54
-    sput-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->vAggregate:Landroid/widget/TextView;
+    sput-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->vStatus:Landroid/widget/TextView;
 
     return-object p0
 .end method
@@ -623,16 +638,16 @@
     .locals 0
 
     .line 54
-    sput-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->vOverallText:Landroid/widget/TextView;
+    sput-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->vAggregate:Landroid/widget/TextView;
 
     return-object p0
 .end method
 
-.method static synthetic access$2302(Landroid/widget/LinearLayout;)Landroid/widget/LinearLayout;
+.method static synthetic access$2302(Landroid/widget/TextView;)Landroid/widget/TextView;
     .locals 0
 
     .line 54
-    sput-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->slotContainer:Landroid/widget/LinearLayout;
+    sput-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->vOverallText:Landroid/widget/TextView;
 
     return-object p0
 .end method
@@ -641,16 +656,16 @@
     .locals 0
 
     .line 54
-    sput-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->vContribList:Landroid/widget/LinearLayout;
+    sput-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->slotContainer:Landroid/widget/LinearLayout;
 
     return-object p0
 .end method
 
-.method static synthetic access$2502(Landroid/widget/TextView;)Landroid/widget/TextView;
+.method static synthetic access$2502(Landroid/widget/LinearLayout;)Landroid/widget/LinearLayout;
     .locals 0
 
     .line 54
-    sput-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->vThemeChip:Landroid/widget/TextView;
+    sput-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->vContribList:Landroid/widget/LinearLayout;
 
     return-object p0
 .end method
@@ -659,36 +674,36 @@
     .locals 0
 
     .line 54
+    sput-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->vThemeChip:Landroid/widget/TextView;
+
+    return-object p0
+.end method
+
+.method static synthetic access$2702(Landroid/widget/TextView;)Landroid/widget/TextView;
+    .locals 0
+
+    .line 54
     sput-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->vLogPill:Landroid/widget/TextView;
 
     return-object p0
 .end method
 
-.method static synthetic access$2702(Landroid/graphics/drawable/GradientDrawable;)Landroid/graphics/drawable/GradientDrawable;
+.method static synthetic access$2802(Landroid/widget/FrameLayout;)Landroid/widget/FrameLayout;
+    .locals 0
+
+    .line 54
+    sput-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->logModal:Landroid/widget/FrameLayout;
+
+    return-object p0
+.end method
+
+.method static synthetic access$2902(Landroid/graphics/drawable/GradientDrawable;)Landroid/graphics/drawable/GradientDrawable;
     .locals 0
 
     .line 54
     sput-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->themeChipBg:Landroid/graphics/drawable/GradientDrawable;
 
     return-object p0
-.end method
-
-.method static synthetic access$2802(Landroid/graphics/drawable/GradientDrawable;)Landroid/graphics/drawable/GradientDrawable;
-    .locals 0
-
-    .line 54
-    sput-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->logPillBg:Landroid/graphics/drawable/GradientDrawable;
-
-    return-object p0
-.end method
-
-.method static synthetic access$2900()Ljava/util/List;
-    .locals 1
-
-    .line 54
-    sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->slotList:Ljava/util/List;
-
-    return-object v0
 .end method
 
 .method static synthetic access$300()Ljava/lang/String;
@@ -700,6 +715,15 @@
     return-object v0
 .end method
 
+.method static synthetic access$3002(Landroid/graphics/drawable/GradientDrawable;)Landroid/graphics/drawable/GradientDrawable;
+    .locals 0
+
+    .line 54
+    sput-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->logPillBg:Landroid/graphics/drawable/GradientDrawable;
+
+    return-object p0
+.end method
+
 .method static synthetic access$302(Ljava/lang/String;)Ljava/lang/String;
     .locals 0
 
@@ -707,6 +731,15 @@
     sput-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->pendingUrl:Ljava/lang/String;
 
     return-object p0
+.end method
+
+.method static synthetic access$3100()Ljava/util/List;
+    .locals 1
+
+    .line 54
+    sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->slotList:Ljava/util/List;
+
+    return-object v0
 .end method
 
 .method static synthetic access$400()J
@@ -736,33 +769,24 @@
     return-void
 .end method
 
-.method static synthetic access$600()Ljava/lang/String;
-    .locals 1
-
-    .line 54
-    invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->composeLogText()Ljava/lang/String;
-
-    move-result-object v0
-
-    return-object v0
-.end method
-
-.method static synthetic access$800()Landroid/widget/FrameLayout;
-    .locals 1
-
-    .line 54
-    sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->logModal:Landroid/widget/FrameLayout;
-
-    return-object v0
-.end method
-
-.method static synthetic access$802(Landroid/widget/FrameLayout;)Landroid/widget/FrameLayout;
+.method static synthetic access$600(Z)Ljava/lang/String;
     .locals 0
 
     .line 54
-    sput-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->logModal:Landroid/widget/FrameLayout;
+    invoke-static {p0}, Lio/kamihama/magianative/CNCNDownloadUI;->composeLogText(Z)Ljava/lang/String;
+
+    move-result-object p0
 
     return-object p0
+.end method
+
+.method static synthetic access$900()V
+    .locals 0
+
+    .line 54
+    invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->scheduleLogRefresh()V
+
+    return-void
 .end method
 
 .method private static buildOverlay(Landroid/app/Activity;)Landroid/widget/FrameLayout;
@@ -2439,87 +2463,82 @@
     invoke-virtual {v4, v2, v6}, Landroid/graphics/drawable/GradientDrawable;->setStroke(II)V
 
     .line 755
-    sget-object v6, Lio/kamihama/magianative/CNCNDownloadUI;->vLogScroll:Landroid/widget/ScrollView;
+    sget-object v2, Lio/kamihama/magianative/CNCNDownloadUI;->vLogScroll:Landroid/widget/ScrollView;
 
-    invoke-virtual {v6, v4}, Landroid/widget/ScrollView;->setBackground(Landroid/graphics/drawable/Drawable;)V
+    invoke-virtual {v2, v4}, Landroid/widget/ScrollView;->setBackground(Landroid/graphics/drawable/Drawable;)V
 
     .line 756
-    sget-object v4, Lio/kamihama/magianative/CNCNDownloadUI;->vLogScroll:Landroid/widget/ScrollView;
+    sget-object v2, Lio/kamihama/magianative/CNCNDownloadUI;->vLogScroll:Landroid/widget/ScrollView;
 
-    const/16 v6, 0x8
+    const/16 v4, 0x8
 
-    invoke-static {v0, v6}, Lio/kamihama/magianative/CNCNDownloadUI;->dp(Landroid/content/Context;I)I
-
-    move-result v7
-
-    const/4 v8, 0x6
-
-    invoke-static {v0, v8}, Lio/kamihama/magianative/CNCNDownloadUI;->dp(Landroid/content/Context;I)I
-
-    move-result v9
-
-    invoke-static {v0, v6}, Lio/kamihama/magianative/CNCNDownloadUI;->dp(Landroid/content/Context;I)I
+    invoke-static {v0, v4}, Lio/kamihama/magianative/CNCNDownloadUI;->dp(Landroid/content/Context;I)I
 
     move-result v6
 
-    invoke-static {v0, v8}, Lio/kamihama/magianative/CNCNDownloadUI;->dp(Landroid/content/Context;I)I
+    const/4 v7, 0x6
+
+    invoke-static {v0, v7}, Lio/kamihama/magianative/CNCNDownloadUI;->dp(Landroid/content/Context;I)I
 
     move-result v8
 
-    invoke-virtual {v4, v7, v9, v6, v8}, Landroid/widget/ScrollView;->setPadding(IIII)V
+    invoke-static {v0, v4}, Lio/kamihama/magianative/CNCNDownloadUI;->dp(Landroid/content/Context;I)I
+
+    move-result v4
+
+    invoke-static {v0, v7}, Lio/kamihama/magianative/CNCNDownloadUI;->dp(Landroid/content/Context;I)I
+
+    move-result v7
+
+    invoke-virtual {v2, v6, v8, v4, v7}, Landroid/widget/ScrollView;->setPadding(IIII)V
 
     .line 757
-    sget-object v4, Lio/kamihama/magianative/CNCNDownloadUI;->vLogScroll:Landroid/widget/ScrollView;
+    sget-object v2, Lio/kamihama/magianative/CNCNDownloadUI;->vLogScroll:Landroid/widget/ScrollView;
 
-    new-instance v6, Landroid/widget/LinearLayout$LayoutParams;
+    new-instance v4, Landroid/widget/LinearLayout$LayoutParams;
 
-    const/high16 v7, 0x3f800000    # 1.0f
+    const/high16 v6, 0x3f800000    # 1.0f
 
-    const/4 v8, 0x0
+    const/4 v7, 0x0
 
-    invoke-direct {v6, v5, v8, v7}, Landroid/widget/LinearLayout$LayoutParams;-><init>(IIF)V
+    invoke-direct {v4, v5, v7, v6}, Landroid/widget/LinearLayout$LayoutParams;-><init>(IIF)V
 
-    invoke-virtual {v3, v4, v6}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
+    invoke-virtual {v3, v2, v4}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
     .line 761
-    new-instance v3, Landroid/widget/TextView;
+    new-instance v2, Landroid/widget/TextView;
 
-    invoke-direct {v3, v0}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
+    invoke-direct {v2, v0}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
 
-    sput-object v3, Lio/kamihama/magianative/CNCNDownloadUI;->tvLog:Landroid/widget/TextView;
+    sput-object v2, Lio/kamihama/magianative/CNCNDownloadUI;->tvLog:Landroid/widget/TextView;
 
     .line 762
     const-string v0, "=== MagiaCN Installer ===\n(waiting...)"
 
-    invoke-virtual {v3, v0}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+    invoke-virtual {v2, v0}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
     .line 763
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->tvLog:Landroid/widget/TextView;
 
-    sget v3, Lio/kamihama/magianative/CNCNDownloadUI;->COLOR_LOG_PANEL_TEXT:I
+    sget v2, Lio/kamihama/magianative/CNCNDownloadUI;->COLOR_LOG_PANEL_TEXT:I
 
-    invoke-virtual {v0, v3}, Landroid/widget/TextView;->setTextColor(I)V
+    invoke-virtual {v0, v2}, Landroid/widget/TextView;->setTextColor(I)V
 
     .line 764
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->tvLog:Landroid/widget/TextView;
 
-    const/high16 v3, 0x41300000    # 11.0f
+    const/high16 v2, 0x41300000    # 11.0f
 
-    invoke-virtual {v0, v11, v3}, Landroid/widget/TextView;->setTextSize(IF)V
+    invoke-virtual {v0, v11, v2}, Landroid/widget/TextView;->setTextSize(IF)V
 
     .line 765
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->tvLog:Landroid/widget/TextView;
 
-    sget-object v3, Landroid/graphics/Typeface;->MONOSPACE:Landroid/graphics/Typeface;
+    sget-object v2, Landroid/graphics/Typeface;->MONOSPACE:Landroid/graphics/Typeface;
 
-    invoke-virtual {v0, v3}, Landroid/widget/TextView;->setTypeface(Landroid/graphics/Typeface;)V
+    invoke-virtual {v0, v2}, Landroid/widget/TextView;->setTypeface(Landroid/graphics/Typeface;)V
 
-    .line 766
-    sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->tvLog:Landroid/widget/TextView;
-
-    invoke-virtual {v0, v2}, Landroid/widget/TextView;->setTextIsSelectable(Z)V
-
-    .line 767
+    .line 769
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->vLogScroll:Landroid/widget/ScrollView;
 
     sget-object v2, Lio/kamihama/magianative/CNCNDownloadUI;->tvLog:Landroid/widget/TextView;
@@ -2530,32 +2549,32 @@
 
     invoke-virtual {v0, v2, v3}, Landroid/widget/ScrollView;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    .line 771
+    .line 773
     return-object v1
 .end method
 
 .method public static buildStatusText()Ljava/lang/String;
     .locals 14
 
-    .line 1432
+    .line 1474
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->FILE_NAMES:[Ljava/lang/String;
 
-    .line 1433
+    .line 1475
     sget-object v1, Lio/kamihama/magianative/CNCNDownloadUI;->fileStatus:[I
 
-    .line 1434
+    .line 1476
     sget-object v2, Lio/kamihama/magianative/CNCNDownloadUI;->fileProgress:[I
 
-    .line 1435
+    .line 1477
     sget-object v3, Lio/kamihama/magianative/CNCNDownloadUI;->fileSize:[F
 
-    .line 1436
+    .line 1478
     sget-object v4, Lio/kamihama/magianative/CNCNDownloadUI;->fileSpeed:[F
 
-    .line 1437
+    .line 1479
     sget-object v5, Lio/kamihama/magianative/CNCNDownloadUI;->fileDownloaded:[F
 
-    .line 1438
+    .line 1480
     if-eqz v0, :cond_d
 
     if-eqz v1, :cond_d
@@ -2564,7 +2583,7 @@
 
     goto/16 :goto_4
 
-    .line 1441
+    .line 1483
     :cond_0
     new-instance v6, Ljava/lang/StringBuilder;
 
@@ -2572,7 +2591,7 @@
 
     invoke-direct {v6, v7}, Ljava/lang/StringBuilder;-><init>(Ljava/lang/String;)V
 
-    .line 1442
+    .line 1484
     const/4 v7, 0x0
 
     const/4 v8, 0x0
@@ -2582,10 +2601,10 @@
 
     if-ge v8, v9, :cond_c
 
-    .line 1443
+    .line 1485
     aget v9, v1, v8
 
-    .line 1444
+    .line 1486
     const/4 v10, 0x2
 
     const/4 v11, 0x1
@@ -2622,7 +2641,7 @@
 
     add-int/lit8 v12, v8, 0x1
 
-    .line 1445
+    .line 1487
     invoke-virtual {v10, v12}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
     move-result-object v10
@@ -2637,10 +2656,10 @@
 
     invoke-virtual {v10, v13}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    .line 1446
+    .line 1488
     if-ne v9, v11, :cond_b
 
-    .line 1447
+    .line 1489
     const-string v9, "  "
 
     invoke-virtual {v6, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
@@ -2657,19 +2676,19 @@
 
     invoke-virtual {v10, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    .line 1448
+    .line 1490
     if-eqz v5, :cond_6
 
     if-eqz v3, :cond_6
 
-    .line 1449
+    .line 1491
     aget v10, v5, v8
 
     invoke-static {v10}, Ljava/lang/Float;->toString(F)Ljava/lang/String;
 
     move-result-object v10
 
-    .line 1450
+    .line 1492
     invoke-virtual {v10}, Ljava/lang/String;->length()I
 
     move-result v11
@@ -2682,7 +2701,7 @@
 
     move-result-object v10
 
-    .line 1451
+    .line 1493
     :cond_4
     invoke-virtual {v6, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -2696,14 +2715,14 @@
 
     invoke-virtual {v10, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    .line 1452
+    .line 1494
     aget v10, v3, v8
 
     invoke-static {v10}, Ljava/lang/Float;->toString(F)Ljava/lang/String;
 
     move-result-object v10
 
-    .line 1453
+    .line 1495
     invoke-virtual {v10}, Ljava/lang/String;->length()I
 
     move-result v11
@@ -2714,7 +2733,7 @@
 
     move-result-object v10
 
-    .line 1454
+    .line 1496
     :cond_5
     invoke-virtual {v6, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -2724,18 +2743,18 @@
 
     invoke-virtual {v10, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    .line 1456
+    .line 1498
     :cond_6
     if-eqz v4, :cond_8
 
-    .line 1457
+    .line 1499
     aget v10, v4, v8
 
     invoke-static {v10}, Ljava/lang/Float;->toString(F)Ljava/lang/String;
 
     move-result-object v10
 
-    .line 1458
+    .line 1500
     invoke-virtual {v10}, Ljava/lang/String;->length()I
 
     move-result v11
@@ -2748,7 +2767,7 @@
 
     move-result-object v10
 
-    .line 1459
+    .line 1501
     :cond_7
     invoke-virtual {v6, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
@@ -2762,21 +2781,21 @@
 
     invoke-virtual {v9, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    .line 1461
+    .line 1503
     :cond_8
     aget v9, v1, v8
 
     if-eqz v9, :cond_b
 
-    .line 1462
+    .line 1504
     aget v8, v2, v8
 
-    .line 1463
+    .line 1505
     const-string v9, "\n  ["
 
     invoke-virtual {v6, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    .line 1464
+    .line 1506
     const/4 v9, 0x0
 
     :goto_2
@@ -2784,7 +2803,7 @@
 
     if-ge v9, v10, :cond_a
 
-    .line 1465
+    .line 1507
     mul-int/lit8 v10, v9, 0xa
 
     if-ge v10, v8, :cond_9
@@ -2799,29 +2818,29 @@
     :goto_3
     invoke-virtual {v6, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    .line 1464
+    .line 1506
     add-int/lit8 v9, v9, 0x1
 
     goto :goto_2
 
-    .line 1467
+    .line 1509
     :cond_a
     const-string v8, "]"
 
     invoke-virtual {v6, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    .line 1470
+    .line 1512
     :cond_b
     const-string v8, "\n"
 
     invoke-virtual {v6, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    .line 1442
+    .line 1484
     move v8, v12
 
     goto/16 :goto_0
 
-    .line 1472
+    .line 1514
     :cond_c
     invoke-virtual {v6}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
@@ -2829,7 +2848,7 @@
 
     return-object v0
 
-    .line 1439
+    .line 1481
     :cond_d
     :goto_4
     const-string v0, "=== MagiaCN Installer ===\n(initializing...)"
@@ -2840,7 +2859,7 @@
 .method private static closeLogModal()V
     .locals 2
 
-    .line 1051
+    .line 1068
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->logModal:Landroid/widget/FrameLayout;
 
     if-eqz v0, :cond_0
@@ -2849,54 +2868,113 @@
 
     invoke-virtual {v0, v1}, Landroid/widget/FrameLayout;->setVisibility(I)V
 
-    .line 1052
+    .line 1069
     :cond_0
     return-void
 .end method
 
-.method private static composeLogText()Ljava/lang/String;
-    .locals 3
+.method private static composeLogText(Z)Ljava/lang/String;
+    .locals 4
 
-    .line 1026
+    .line 1035
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
 
-    .line 1027
+    .line 1036
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->buildStatusText()Ljava/lang/String;
 
     move-result-object v1
 
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    .line 1028
+    .line 1037
     const-string v1, "\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 \u8fd0\u884c\u65e5\u5fd7 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n"
 
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    .line 1029
+    .line 1038
+    const/16 v1, 0x12c
+
+    if-eqz p0, :cond_0
+
     invoke-static {}, Lio/kamihama/magianative/CNLog;->snapshot()Ljava/lang/String;
 
-    move-result-object v1
+    move-result-object v2
 
-    .line 1030
-    invoke-virtual {v1}, Ljava/lang/String;->length()I
-
-    move-result v2
-
-    if-nez v2, :cond_0
-
-    const-string v1, "\uff08\u6682\u65e0\u65e5\u5fd7\uff09\n"
+    goto :goto_0
 
     :cond_0
-    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-static {v1}, Lio/kamihama/magianative/CNLog;->tail(I)Ljava/lang/String;
 
-    .line 1031
+    move-result-object v2
+
+    .line 1039
+    :goto_0
+    invoke-virtual {v2}, Ljava/lang/String;->length()I
+
+    move-result v3
+
+    if-nez v3, :cond_1
+
+    .line 1040
+    const-string p0, "\uff08\u6682\u65e0\u65e5\u5fd7\uff09\n"
+
+    invoke-virtual {v0, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    goto :goto_1
+
+    .line 1042
+    :cond_1
+    if-nez p0, :cond_2
+
+    invoke-static {}, Lio/kamihama/magianative/CNLog;->size()I
+
+    move-result p0
+
+    if-le p0, v1, :cond_2
+
+    .line 1043
+    const-string p0, "\uff08\u4ec5\u663e\u793a\u6700\u8fd1 "
+
+    invoke-virtual {v0, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object p0
+
+    invoke-virtual {p0, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    move-result-object p0
+
+    const-string v1, " \u884c\uff0c\u5171 "
+
+    invoke-virtual {p0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object p0
+
+    .line 1044
+    invoke-static {}, Lio/kamihama/magianative/CNLog;->size()I
+
+    move-result v1
+
+    invoke-virtual {p0, v1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    move-result-object p0
+
+    const-string v1, " \u884c\uff1b\u300c\u590d\u5236\u5168\u90e8\u300d\u53ef\u53d6\u5b8c\u6574\u65e5\u5fd7\uff09\n"
+
+    invoke-virtual {p0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 1046
+    :cond_2
+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 1048
+    :goto_1
     invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
-    move-result-object v0
+    move-result-object p0
 
-    return-object v0
+    return-object p0
 .end method
 
 .method private static dp(Landroid/content/Context;I)I
@@ -2929,14 +3007,14 @@
 .method private static dpStatic(I)I
     .locals 1
 
-    .line 1090
+    .line 1124
     int-to-float p0, p0
 
     invoke-static {}, Landroid/content/res/Resources;->getSystem()Landroid/content/res/Resources;
 
     move-result-object v0
 
-    .line 1091
+    .line 1125
     invoke-virtual {v0}, Landroid/content/res/Resources;->getDisplayMetrics()Landroid/util/DisplayMetrics;
 
     move-result-object v0
@@ -2951,19 +3029,19 @@
 
     float-to-int p0, p0
 
-    .line 1090
+    .line 1124
     return p0
 .end method
 
 .method public static ensureVisible(Landroid/app/Activity;)V
     .locals 1
 
-    .line 1104
+    .line 1138
     if-nez p0, :cond_0
 
     return-void
 
-    .line 1106
+    .line 1140
     :cond_0
     :try_start_0
     new-instance v0, Lio/kamihama/magianative/CNCNDownloadUI$EnsureVisible;
@@ -2976,21 +3054,21 @@
 
     goto :goto_0
 
-    .line 1107
+    .line 1141
     :catchall_0
     move-exception p0
 
     :goto_0
     nop
 
-    .line 1108
+    .line 1142
     return-void
 .end method
 
 .method private static formatMb(F)Ljava/lang/String;
     .locals 4
 
-    .line 1176
+    .line 1210
     const/4 v0, 0x0
 
     cmpg-float v0, p0, v0
@@ -3001,7 +3079,7 @@
 
     return-object p0
 
-    .line 1177
+    .line 1211
     :cond_0
     const/4 v0, 0x0
 
@@ -3031,7 +3109,7 @@
 
     return-object p0
 
-    .line 1178
+    .line 1212
     :cond_1
     sget-object v3, Ljava/util/Locale;->US:Ljava/util/Locale;
 
@@ -3057,7 +3135,7 @@
 .method private static formatMbps(F)Ljava/lang/String;
     .locals 3
 
-    .line 1182
+    .line 1216
     const/4 v0, 0x0
 
     cmpg-float v0, p0, v0
@@ -3068,7 +3146,7 @@
 
     return-object p0
 
-    .line 1183
+    .line 1217
     :cond_0
     sget-object v0, Ljava/util/Locale;->US:Ljava/util/Locale;
 
@@ -3096,7 +3174,7 @@
 .method public static hide()V
     .locals 2
 
-    .line 1477
+    .line 1519
     sget-boolean v0, Lio/kamihama/magianative/CNCNDownloadUI;->isShowing:Z
 
     if-eqz v0, :cond_1
@@ -3107,7 +3185,7 @@
 
     goto :goto_0
 
-    .line 1480
+    .line 1522
     :cond_0
     new-instance v1, Lio/kamihama/magianative/CNCNDownloadUI$HideRunnable;
 
@@ -3115,15 +3193,15 @@
 
     invoke-virtual {v0, v1}, Landroid/os/Handler;->post(Ljava/lang/Runnable;)Z
 
-    .line 1481
+    .line 1523
     const/4 v0, 0x0
 
     sput-boolean v0, Lio/kamihama/magianative/CNCNDownloadUI;->isShowing:Z
 
-    .line 1482
+    .line 1524
     return-void
 
-    .line 1478
+    .line 1520
     :cond_1
     :goto_0
     return-void
@@ -3132,14 +3210,14 @@
 .method private static highlight(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/CharSequence;
     .locals 3
 
-    .line 816
+    .line 818
     if-nez p0, :cond_0
 
     const-string p0, ""
 
     return-object p0
 
-    .line 817
+    .line 819
     :cond_0
     if-eqz p1, :cond_3
 
@@ -3151,46 +3229,46 @@
 
     goto :goto_0
 
-    .line 818
+    .line 820
     :cond_1
     invoke-virtual {p0, p1}, Ljava/lang/String;->indexOf(Ljava/lang/String;)I
 
     move-result v0
 
-    .line 819
+    .line 821
     if-gez v0, :cond_2
 
     return-object p0
 
-    .line 820
+    .line 822
     :cond_2
     new-instance v1, Landroid/text/SpannableString;
 
     invoke-direct {v1, p0}, Landroid/text/SpannableString;-><init>(Ljava/lang/CharSequence;)V
 
-    .line 821
+    .line 823
     new-instance p0, Landroid/text/style/ForegroundColorSpan;
 
     sget v2, Lio/kamihama/magianative/CNCNDownloadUI;->COLOR_LINK:I
 
     invoke-direct {p0, v2}, Landroid/text/style/ForegroundColorSpan;-><init>(I)V
 
-    .line 822
+    .line 824
     invoke-virtual {p1}, Ljava/lang/String;->length()I
 
     move-result p1
 
     add-int/2addr p1, v0
 
-    .line 821
+    .line 823
     const/16 v2, 0x21
 
     invoke-virtual {v1, p0, v0, p1, v2}, Landroid/text/SpannableString;->setSpan(Ljava/lang/Object;III)V
 
-    .line 824
+    .line 826
     return-object v1
 
-    .line 817
+    .line 819
     :cond_3
     :goto_0
     return-object p0
@@ -3382,55 +3460,55 @@
 .method public static markFileDone(I)V
     .locals 2
 
-    .line 1485
+    .line 1527
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->fileStatus:[I
 
-    .line 1486
+    .line 1528
     if-eqz v0, :cond_0
 
-    .line 1487
+    .line 1529
     const/4 v1, 0x2
 
     aput v1, v0, p0
 
-    .line 1488
+    .line 1530
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->fileProgress:[I
 
-    .line 1489
+    .line 1531
     if-eqz v0, :cond_0
 
-    .line 1490
+    .line 1532
     const/16 v1, 0x64
 
     aput v1, v0, p0
 
-    .line 1493
+    .line 1535
     :cond_0
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->fileSpeed:[F
 
-    .line 1494
+    .line 1536
     if-eqz v0, :cond_1
 
-    .line 1495
+    .line 1537
     const/4 v1, 0x0
 
     aput v1, v0, p0
 
-    .line 1497
+    .line 1539
     :cond_1
     sget-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->uiHandler:Landroid/os/Handler;
 
-    .line 1498
+    .line 1540
     if-eqz p0, :cond_2
 
-    .line 1499
+    .line 1541
     new-instance v0, Lio/kamihama/magianative/CNCNDownloadUI$UpdateRunnable;
 
     invoke-direct {v0}, Lio/kamihama/magianative/CNCNDownloadUI$UpdateRunnable;-><init>()V
 
     invoke-virtual {p0, v0}, Landroid/os/Handler;->post(Ljava/lang/Runnable;)Z
 
-    .line 1501
+    .line 1543
     :cond_2
     return-void
 .end method
@@ -3438,28 +3516,28 @@
 .method private static openLogModal()V
     .locals 3
 
-    .line 1042
+    .line 1059
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->logModal:Landroid/widget/FrameLayout;
 
     if-nez v0, :cond_0
 
     return-void
 
-    .line 1043
+    .line 1060
     :cond_0
     const/4 v1, 0x0
 
     invoke-virtual {v0, v1}, Landroid/widget/FrameLayout;->setVisibility(I)V
 
-    .line 1044
+    .line 1061
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->renderLogModal()V
 
-    .line 1045
+    .line 1062
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->vLogScroll:Landroid/widget/ScrollView;
 
     if-eqz v0, :cond_1
 
-    .line 1046
+    .line 1063
     new-instance v1, Lio/kamihama/magianative/CNCNDownloadUI$ScrollToBottom;
 
     const/4 v2, 0x0
@@ -3468,7 +3546,7 @@
 
     invoke-virtual {v0, v1}, Landroid/widget/ScrollView;->post(Ljava/lang/Runnable;)Z
 
-    .line 1048
+    .line 1065
     :cond_1
     return-void
 .end method
@@ -3476,21 +3554,21 @@
 .method private static populateContributors(Landroid/app/Activity;)V
     .locals 14
 
-    .line 852
+    .line 854
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->vContribList:Landroid/widget/LinearLayout;
 
     if-nez v0, :cond_0
 
     return-void
 
-    .line 853
+    .line 855
     :cond_0
     invoke-virtual {v0}, Landroid/widget/LinearLayout;->removeAllViews()V
 
-    .line 854
+    .line 856
     nop
 
-    .line 855
+    .line 857
     const/4 v0, 0x0
 
     const/4 v1, 0x0
@@ -3504,12 +3582,12 @@
 
     if-ge v1, v4, :cond_7
 
-    .line 856
+    .line 858
     sget-object v4, Lio/kamihama/magianative/CNCNDownloadUI;->CREDIT_KINDS:[I
 
     aget v4, v4, v1
 
-    .line 857
+    .line 859
     const/4 v5, -0x1
 
     const/4 v6, -0x2
@@ -3520,25 +3598,25 @@
 
     if-ne v4, v8, :cond_4
 
-    .line 858
+    .line 860
     new-instance v4, Landroid/widget/LinearLayout;
 
     invoke-direct {v4, p0}, Landroid/widget/LinearLayout;-><init>(Landroid/content/Context;)V
 
-    .line 859
+    .line 861
     invoke-virtual {v4, v0}, Landroid/widget/LinearLayout;->setOrientation(I)V
 
-    .line 860
+    .line 862
     const/16 v9, 0x10
 
     invoke-virtual {v4, v9}, Landroid/widget/LinearLayout;->setGravity(I)V
 
-    .line 861
+    .line 863
     new-instance v9, Landroid/widget/LinearLayout$LayoutParams;
 
     invoke-direct {v9, v5, v6}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
 
-    .line 864
+    .line 866
     const/4 v5, 0x3
 
     invoke-static {p0, v5}, Lio/kamihama/magianative/CNCNDownloadUI;->dp(Landroid/content/Context;I)I
@@ -3547,12 +3625,12 @@
 
     iput v10, v9, Landroid/widget/LinearLayout$LayoutParams;->topMargin:I
 
-    .line 865
+    .line 867
     sget-object v10, Lio/kamihama/magianative/CNCNDownloadUI;->vContribList:Landroid/widget/LinearLayout;
 
     invoke-virtual {v10, v4, v9}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    .line 867
+    .line 869
     new-instance v9, Lio/kamihama/magianative/CNCNDownloadUI$DotView;
 
     sget-object v10, Lio/kamihama/magianative/CNCNDownloadUI;->CONTRIB_PALETTE:[I
@@ -3565,10 +3643,10 @@
 
     invoke-direct {v9, p0, v10}, Lio/kamihama/magianative/CNCNDownloadUI$DotView;-><init>(Landroid/content/Context;I)V
 
-    .line 869
+    .line 871
     new-instance v10, Landroid/widget/LinearLayout$LayoutParams;
 
-    .line 870
+    .line 872
     const/4 v11, 0x7
 
     invoke-static {p0, v11}, Lio/kamihama/magianative/CNCNDownloadUI;->dp(Landroid/content/Context;I)I
@@ -3581,20 +3659,20 @@
 
     invoke-direct {v10, v12, v13}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
 
-    .line 871
+    .line 873
     invoke-static {p0, v11}, Lio/kamihama/magianative/CNCNDownloadUI;->dp(Landroid/content/Context;I)I
 
     move-result v11
 
     iput v11, v10, Landroid/widget/LinearLayout$LayoutParams;->rightMargin:I
 
-    .line 872
+    .line 874
     invoke-virtual {v4, v9, v10}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    .line 873
+    .line 875
     add-int/lit8 v2, v2, 0x1
 
-    .line 875
+    .line 877
     sget-object v9, Lio/kamihama/magianative/CNCNDownloadUI;->CREDIT_URLS:[Ljava/lang/String;
 
     array-length v10, v9
@@ -3610,7 +3688,7 @@
     :cond_1
     move-object v9, v11
 
-    .line 876
+    .line 878
     :goto_1
     sget-object v10, Lio/kamihama/magianative/CNCNDownloadUI;->CREDIT_LINK_SPANS:[Ljava/lang/String;
 
@@ -3620,23 +3698,23 @@
 
     aget-object v11, v10, v1
 
-    .line 877
+    .line 879
     :cond_2
     new-instance v10, Landroid/widget/TextView;
 
     invoke-direct {v10, p0}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
 
-    .line 878
+    .line 880
     sget v12, Lio/kamihama/magianative/CNCNDownloadUI;->COLOR_TEXT:I
 
     invoke-virtual {v10, v12}, Landroid/widget/TextView;->setTextColor(I)V
 
-    .line 879
+    .line 881
     const/high16 v12, 0x41200000    # 10.0f
 
     invoke-virtual {v10, v8, v12}, Landroid/widget/TextView;->setTextSize(IF)V
 
-    .line 880
+    .line 882
     aget-object v3, v3, v1
 
     invoke-static {v3, v11}, Lio/kamihama/magianative/CNCNDownloadUI;->highlight(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/CharSequence;
@@ -3645,14 +3723,14 @@
 
     invoke-virtual {v10, v3}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    .line 881
+    .line 883
     invoke-virtual {v9}, Ljava/lang/String;->length()I
 
     move-result v3
 
     if-lez v3, :cond_3
 
-    .line 882
+    .line 884
     invoke-static {p0, v5}, Lio/kamihama/magianative/CNCNDownloadUI;->dp(Landroid/content/Context;I)I
 
     move-result v3
@@ -3663,17 +3741,17 @@
 
     invoke-virtual {v4, v0, v3, v0, v5}, Landroid/widget/LinearLayout;->setPadding(IIII)V
 
-    .line 883
+    .line 885
     invoke-virtual {v4, v7}, Landroid/widget/LinearLayout;->setClickable(Z)V
 
-    .line 884
+    .line 886
     new-instance v3, Lio/kamihama/magianative/CNCNDownloadUI$CreditLinkClick;
 
     invoke-direct {v3, p0, v9}, Lio/kamihama/magianative/CNCNDownloadUI$CreditLinkClick;-><init>(Landroid/app/Activity;Ljava/lang/String;)V
 
     invoke-virtual {v4, v3}, Landroid/widget/LinearLayout;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
-    .line 886
+    .line 888
     :cond_3
     new-instance v3, Landroid/widget/LinearLayout$LayoutParams;
 
@@ -3683,46 +3761,46 @@
 
     invoke-virtual {v4, v10, v3}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    .line 888
+    .line 890
     goto :goto_3
 
-    .line 889
+    .line 891
     :cond_4
     new-instance v9, Landroid/widget/TextView;
 
     invoke-direct {v9, p0}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
 
-    .line 890
+    .line 892
     aget-object v3, v3, v1
 
     invoke-virtual {v9, v3}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    .line 891
+    .line 893
     new-instance v3, Landroid/widget/LinearLayout$LayoutParams;
 
     invoke-direct {v3, v5, v6}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
 
-    .line 894
+    .line 896
     if-nez v4, :cond_5
 
-    .line 895
+    .line 897
     sget v4, Lio/kamihama/magianative/CNCNDownloadUI;->COLOR_ACCENT:I
 
     invoke-virtual {v9, v4}, Landroid/widget/TextView;->setTextColor(I)V
 
-    .line 896
+    .line 898
     const/high16 v4, 0x41400000    # 12.0f
 
     invoke-virtual {v9, v8, v4}, Landroid/widget/TextView;->setTextSize(IF)V
 
-    .line 897
+    .line 899
     invoke-virtual {v9}, Landroid/widget/TextView;->getTypeface()Landroid/graphics/Typeface;
 
     move-result-object v4
 
     invoke-virtual {v9, v4, v7}, Landroid/widget/TextView;->setTypeface(Landroid/graphics/Typeface;I)V
 
-    .line 898
+    .line 900
     const/4 v4, 0x4
 
     invoke-static {p0, v4}, Lio/kamihama/magianative/CNCNDownloadUI;->dp(Landroid/content/Context;I)I
@@ -3733,28 +3811,28 @@
 
     goto :goto_2
 
-    .line 899
+    .line 901
     :cond_5
     if-ne v4, v7, :cond_6
 
-    .line 900
+    .line 902
     sget v4, Lio/kamihama/magianative/CNCNDownloadUI;->COLOR_ACCENT2:I
 
     invoke-virtual {v9, v4}, Landroid/widget/TextView;->setTextColor(I)V
 
-    .line 901
+    .line 903
     const/high16 v4, 0x41300000    # 11.0f
 
     invoke-virtual {v9, v8, v4}, Landroid/widget/TextView;->setTextSize(IF)V
 
-    .line 902
+    .line 904
     invoke-virtual {v9}, Landroid/widget/TextView;->getTypeface()Landroid/graphics/Typeface;
 
     move-result-object v4
 
     invoke-virtual {v9, v4, v7}, Landroid/widget/TextView;->setTypeface(Landroid/graphics/Typeface;I)V
 
-    .line 903
+    .line 905
     const/16 v4, 0x8
 
     invoke-static {p0, v4}, Lio/kamihama/magianative/CNCNDownloadUI;->dp(Landroid/content/Context;I)I
@@ -3763,7 +3841,7 @@
 
     iput v4, v3, Landroid/widget/LinearLayout$LayoutParams;->topMargin:I
 
-    .line 904
+    .line 906
     invoke-static {p0, v8}, Lio/kamihama/magianative/CNCNDownloadUI;->dp(Landroid/content/Context;I)I
 
     move-result v4
@@ -3772,18 +3850,18 @@
 
     goto :goto_2
 
-    .line 906
+    .line 908
     :cond_6
     sget v4, Lio/kamihama/magianative/CNCNDownloadUI;->COLOR_SUB:I
 
     invoke-virtual {v9, v4}, Landroid/widget/TextView;->setTextColor(I)V
 
-    .line 907
+    .line 909
     const/high16 v4, 0x41100000    # 9.0f
 
     invoke-virtual {v9, v8, v4}, Landroid/widget/TextView;->setTextSize(IF)V
 
-    .line 908
+    .line 910
     const/16 v4, 0xe
 
     invoke-static {p0, v4}, Lio/kamihama/magianative/CNCNDownloadUI;->dp(Landroid/content/Context;I)I
@@ -3792,19 +3870,19 @@
 
     iput v4, v3, Landroid/widget/LinearLayout$LayoutParams;->leftMargin:I
 
-    .line 910
+    .line 912
     :goto_2
     sget-object v4, Lio/kamihama/magianative/CNCNDownloadUI;->vContribList:Landroid/widget/LinearLayout;
 
     invoke-virtual {v4, v9, v3}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    .line 855
+    .line 857
     :goto_3
     add-int/lit8 v1, v1, 0x1
 
     goto/16 :goto_0
 
-    .line 913
+    .line 915
     :cond_7
     return-void
 .end method
@@ -3812,7 +3890,7 @@
 .method private static rebuildSlots(Landroid/app/Activity;)V
     .locals 16
 
-    .line 917
+    .line 919
     move-object/from16 v0, p0
 
     sget-object v1, Lio/kamihama/magianative/CNCNDownloadUI;->slotContainer:Landroid/widget/LinearLayout;
@@ -3821,16 +3899,16 @@
 
     return-void
 
-    .line 918
+    .line 920
     :cond_0
     invoke-virtual {v1}, Landroid/widget/LinearLayout;->removeAllViews()V
 
-    .line 919
+    .line 921
     sget-object v1, Lio/kamihama/magianative/CNCNDownloadUI;->slotList:Ljava/util/List;
 
     invoke-interface {v1}, Ljava/util/List;->clear()V
 
-    .line 920
+    .line 922
     const/4 v1, 0x0
 
     const/4 v2, 0x0
@@ -3840,17 +3918,17 @@
 
     if-ge v2, v3, :cond_2
 
-    .line 921
+    .line 923
     new-instance v3, Landroid/widget/LinearLayout;
 
     invoke-direct {v3, v0}, Landroid/widget/LinearLayout;-><init>(Landroid/content/Context;)V
 
-    .line 922
+    .line 924
     const/4 v4, 0x1
 
     invoke-virtual {v3, v4}, Landroid/widget/LinearLayout;->setOrientation(I)V
 
-    .line 923
+    .line 925
     sget-object v5, Lio/kamihama/magianative/CNCNDownloadUI;->slotContainer:Landroid/widget/LinearLayout;
 
     new-instance v6, Landroid/widget/LinearLayout$LayoutParams;
@@ -3863,25 +3941,25 @@
 
     invoke-virtual {v5, v3, v6}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    .line 927
+    .line 929
     new-instance v5, Landroid/widget/LinearLayout;
 
     invoke-direct {v5, v0}, Landroid/widget/LinearLayout;-><init>(Landroid/content/Context;)V
 
-    .line 928
+    .line 930
     invoke-virtual {v5, v1}, Landroid/widget/LinearLayout;->setOrientation(I)V
 
-    .line 929
+    .line 931
     const/16 v6, 0x10
 
     invoke-virtual {v5, v6}, Landroid/widget/LinearLayout;->setGravity(I)V
 
-    .line 930
+    .line 932
     new-instance v6, Landroid/widget/LinearLayout$LayoutParams;
 
     invoke-direct {v6, v7, v8}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
 
-    .line 933
+    .line 935
     const/4 v9, 0x5
 
     invoke-static {v0, v9}, Lio/kamihama/magianative/CNCNDownloadUI;->dp(Landroid/content/Context;I)I
@@ -3890,15 +3968,15 @@
 
     iput v9, v6, Landroid/widget/LinearLayout$LayoutParams;->topMargin:I
 
-    .line 934
+    .line 936
     invoke-virtual {v3, v5, v6}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    .line 936
+    .line 938
     new-instance v11, Landroid/widget/TextView;
 
     invoke-direct {v11, v0}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
 
-    .line 937
+    .line 939
     new-instance v6, Ljava/lang/StringBuilder;
 
     invoke-direct {v6}, Ljava/lang/StringBuilder;-><init>()V
@@ -3929,27 +4007,27 @@
 
     invoke-virtual {v11, v6}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    .line 938
+    .line 940
     sget v6, Lio/kamihama/magianative/CNCNDownloadUI;->COLOR_TEXT:I
 
     invoke-virtual {v11, v6}, Landroid/widget/TextView;->setTextColor(I)V
 
-    .line 939
+    .line 941
     const/high16 v6, 0x41300000    # 11.0f
 
     const/4 v10, 0x2
 
     invoke-virtual {v11, v10, v6}, Landroid/widget/TextView;->setTextSize(IF)V
 
-    .line 940
+    .line 942
     invoke-virtual {v11, v4}, Landroid/widget/TextView;->setSingleLine(Z)V
 
-    .line 941
+    .line 943
     sget-object v6, Landroid/text/TextUtils$TruncateAt;->MIDDLE:Landroid/text/TextUtils$TruncateAt;
 
     invoke-virtual {v11, v6}, Landroid/widget/TextView;->setEllipsize(Landroid/text/TextUtils$TruncateAt;)V
 
-    .line 942
+    .line 944
     new-instance v6, Landroid/widget/LinearLayout$LayoutParams;
 
     const/high16 v12, 0x3f800000    # 1.0f
@@ -3958,60 +4036,60 @@
 
     invoke-virtual {v5, v11, v6}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    .line 945
+    .line 947
     new-instance v12, Landroid/widget/TextView;
 
     invoke-direct {v12, v0}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
 
-    .line 946
+    .line 948
     const-string v6, ""
 
     invoke-virtual {v12, v6}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    .line 947
+    .line 949
     sget v6, Lio/kamihama/magianative/CNCNDownloadUI;->COLOR_SUB:I
 
     invoke-virtual {v12, v6}, Landroid/widget/TextView;->setTextColor(I)V
 
-    .line 948
+    .line 950
     const/high16 v6, 0x41200000    # 10.0f
 
     invoke-virtual {v12, v10, v6}, Landroid/widget/TextView;->setTextSize(IF)V
 
-    .line 949
+    .line 951
     const v13, 0x800005
 
     invoke-virtual {v12, v13}, Landroid/widget/TextView;->setGravity(I)V
 
-    .line 950
+    .line 952
     new-instance v13, Landroid/widget/LinearLayout$LayoutParams;
 
     invoke-direct {v13, v8, v8}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
 
     invoke-virtual {v5, v12, v13}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    .line 955
+    .line 957
     new-instance v13, Landroid/widget/TextView;
 
     invoke-direct {v13, v0}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
 
-    .line 956
+    .line 958
     const-string v14, "\u91cd\u8bd5"
 
     invoke-virtual {v13, v14}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    .line 957
+    .line 959
     invoke-virtual {v13, v7}, Landroid/widget/TextView;->setTextColor(I)V
 
-    .line 958
+    .line 960
     invoke-virtual {v13, v10, v6}, Landroid/widget/TextView;->setTextSize(IF)V
 
-    .line 959
+    .line 961
     const/16 v6, 0x11
 
     invoke-virtual {v13, v6}, Landroid/widget/TextView;->setGravity(I)V
 
-    .line 960
+    .line 962
     const/16 v6, 0xa
 
     invoke-static {v0, v6}, Lio/kamihama/magianative/CNCNDownloadUI;->dp(Landroid/content/Context;I)I
@@ -4034,17 +4112,17 @@
 
     invoke-virtual {v13, v14, v4, v10, v15}, Landroid/widget/TextView;->setPadding(IIII)V
 
-    .line 961
+    .line 963
     new-instance v4, Landroid/graphics/drawable/GradientDrawable;
 
     invoke-direct {v4}, Landroid/graphics/drawable/GradientDrawable;-><init>()V
 
-    .line 962
+    .line 964
     const v10, -0x1ac6cb
 
     invoke-virtual {v4, v10}, Landroid/graphics/drawable/GradientDrawable;->setColor(I)V
 
-    .line 963
+    .line 965
     invoke-static {v0, v6}, Lio/kamihama/magianative/CNCNDownloadUI;->dp(Landroid/content/Context;I)I
 
     move-result v6
@@ -4053,37 +4131,37 @@
 
     invoke-virtual {v4, v6}, Landroid/graphics/drawable/GradientDrawable;->setCornerRadius(F)V
 
-    .line 964
+    .line 966
     invoke-virtual {v13, v4}, Landroid/widget/TextView;->setBackground(Landroid/graphics/drawable/Drawable;)V
 
-    .line 965
+    .line 967
     const/16 v4, 0x8
 
     invoke-virtual {v13, v4}, Landroid/widget/TextView;->setVisibility(I)V
 
-    .line 966
+    .line 968
     new-instance v6, Lio/kamihama/magianative/CNCNDownloadUI$RetryClick;
 
     invoke-direct {v6, v0, v2}, Lio/kamihama/magianative/CNCNDownloadUI$RetryClick;-><init>(Landroid/app/Activity;I)V
 
     invoke-virtual {v13, v6}, Landroid/widget/TextView;->setOnClickListener(Landroid/view/View$OnClickListener;)V
 
-    .line 967
+    .line 969
     new-instance v2, Landroid/widget/LinearLayout$LayoutParams;
 
     invoke-direct {v2, v8, v8}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
 
-    .line 970
+    .line 972
     invoke-static {v0, v4}, Lio/kamihama/magianative/CNCNDownloadUI;->dp(Landroid/content/Context;I)I
 
     move-result v4
 
     iput v4, v2, Landroid/widget/LinearLayout$LayoutParams;->leftMargin:I
 
-    .line 971
+    .line 973
     invoke-virtual {v5, v13, v2}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    .line 973
+    .line 975
     new-instance v14, Landroid/widget/ProgressBar;
 
     const/4 v2, 0x0
@@ -4092,23 +4170,23 @@
 
     invoke-direct {v14, v0, v2, v4}, Landroid/widget/ProgressBar;-><init>(Landroid/content/Context;Landroid/util/AttributeSet;I)V
 
-    .line 975
+    .line 977
     const/16 v2, 0x64
 
     invoke-virtual {v14, v2}, Landroid/widget/ProgressBar;->setMax(I)V
 
-    .line 976
+    .line 978
     invoke-virtual {v14, v1}, Landroid/widget/ProgressBar;->setProgress(I)V
 
-    .line 977
+    .line 979
     const v2, 0x55888888
 
     invoke-static {v14, v2}, Lio/kamihama/magianative/CNCNDownloadUI;->tintBar(Landroid/widget/ProgressBar;I)V
 
-    .line 978
+    .line 980
     new-instance v2, Landroid/widget/LinearLayout$LayoutParams;
 
-    .line 979
+    .line 981
     const/4 v4, 0x6
 
     invoke-static {v0, v4}, Lio/kamihama/magianative/CNCNDownloadUI;->dp(Landroid/content/Context;I)I
@@ -4117,7 +4195,7 @@
 
     invoke-direct {v2, v7, v4}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
 
-    .line 980
+    .line 982
     const/4 v4, 0x2
 
     invoke-static {v0, v4}, Lio/kamihama/magianative/CNCNDownloadUI;->dp(Landroid/content/Context;I)I
@@ -4126,15 +4204,15 @@
 
     iput v4, v2, Landroid/widget/LinearLayout$LayoutParams;->topMargin:I
 
-    .line 981
+    .line 983
     invoke-virtual {v3, v14, v2}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    .line 983
+    .line 985
     new-instance v15, Landroid/view/View;
 
     invoke-direct {v15, v0}, Landroid/view/View;-><init>(Landroid/content/Context;)V
 
-    .line 984
+    .line 986
     sget-boolean v2, Lio/kamihama/magianative/CNCNDownloadUI;->darkMode:Z
 
     if-eqz v2, :cond_1
@@ -4149,14 +4227,14 @@
     :goto_1
     invoke-virtual {v15, v2}, Landroid/view/View;->setBackgroundColor(I)V
 
-    .line 985
+    .line 987
     new-instance v2, Landroid/widget/LinearLayout$LayoutParams;
 
     const/4 v4, 0x1
 
     invoke-direct {v2, v7, v4}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
 
-    .line 987
+    .line 989
     const/4 v4, 0x4
 
     invoke-static {v0, v4}, Lio/kamihama/magianative/CNCNDownloadUI;->dp(Landroid/content/Context;I)I
@@ -4165,10 +4243,10 @@
 
     iput v4, v2, Landroid/widget/LinearLayout$LayoutParams;->topMargin:I
 
-    .line 988
+    .line 990
     invoke-virtual {v3, v15, v2}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    .line 990
+    .line 992
     sget-object v2, Lio/kamihama/magianative/CNCNDownloadUI;->slotList:Ljava/util/List;
 
     new-instance v3, Lio/kamihama/magianative/CNCNDownloadUI$SlotViews;
@@ -4179,12 +4257,12 @@
 
     invoke-interface {v2, v3}, Ljava/util/List;->add(Ljava/lang/Object;)Z
 
-    .line 920
+    .line 922
     move v2, v9
 
     goto/16 :goto_0
 
-    .line 992
+    .line 994
     :cond_2
     return-void
 .end method
@@ -4192,28 +4270,28 @@
 .method private static renderAll()V
     .locals 17
 
-    .line 1197
-    invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->renderLogModal()V
+    .line 1231
+    invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->scheduleLogRefresh()V
 
-    .line 1199
+    .line 1233
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->fileStatus:[I
 
-    .line 1200
+    .line 1234
     sget-object v1, Lio/kamihama/magianative/CNCNDownloadUI;->fileProgress:[I
 
-    .line 1201
+    .line 1235
     sget-object v2, Lio/kamihama/magianative/CNCNDownloadUI;->fileSize:[F
 
-    .line 1202
+    .line 1236
     sget-object v3, Lio/kamihama/magianative/CNCNDownloadUI;->fileSpeed:[F
 
-    .line 1203
+    .line 1237
     sget-object v4, Lio/kamihama/magianative/CNCNDownloadUI;->fileDownloaded:[F
 
-    .line 1214
+    .line 1248
     nop
 
-    .line 1215
+    .line 1249
     const/4 v5, 0x2
 
     const/16 v6, 0xf
@@ -4226,7 +4304,7 @@
 
     if-eqz v0, :cond_2
 
-    .line 1216
+    .line 1250
     const/4 v9, 0x0
 
     const/4 v10, 0x0
@@ -4236,7 +4314,7 @@
     :goto_0
     if-ge v9, v6, :cond_3
 
-    .line 1217
+    .line 1251
     aget v12, v2, v9
 
     cmpg-float v13, v12, v8
@@ -4245,11 +4323,11 @@
 
     goto :goto_2
 
-    .line 1218
+    .line 1252
     :cond_0
     add-float/2addr v10, v12
 
-    .line 1221
+    .line 1255
     aget v13, v0, v9
 
     if-ne v13, v5, :cond_1
@@ -4266,13 +4344,13 @@
     :goto_1
     add-float/2addr v11, v12
 
-    .line 1216
+    .line 1250
     :goto_2
     add-int/lit8 v9, v9, 0x1
 
     goto :goto_0
 
-    .line 1225
+    .line 1259
     :cond_2
     const/4 v10, 0x0
 
@@ -4283,7 +4361,7 @@
 
     if-lez v9, :cond_4
 
-    .line 1226
+    .line 1260
     const/high16 v9, 0x42c80000    # 100.0f
 
     mul-float v11, v11, v9
@@ -4308,14 +4386,14 @@
 
     goto :goto_4
 
-    .line 1227
+    .line 1261
     :cond_4
     if-eqz v1, :cond_6
 
-    .line 1228
+    .line 1262
     nop
 
-    .line 1229
+    .line 1263
     const/4 v9, 0x0
 
     const/4 v10, 0x0
@@ -4331,38 +4409,38 @@
 
     goto :goto_3
 
-    .line 1230
+    .line 1264
     :cond_5
     div-int/2addr v10, v6
 
-    .line 1231
+    .line 1265
     goto :goto_4
 
-    .line 1232
+    .line 1266
     :cond_6
     const/4 v10, 0x0
 
-    .line 1234
+    .line 1268
     :goto_4
     sget-object v9, Lio/kamihama/magianative/CNCNDownloadUI;->progressBarOverall:Landroid/widget/ProgressBar;
 
-    .line 1235
+    .line 1269
     if-eqz v9, :cond_7
 
     invoke-virtual {v9, v10}, Landroid/widget/ProgressBar;->setProgress(I)V
 
-    .line 1239
+    .line 1273
     :cond_7
     nop
 
-    .line 1240
+    .line 1274
     const/4 v9, 0x1
 
     if-eqz v3, :cond_9
 
     if-eqz v0, :cond_9
 
-    .line 1241
+    .line 1275
     const/4 v10, 0x0
 
     const/4 v11, 0x0
@@ -4370,7 +4448,7 @@
     :goto_5
     if-ge v10, v6, :cond_a
 
-    .line 1242
+    .line 1276
     aget v12, v0, v10
 
     if-ne v12, v9, :cond_8
@@ -4379,20 +4457,20 @@
 
     add-float/2addr v11, v12
 
-    .line 1241
+    .line 1275
     :cond_8
     add-int/lit8 v10, v10, 0x1
 
     goto :goto_5
 
-    .line 1245
+    .line 1279
     :cond_9
     const/4 v11, 0x0
 
     :cond_a
     sget-object v10, Lio/kamihama/magianative/CNCNDownloadUI;->tvSpeed:Landroid/widget/TextView;
 
-    .line 1246
+    .line 1280
     if-eqz v10, :cond_b
 
     invoke-static {v11}, Lio/kamihama/magianative/CNCNDownloadUI;->formatMbps(F)Ljava/lang/String;
@@ -4401,7 +4479,7 @@
 
     invoke-virtual {v10, v11}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    .line 1249
+    .line 1283
     :cond_b
     sget-object v10, Lio/kamihama/magianative/CNCNDownloadUI;->vPhase:Landroid/widget/TextView;
 
@@ -4411,7 +4489,7 @@
 
     invoke-virtual {v10, v11}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    .line 1250
+    .line 1284
     :cond_c
     sget-object v10, Lio/kamihama/magianative/CNCNDownloadUI;->vStatus:Landroid/widget/TextView;
 
@@ -4421,7 +4499,7 @@
 
     invoke-virtual {v10, v11}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    .line 1253
+    .line 1287
     :cond_d
     sget-object v10, Lio/kamihama/magianative/CNCNDownloadUI;->slotList:Ljava/util/List;
 
@@ -4433,17 +4511,17 @@
 
     const-string v12, " / "
 
-    if-nez v10, :cond_14
+    if-nez v10, :cond_16
 
-    if-eqz v0, :cond_14
+    if-eqz v0, :cond_16
 
-    if-eqz v1, :cond_14
+    if-eqz v1, :cond_16
 
-    .line 1254
+    .line 1288
     const/4 v10, 0x0
 
     :goto_6
-    if-ge v10, v6, :cond_14
+    if-ge v10, v6, :cond_16
 
     sget-object v13, Lio/kamihama/magianative/CNCNDownloadUI;->slotList:Ljava/util/List;
 
@@ -4451,117 +4529,157 @@
 
     move-result v14
 
-    if-ge v10, v14, :cond_14
+    if-ge v10, v14, :cond_16
 
-    .line 1255
+    .line 1289
     invoke-interface {v13, v10}, Ljava/util/List;->get(I)Ljava/lang/Object;
 
     move-result-object v13
 
     check-cast v13, Lio/kamihama/magianative/CNCNDownloadUI$SlotViews;
 
-    .line 1256
+    .line 1290
     aget v14, v0, v10
 
-    .line 1257
+    .line 1291
     aget v15, v1, v10
 
-    .line 1258
+    .line 1292
     iget-object v7, v13, Lio/kamihama/magianative/CNCNDownloadUI$SlotViews;->bar:Landroid/widget/ProgressBar;
 
     invoke-virtual {v7, v15}, Landroid/widget/ProgressBar;->setProgress(I)V
 
-    .line 1261
+    .line 1295
     const v6, -0x994496
 
     packed-switch v14, :pswitch_data_0
 
-    .line 1265
+    .line 1299
     const v16, 0x55888888
 
     goto :goto_7
 
-    .line 1264
+    .line 1298
     :pswitch_0
     const v16, -0x1ac6cb
 
     goto :goto_7
 
-    .line 1263
+    .line 1297
     :pswitch_1
     const v16, -0x994496
 
     goto :goto_7
 
-    .line 1262
+    .line 1296
     :pswitch_2
     sget v16, Lio/kamihama/magianative/CNCNDownloadUI;->COLOR_ACCENT:I
 
-    .line 1267
+    .line 1301
     :goto_7
     nop
 
-    .line 1268
-    iget-object v8, v13, Lio/kamihama/magianative/CNCNDownloadUI$SlotViews;->bar:Landroid/widget/ProgressBar;
+    .line 1302
+    iget-object v9, v13, Lio/kamihama/magianative/CNCNDownloadUI$SlotViews;->bar:Landroid/widget/ProgressBar;
 
-    .line 1269
+    .line 1303
     invoke-static/range {v16 .. v16}, Landroid/content/res/ColorStateList;->valueOf(I)Landroid/content/res/ColorStateList;
 
-    move-result-object v9
+    move-result-object v7
 
-    .line 1268
-    invoke-virtual {v8, v9}, Landroid/widget/ProgressBar;->setProgressTintList(Landroid/content/res/ColorStateList;)V
+    .line 1302
+    invoke-virtual {v9, v7}, Landroid/widget/ProgressBar;->setProgressTintList(Landroid/content/res/ColorStateList;)V
 
-    .line 1272
-    iget-object v8, v13, Lio/kamihama/magianative/CNCNDownloadUI$SlotViews;->retryView:Landroid/widget/TextView;
+    .line 1306
+    iget-object v7, v13, Lio/kamihama/magianative/CNCNDownloadUI$SlotViews;->retryView:Landroid/widget/TextView;
 
     const/4 v9, 0x3
 
     if-ne v14, v9, :cond_e
 
-    const/4 v7, 0x0
+    const/4 v9, 0x0
 
     goto :goto_8
 
     :cond_e
     const/16 v16, 0x8
 
-    const/16 v7, 0x8
+    const/16 v9, 0x8
 
     :goto_8
-    invoke-virtual {v8, v7}, Landroid/widget/TextView;->setVisibility(I)V
+    invoke-virtual {v7, v9}, Landroid/widget/TextView;->setVisibility(I)V
 
-    .line 1273
-    if-ne v14, v5, :cond_f
+    .line 1307
+    if-ne v14, v5, :cond_10
 
-    .line 1274
+    .line 1308
     iget-object v7, v13, Lio/kamihama/magianative/CNCNDownloadUI$SlotViews;->infoView:Landroid/widget/TextView;
 
     invoke-virtual {v7, v6}, Landroid/widget/TextView;->setTextColor(I)V
 
-    .line 1275
+    .line 1309
     iget-object v6, v13, Lio/kamihama/magianative/CNCNDownloadUI$SlotViews;->infoView:Landroid/widget/TextView;
 
+    if-eqz v2, :cond_f
+
+    aget v7, v2, v10
+
+    cmpl-float v7, v7, v8
+
+    if-lez v7, :cond_f
+
+    .line 1310
+    new-instance v7, Ljava/lang/StringBuilder;
+
+    invoke-direct {v7}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v9, "\u2713 "
+
+    invoke-virtual {v7, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v7
+
+    aget v9, v2, v10
+
+    invoke-static {v9}, Lio/kamihama/magianative/CNCNDownloadUI;->formatMb(F)Ljava/lang/String;
+
+    move-result-object v9
+
+    invoke-virtual {v7, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v7
+
+    invoke-virtual {v7}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v7
+
+    goto :goto_9
+
+    :cond_f
     const-string v7, "\u2713"
 
+    .line 1309
+    :goto_9
     invoke-virtual {v6, v7}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
     const/4 v6, 0x1
 
-    goto/16 :goto_9
+    goto/16 :goto_a
 
-    .line 1276
-    :cond_f
-    if-ne v14, v9, :cond_10
+    .line 1311
+    :cond_10
+    const/4 v6, 0x3
 
-    .line 1277
+    if-ne v14, v6, :cond_11
+
+    .line 1312
     iget-object v6, v13, Lio/kamihama/magianative/CNCNDownloadUI$SlotViews;->infoView:Landroid/widget/TextView;
 
     const v7, -0x1ac6cb
 
     invoke-virtual {v6, v7}, Landroid/widget/TextView;->setTextColor(I)V
 
-    .line 1278
+    .line 1313
     iget-object v6, v13, Lio/kamihama/magianative/CNCNDownloadUI$SlotViews;->infoView:Landroid/widget/TextView;
 
     const-string v7, "\u2717"
@@ -4570,175 +4688,210 @@
 
     const/4 v6, 0x1
 
-    goto :goto_9
+    goto/16 :goto_a
 
-    .line 1279
-    :cond_10
+    .line 1314
+    :cond_11
     const/4 v6, 0x1
 
-    if-ne v14, v6, :cond_13
+    if-ne v14, v6, :cond_14
 
-    .line 1280
+    .line 1315
     iget-object v7, v13, Lio/kamihama/magianative/CNCNDownloadUI$SlotViews;->infoView:Landroid/widget/TextView;
 
-    sget v8, Lio/kamihama/magianative/CNCNDownloadUI;->COLOR_SUB:I
+    sget v9, Lio/kamihama/magianative/CNCNDownloadUI;->COLOR_SUB:I
 
-    invoke-virtual {v7, v8}, Landroid/widget/TextView;->setTextColor(I)V
+    invoke-virtual {v7, v9}, Landroid/widget/TextView;->setTextColor(I)V
 
-    .line 1281
+    .line 1316
     new-instance v7, Ljava/lang/StringBuilder;
 
     invoke-direct {v7}, Ljava/lang/StringBuilder;-><init>()V
 
-    .line 1282
+    .line 1317
     invoke-virtual {v7, v15}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-
-    move-result-object v8
-
-    const/16 v9, 0x25
-
-    invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(C)Ljava/lang/StringBuilder;
-
-    .line 1283
-    if-eqz v4, :cond_11
-
-    if-eqz v2, :cond_11
-
-    aget v8, v2, v10
-
-    const/4 v9, 0x0
-
-    cmpl-float v8, v8, v9
-
-    if-lez v8, :cond_11
-
-    .line 1284
-    invoke-virtual {v7, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v8
-
-    aget v9, v4, v10
-
-    invoke-static {v9}, Lio/kamihama/magianative/CNCNDownloadUI;->formatMb(F)Ljava/lang/String;
 
     move-result-object v9
 
-    invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const/16 v14, 0x25
 
-    move-result-object v8
+    invoke-virtual {v9, v14}, Ljava/lang/StringBuilder;->append(C)Ljava/lang/StringBuilder;
 
-    .line 1285
-    invoke-virtual {v8, v12}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    .line 1318
+    if-eqz v4, :cond_12
 
-    move-result-object v8
+    if-eqz v2, :cond_12
 
     aget v9, v2, v10
 
-    invoke-static {v9}, Lio/kamihama/magianative/CNCNDownloadUI;->formatMb(F)Ljava/lang/String;
+    cmpl-float v9, v9, v8
+
+    if-lez v9, :cond_12
+
+    .line 1319
+    invoke-virtual {v7, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v9
 
-    invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    aget v14, v4, v10
 
-    .line 1287
-    :cond_11
-    if-eqz v3, :cond_12
+    invoke-static {v14}, Lio/kamihama/magianative/CNCNDownloadUI;->formatMb(F)Ljava/lang/String;
 
-    aget v8, v3, v10
+    move-result-object v14
 
-    const/4 v9, 0x0
+    invoke-virtual {v9, v14}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    cmpl-float v8, v8, v9
+    move-result-object v9
 
-    if-lez v8, :cond_12
+    .line 1320
+    invoke-virtual {v9, v12}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    .line 1288
-    invoke-virtual {v7, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    move-result-object v9
 
-    move-result-object v8
+    aget v14, v2, v10
+
+    invoke-static {v14}, Lio/kamihama/magianative/CNCNDownloadUI;->formatMb(F)Ljava/lang/String;
+
+    move-result-object v14
+
+    invoke-virtual {v9, v14}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 1322
+    :cond_12
+    if-eqz v3, :cond_13
 
     aget v9, v3, v10
 
-    invoke-static {v9}, Lio/kamihama/magianative/CNCNDownloadUI;->formatMbps(F)Ljava/lang/String;
+    cmpl-float v9, v9, v8
+
+    if-lez v9, :cond_13
+
+    .line 1323
+    invoke-virtual {v7, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v9
 
-    invoke-virtual {v8, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    aget v14, v3, v10
 
-    .line 1290
-    :cond_12
-    iget-object v8, v13, Lio/kamihama/magianative/CNCNDownloadUI$SlotViews;->infoView:Landroid/widget/TextView;
+    invoke-static {v14}, Lio/kamihama/magianative/CNCNDownloadUI;->formatMbps(F)Ljava/lang/String;
+
+    move-result-object v14
+
+    invoke-virtual {v9, v14}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    .line 1325
+    :cond_13
+    iget-object v9, v13, Lio/kamihama/magianative/CNCNDownloadUI$SlotViews;->infoView:Landroid/widget/TextView;
 
     invoke-virtual {v7}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
     move-result-object v7
 
-    invoke-virtual {v8, v7}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+    invoke-virtual {v9, v7}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    .line 1291
-    goto :goto_9
+    .line 1326
+    goto :goto_a
 
-    .line 1292
-    :cond_13
+    .line 1330
+    :cond_14
     iget-object v7, v13, Lio/kamihama/magianative/CNCNDownloadUI$SlotViews;->infoView:Landroid/widget/TextView;
 
-    sget v8, Lio/kamihama/magianative/CNCNDownloadUI;->COLOR_SUB:I
+    sget v9, Lio/kamihama/magianative/CNCNDownloadUI;->COLOR_SUB:I
 
-    invoke-virtual {v7, v8}, Landroid/widget/TextView;->setTextColor(I)V
+    invoke-virtual {v7, v9}, Landroid/widget/TextView;->setTextColor(I)V
 
-    .line 1293
+    .line 1331
+    if-eqz v2, :cond_15
+
+    aget v7, v2, v10
+
+    cmpl-float v7, v7, v8
+
+    if-lez v7, :cond_15
+
+    .line 1332
     iget-object v7, v13, Lio/kamihama/magianative/CNCNDownloadUI$SlotViews;->infoView:Landroid/widget/TextView;
 
-    const-string v8, ""
+    new-instance v9, Ljava/lang/StringBuilder;
 
-    invoke-virtual {v7, v8}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+    invoke-direct {v9}, Ljava/lang/StringBuilder;-><init>()V
 
-    .line 1254
-    :goto_9
+    const-string v13, "\u7b49\u5f85\u4e2d \u00b7 "
+
+    invoke-virtual {v9, v13}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v9
+
+    aget v13, v2, v10
+
+    invoke-static {v13}, Lio/kamihama/magianative/CNCNDownloadUI;->formatMb(F)Ljava/lang/String;
+
+    move-result-object v13
+
+    invoke-virtual {v9, v13}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v9
+
+    invoke-virtual {v9}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v9
+
+    invoke-virtual {v7, v9}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    goto :goto_a
+
+    .line 1334
+    :cond_15
+    iget-object v7, v13, Lio/kamihama/magianative/CNCNDownloadUI$SlotViews;->infoView:Landroid/widget/TextView;
+
+    const-string v9, "\u7b49\u5f85\u4e2d"
+
+    invoke-virtual {v7, v9}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    .line 1288
+    :goto_a
     add-int/lit8 v10, v10, 0x1
 
     const/16 v6, 0xf
-
-    const/4 v8, 0x0
 
     const/4 v9, 0x1
 
     goto/16 :goto_6
 
-    .line 1299
-    :cond_14
+    .line 1341
+    :cond_16
     sget-object v1, Lio/kamihama/magianative/CNCNDownloadUI;->vAggregate:Landroid/widget/TextView;
 
-    if-eqz v1, :cond_17
+    if-eqz v1, :cond_19
 
-    if-eqz v0, :cond_17
+    if-eqz v0, :cond_19
 
-    .line 1300
+    .line 1342
     nop
 
-    .line 1301
+    .line 1343
     const/4 v1, 0x0
 
     const/4 v3, 0x0
 
-    :goto_a
+    :goto_b
     const/16 v6, 0xf
 
-    if-ge v1, v6, :cond_16
+    if-ge v1, v6, :cond_18
 
     aget v6, v0, v1
 
-    if-ne v6, v5, :cond_15
+    if-ne v6, v5, :cond_17
 
     add-int/lit8 v3, v3, 0x1
 
-    :cond_15
+    :cond_17
     add-int/lit8 v1, v1, 0x1
 
-    goto :goto_a
+    goto :goto_b
 
-    .line 1302
-    :cond_16
+    .line 1344
+    :cond_18
     sget-object v1, Lio/kamihama/magianative/CNCNDownloadUI;->vAggregate:Landroid/widget/TextView;
 
     new-instance v6, Ljava/lang/StringBuilder;
@@ -4771,86 +4924,82 @@
 
     invoke-virtual {v1, v3}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    .line 1304
-    :cond_17
+    .line 1346
+    :cond_19
     sget-object v1, Lio/kamihama/magianative/CNCNDownloadUI;->vOverallText:Landroid/widget/TextView;
 
-    if-eqz v1, :cond_1c
+    if-eqz v1, :cond_1e
 
-    .line 1305
+    .line 1347
     nop
 
-    .line 1306
+    .line 1348
     const-string v1, "\u603b\u8fdb\u5ea6"
 
-    if-eqz v2, :cond_1b
+    if-eqz v2, :cond_1d
 
-    if-eqz v4, :cond_1b
+    if-eqz v4, :cond_1d
 
-    if-eqz v0, :cond_1b
+    if-eqz v0, :cond_1d
 
-    .line 1307
+    .line 1349
     nop
 
-    .line 1308
+    .line 1350
     const/4 v3, 0x0
+
+    const/4 v6, 0x0
 
     const/4 v7, 0x0
 
-    const/4 v9, 0x0
+    :goto_c
+    const/16 v9, 0xf
 
-    :goto_b
-    const/16 v6, 0xf
+    if-ge v7, v9, :cond_1c
 
-    if-ge v7, v6, :cond_1a
+    .line 1351
+    aget v10, v2, v7
 
-    .line 1309
-    aget v8, v2, v7
+    cmpg-float v13, v10, v8
 
-    const/4 v10, 0x0
+    if-gtz v13, :cond_1a
 
-    cmpg-float v13, v8, v10
+    goto :goto_e
 
-    if-gtz v13, :cond_18
+    .line 1352
+    :cond_1a
+    add-float/2addr v3, v10
+
+    .line 1353
+    aget v13, v0, v7
+
+    if-ne v13, v5, :cond_1b
 
     goto :goto_d
 
-    .line 1310
-    :cond_18
-    add-float/2addr v9, v8
+    :cond_1b
+    aget v13, v4, v7
 
-    .line 1311
-    aget v10, v0, v7
+    invoke-static {v13, v10}, Ljava/lang/Math;->min(FF)F
 
-    if-ne v10, v5, :cond_19
+    move-result v10
+
+    :goto_d
+    add-float/2addr v6, v10
+
+    .line 1350
+    :goto_e
+    add-int/lit8 v7, v7, 0x1
 
     goto :goto_c
 
-    :cond_19
-    aget v10, v4, v7
+    .line 1355
+    :cond_1c
+    cmpl-float v0, v3, v8
 
-    invoke-static {v10, v8}, Ljava/lang/Math;->min(FF)F
+    if-lez v0, :cond_1d
 
-    move-result v8
-
-    :goto_c
-    add-float/2addr v3, v8
-
-    .line 1308
-    :goto_d
-    add-int/lit8 v7, v7, 0x1
-
-    goto :goto_b
-
-    .line 1313
-    :cond_1a
-    const/4 v0, 0x0
-
-    cmpl-float v0, v9, v0
-
-    if-lez v0, :cond_1b
-
-    .line 1314
+    .line 1356
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
@@ -4863,7 +5012,7 @@
 
     move-result-object v0
 
-    invoke-static {v3}, Lio/kamihama/magianative/CNCNDownloadUI;->formatMb(F)Ljava/lang/String;
+    invoke-static {v6}, Lio/kamihama/magianative/CNCNDownloadUI;->formatMb(F)Ljava/lang/String;
 
     move-result-object v1
 
@@ -4875,7 +5024,7 @@
 
     move-result-object v0
 
-    invoke-static {v9}, Lio/kamihama/magianative/CNCNDownloadUI;->formatMb(F)Ljava/lang/String;
+    invoke-static {v3}, Lio/kamihama/magianative/CNCNDownloadUI;->formatMb(F)Ljava/lang/String;
 
     move-result-object v1
 
@@ -4887,14 +5036,14 @@
 
     move-result-object v1
 
-    .line 1317
-    :cond_1b
+    .line 1359
+    :cond_1d
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->vOverallText:Landroid/widget/TextView;
 
     invoke-virtual {v0, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    .line 1319
-    :cond_1c
+    .line 1361
+    :cond_1e
     return-void
 
     :pswitch_data_0
@@ -4908,7 +5057,7 @@
 .method private static renderLogModal()V
     .locals 2
 
-    .line 1036
+    .line 1053
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->logModal:Landroid/widget/FrameLayout;
 
     if-eqz v0, :cond_2
@@ -4919,7 +5068,7 @@
 
     goto :goto_0
 
-    .line 1037
+    .line 1054
     :cond_0
     invoke-virtual {v0}, Landroid/widget/FrameLayout;->getVisibility()I
 
@@ -4929,21 +5078,83 @@
 
     return-void
 
-    .line 1038
+    .line 1055
     :cond_1
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->tvLog:Landroid/widget/TextView;
 
-    invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->composeLogText()Ljava/lang/String;
+    const/4 v1, 0x0
+
+    invoke-static {v1}, Lio/kamihama/magianative/CNCNDownloadUI;->composeLogText(Z)Ljava/lang/String;
 
     move-result-object v1
 
     invoke-virtual {v0, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    .line 1039
+    .line 1056
     return-void
 
-    .line 1036
+    .line 1053
     :cond_2
+    :goto_0
+    return-void
+.end method
+
+.method private static scheduleLogRefresh()V
+    .locals 4
+
+    .line 1086
+    sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->uiHandler:Landroid/os/Handler;
+
+    .line 1087
+    if-eqz v0, :cond_3
+
+    sget-object v1, Lio/kamihama/magianative/CNCNDownloadUI;->logModal:Landroid/widget/FrameLayout;
+
+    if-nez v1, :cond_0
+
+    goto :goto_0
+
+    .line 1088
+    :cond_0
+    invoke-virtual {v1}, Landroid/widget/FrameLayout;->getVisibility()I
+
+    move-result v1
+
+    if-eqz v1, :cond_1
+
+    return-void
+
+    .line 1089
+    :cond_1
+    sget-object v1, Lio/kamihama/magianative/CNCNDownloadUI;->LOG_DIRTY:Ljava/util/concurrent/atomic/AtomicBoolean;
+
+    const/4 v2, 0x0
+
+    const/4 v3, 0x1
+
+    invoke-virtual {v1, v2, v3}, Ljava/util/concurrent/atomic/AtomicBoolean;->compareAndSet(ZZ)Z
+
+    move-result v1
+
+    if-eqz v1, :cond_2
+
+    .line 1090
+    new-instance v1, Lio/kamihama/magianative/CNCNDownloadUI$RenderLog;
+
+    const/4 v2, 0x0
+
+    invoke-direct {v1, v2}, Lio/kamihama/magianative/CNCNDownloadUI$RenderLog;-><init>(Lio/kamihama/magianative/CNCNDownloadUI$1;)V
+
+    const-wide/16 v2, 0xfa
+
+    invoke-virtual {v0, v1, v2, v3}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
+
+    .line 1092
+    :cond_2
+    return-void
+
+    .line 1087
+    :cond_3
     :goto_0
     return-void
 .end method
@@ -4951,16 +5162,16 @@
 .method public static setDownloadSpeed(IF)V
     .locals 1
 
-    .line 1504
+    .line 1546
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->fileSpeed:[F
 
-    .line 1505
+    .line 1547
     if-eqz v0, :cond_0
 
-    .line 1506
+    .line 1548
     aput p1, v0, p0
 
-    .line 1508
+    .line 1550
     :cond_0
     return-void
 .end method
@@ -4968,16 +5179,16 @@
 .method public static setFileDownloaded(IF)V
     .locals 1
 
-    .line 1511
+    .line 1553
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->fileDownloaded:[F
 
-    .line 1512
+    .line 1554
     if-eqz v0, :cond_0
 
-    .line 1513
+    .line 1555
     aput p1, v0, p0
 
-    .line 1515
+    .line 1557
     :cond_0
     return-void
 .end method
@@ -4985,16 +5196,16 @@
 .method public static setFileSize(IF)V
     .locals 1
 
-    .line 1518
+    .line 1560
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->fileSize:[F
 
-    .line 1519
+    .line 1561
     if-eqz v0, :cond_0
 
-    .line 1520
+    .line 1562
     aput p1, v0, p0
 
-    .line 1522
+    .line 1564
     :cond_0
     return-void
 .end method
@@ -5002,17 +5213,17 @@
 .method public static show(Landroid/app/Activity;)V
     .locals 5
 
-    .line 1525
+    .line 1567
     const-string v0, "\u754c\u9762"
 
     sget-boolean v1, Lio/kamihama/magianative/CNCNDownloadUI;->isShowing:Z
 
     if-eqz v1, :cond_0
 
-    .line 1526
+    .line 1568
     return-void
 
-    .line 1529
+    .line 1571
     :cond_0
     const/4 v1, 0x1
 
@@ -5029,17 +5240,17 @@
 
     sput-object v3, Lio/kamihama/magianative/CNCNDownloadUI;->uiHandler:Landroid/os/Handler;
 
-    .line 1530
+    .line 1572
     new-instance v3, Lio/kamihama/magianative/CNCNDownloadUI$CreateUIRunnable;
 
     invoke-direct {v3, p0}, Lio/kamihama/magianative/CNCNDownloadUI$CreateUIRunnable;-><init>(Landroid/app/Activity;)V
 
     invoke-virtual {p0, v3}, Landroid/app/Activity;->runOnUiThread(Ljava/lang/Runnable;)V
 
-    .line 1531
+    .line 1573
     const/4 p0, 0x0
 
-    .line 1532
+    .line 1574
     :goto_0
     sget-object v3, Lio/kamihama/magianative/CNCNDownloadUI;->tvLog:Landroid/widget/TextView;
     :try_end_0
@@ -5051,10 +5262,10 @@
 
     if-ge p0, v3, :cond_1
 
-    .line 1533
+    .line 1575
     add-int/lit8 p0, p0, 0x1
 
-    .line 1535
+    .line 1577
     const-wide/16 v3, 0x64
 
     :try_start_1
@@ -5063,17 +5274,17 @@
     .catch Ljava/lang/InterruptedException; {:try_start_1 .. :try_end_1} :catch_0
     .catchall {:try_start_1 .. :try_end_1} :catchall_0
 
-    .line 1537
+    .line 1579
     :goto_1
     goto :goto_0
 
-    .line 1536
+    .line 1578
     :catch_0
     move-exception v3
 
     goto :goto_1
 
-    .line 1543
+    .line 1585
     :cond_1
     :try_start_2
     sget-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->overlayView:Landroid/widget/FrameLayout;
@@ -5090,25 +5301,25 @@
     :goto_2
     sput-boolean p0, Lio/kamihama/magianative/CNCNDownloadUI;->isShowing:Z
 
-    .line 1544
+    .line 1586
     if-nez p0, :cond_3
 
-    .line 1545
+    .line 1587
     const-string p0, "\u6d6e\u5c42\u521b\u5efa\u5931\u8d25\uff08overlayView \u4e3a\u7a7a\uff09\uff0c\u5c06\u5141\u8bb8\u540e\u7eed\u91cd\u8bd5"
 
     invoke-static {v0, p0}, Lio/kamihama/magianative/CNLog;->e(Ljava/lang/String;Ljava/lang/String;)V
     :try_end_2
     .catchall {:try_start_2 .. :try_end_2} :catchall_0
 
-    .line 1550
+    .line 1592
     :cond_3
     goto :goto_4
 
-    .line 1547
+    .line 1589
     :catchall_0
     move-exception p0
 
-    .line 1548
+    .line 1590
     sget-object v3, Lio/kamihama/magianative/CNCNDownloadUI;->overlayView:Landroid/widget/FrameLayout;
 
     if-eqz v3, :cond_4
@@ -5121,7 +5332,7 @@
     :goto_3
     sput-boolean v1, Lio/kamihama/magianative/CNCNDownloadUI;->isShowing:Z
 
-    .line 1549
+    .line 1591
     new-instance v1, Ljava/lang/StringBuilder;
 
     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
@@ -5142,7 +5353,7 @@
 
     invoke-static {v0, v1, p0}, Lio/kamihama/magianative/CNLog;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    .line 1551
+    .line 1593
     :goto_4
     return-void
 .end method
@@ -5150,10 +5361,10 @@
 .method public static throttledUpdate()V
     .locals 6
 
-    .line 1554
+    .line 1596
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->uiHandler:Landroid/os/Handler;
 
-    .line 1555
+    .line 1597
     if-eqz v0, :cond_1
 
     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
@@ -5172,7 +5383,7 @@
 
     goto :goto_0
 
-    .line 1558
+    .line 1600
     :cond_0
     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
 
@@ -5180,17 +5391,17 @@
 
     sput-wide v1, Lio/kamihama/magianative/CNCNDownloadUI;->lastUpdateTime:J
 
-    .line 1559
+    .line 1601
     new-instance v1, Lio/kamihama/magianative/CNCNDownloadUI$UpdateRunnable;
 
     invoke-direct {v1}, Lio/kamihama/magianative/CNCNDownloadUI$UpdateRunnable;-><init>()V
 
     invoke-virtual {v0, v1}, Landroid/os/Handler;->post(Ljava/lang/Runnable;)Z
 
-    .line 1560
+    .line 1602
     return-void
 
-    .line 1556
+    .line 1598
     :cond_1
     :goto_0
     return-void
@@ -5199,22 +5410,11 @@
 .method private static tintBar(Landroid/widget/ProgressBar;I)V
     .locals 0
 
-    .line 995
-    nop
-
-    .line 996
-    nop
-
     .line 997
-    invoke-static {p1}, Landroid/content/res/ColorStateList;->valueOf(I)Landroid/content/res/ColorStateList;
-
-    move-result-object p1
-
-    .line 996
-    invoke-virtual {p0, p1}, Landroid/widget/ProgressBar;->setProgressTintList(Landroid/content/res/ColorStateList;)V
+    nop
 
     .line 998
-    sget p1, Lio/kamihama/magianative/CNCNDownloadUI;->COLOR_BAR_BG:I
+    nop
 
     .line 999
     invoke-static {p1}, Landroid/content/res/ColorStateList;->valueOf(I)Landroid/content/res/ColorStateList;
@@ -5222,16 +5422,27 @@
     move-result-object p1
 
     .line 998
-    invoke-virtual {p0, p1}, Landroid/widget/ProgressBar;->setProgressBackgroundTintList(Landroid/content/res/ColorStateList;)V
+    invoke-virtual {p0, p1}, Landroid/widget/ProgressBar;->setProgressTintList(Landroid/content/res/ColorStateList;)V
+
+    .line 1000
+    sget p1, Lio/kamihama/magianative/CNCNDownloadUI;->COLOR_BAR_BG:I
 
     .line 1001
+    invoke-static {p1}, Landroid/content/res/ColorStateList;->valueOf(I)Landroid/content/res/ColorStateList;
+
+    move-result-object p1
+
+    .line 1000
+    invoke-virtual {p0, p1}, Landroid/widget/ProgressBar;->setProgressBackgroundTintList(Landroid/content/res/ColorStateList;)V
+
+    .line 1003
     return-void
 .end method
 
 .method private static toast(Landroid/app/Activity;Ljava/lang/String;)V
     .locals 1
 
-    .line 846
+    .line 848
     const/4 v0, 0x1
 
     :try_start_0
@@ -5245,21 +5456,21 @@
 
     goto :goto_0
 
-    .line 847
+    .line 849
     :catchall_0
     move-exception p0
 
     :goto_0
     nop
 
-    .line 848
+    .line 850
     return-void
 .end method
 
 .method private static toggleTheme(Landroid/app/Activity;)V
     .locals 3
 
-    .line 1149
+    .line 1183
     :try_start_0
     sget-boolean v0, Lio/kamihama/magianative/CNCNDownloadUI;->darkMode:Z
 
@@ -5277,14 +5488,14 @@
     :goto_0
     sput-boolean v0, Lio/kamihama/magianative/CNCNDownloadUI;->darkMode:Z
 
-    .line 1150
+    .line 1184
     const-string v0, "cnv_bootstrap_ui"
 
     invoke-virtual {p0, v0, v1}, Landroid/app/Activity;->getSharedPreferences(Ljava/lang/String;I)Landroid/content/SharedPreferences;
 
     move-result-object v0
 
-    .line 1152
+    .line 1186
     invoke-interface {v0}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
 
     move-result-object v0
@@ -5299,34 +5510,34 @@
 
     invoke-interface {v0}, Landroid/content/SharedPreferences$Editor;->apply()V
 
-    .line 1153
+    .line 1187
     sget-boolean v0, Lio/kamihama/magianative/CNCNDownloadUI;->darkMode:Z
 
     invoke-static {v0}, Lio/kamihama/magianative/CNCNDownloadUI;->loadPalette(Z)V
 
-    .line 1155
+    .line 1189
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->decorView:Landroid/view/ViewGroup;
 
-    .line 1156
+    .line 1190
     sget-object v1, Lio/kamihama/magianative/CNCNDownloadUI;->overlayView:Landroid/widget/FrameLayout;
 
-    .line 1157
+    .line 1191
     if-nez v0, :cond_1
 
     return-void
 
-    .line 1158
+    .line 1192
     :cond_1
     invoke-static {p0}, Lio/kamihama/magianative/CNCNDownloadUI;->buildOverlay(Landroid/app/Activity;)Landroid/widget/FrameLayout;
 
     move-result-object p0
 
-    .line 1159
+    .line 1193
     if-eqz v1, :cond_2
 
     invoke-virtual {v0, v1}, Landroid/view/ViewGroup;->removeView(Landroid/view/View;)V
 
-    .line 1160
+    .line 1194
     :cond_2
     new-instance v1, Landroid/view/ViewGroup$LayoutParams;
 
@@ -5336,22 +5547,22 @@
 
     invoke-virtual {v0, p0, v1}, Landroid/view/ViewGroup;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    .line 1163
+    .line 1197
     sput-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->overlayView:Landroid/widget/FrameLayout;
 
-    .line 1165
+    .line 1199
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->renderAll()V
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    .line 1168
+    .line 1202
     goto :goto_1
 
-    .line 1166
+    .line 1200
     :catchall_0
     move-exception p0
 
-    .line 1167
+    .line 1201
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
@@ -5374,7 +5585,7 @@
 
     invoke-static {v0, p0}, Lio/kamihama/magianative/CNLog;->e(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 1169
+    .line 1203
     :goto_1
     return-void
 .end method
@@ -5382,19 +5593,19 @@
 .method public static updateFileProgress(II)V
     .locals 2
 
-    .line 1563
+    .line 1605
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->fileProgress:[I
 
-    .line 1564
+    .line 1606
     if-eqz v0, :cond_0
 
-    .line 1565
+    .line 1607
     aput p1, v0, p0
 
-    .line 1566
+    .line 1608
     sget-object p1, Lio/kamihama/magianative/CNCNDownloadUI;->fileStatus:[I
 
-    .line 1567
+    .line 1609
     if-eqz p1, :cond_0
 
     aget v0, p1, p0
@@ -5403,23 +5614,23 @@
 
     if-eq v0, v1, :cond_0
 
-    .line 1568
+    .line 1610
     const/4 v0, 0x1
 
     aput v0, p1, p0
 
-    .line 1571
+    .line 1613
     :cond_0
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->throttledUpdate()V
 
-    .line 1572
+    .line 1614
     return-void
 .end method
 
 .method public static updateSimple(Ljava/lang/String;Ljava/lang/String;I)V
     .locals 0
 
-    .line 1581
+    .line 1623
     if-eqz p0, :cond_0
 
     invoke-virtual {p0}, Ljava/lang/String;->length()I
@@ -5430,7 +5641,7 @@
 
     sput-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->phaseText:Ljava/lang/String;
 
-    .line 1582
+    .line 1624
     :cond_0
     if-eqz p1, :cond_1
 
@@ -5442,21 +5653,21 @@
 
     sput-object p1, Lio/kamihama/magianative/CNCNDownloadUI;->detailText:Ljava/lang/String;
 
-    .line 1583
+    .line 1625
     :cond_1
     sget-object p0, Lio/kamihama/magianative/CNCNDownloadUI;->uiHandler:Landroid/os/Handler;
 
-    .line 1584
+    .line 1626
     if-eqz p0, :cond_2
 
-    .line 1585
+    .line 1627
     new-instance p1, Lio/kamihama/magianative/CNCNDownloadUI$UpdateRunnable;
 
     invoke-direct {p1}, Lio/kamihama/magianative/CNCNDownloadUI$UpdateRunnable;-><init>()V
 
     invoke-virtual {p0, p1}, Landroid/os/Handler;->post(Ljava/lang/Runnable;)Z
 
-    .line 1587
+    .line 1629
     :cond_2
     return-void
 .end method

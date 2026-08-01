@@ -40,6 +40,8 @@
 
 .field private static openedOnce:Z
 
+.field private static rawSinceFlush:I
+
 .field private static writer:Ljava/io/BufferedWriter;
 
 
@@ -96,13 +98,16 @@
 
     sput-boolean v0, Lio/kamihama/magianative/CNLog;->openedOnce:Z
 
+    .line 69
+    sput v0, Lio/kamihama/magianative/CNLog;->rawSinceFlush:I
+
     return-void
 .end method
 
 .method private constructor <init>()V
     .locals 0
 
-    .line 69
+    .line 71
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     return-void
@@ -138,22 +143,22 @@
 .method public static close()V
     .locals 2
 
-    .line 99
+    .line 101
     sget-object v0, Lio/kamihama/magianative/CNLog;->FILE_LOCK:Ljava/lang/Object;
 
     monitor-enter v0
 
-    .line 100
+    .line 102
     :try_start_0
     invoke-static {}, Lio/kamihama/magianative/CNLog;->closeWriterLocked()V
 
-    .line 101
+    .line 103
     monitor-exit v0
 
-    .line 102
+    .line 104
     return-void
 
-    .line 101
+    .line 103
     :catchall_0
     move-exception v1
 
@@ -167,12 +172,17 @@
 .method private static closeWriterLocked()V
     .locals 1
 
-    .line 105
+    .line 107
+    const/4 v0, 0x0
+
+    sput v0, Lio/kamihama/magianative/CNLog;->rawSinceFlush:I
+
+    .line 108
     sget-object v0, Lio/kamihama/magianative/CNLog;->writer:Ljava/io/BufferedWriter;
 
     if-eqz v0, :cond_0
 
-    .line 106
+    .line 109
     :try_start_0
     invoke-virtual {v0}, Ljava/io/BufferedWriter;->flush()V
     :try_end_0
@@ -183,7 +193,7 @@
     :catchall_0
     move-exception v0
 
-    .line 107
+    .line 110
     :goto_0
     :try_start_1
     sget-object v0, Lio/kamihama/magianative/CNLog;->writer:Ljava/io/BufferedWriter;
@@ -197,13 +207,13 @@
     :catchall_1
     move-exception v0
 
-    .line 108
+    .line 111
     :goto_1
     const/4 v0, 0x0
 
     sput-object v0, Lio/kamihama/magianative/CNLog;->writer:Ljava/io/BufferedWriter;
 
-    .line 110
+    .line 113
     :cond_0
     return-void
 .end method
@@ -211,7 +221,7 @@
 .method public static e(Ljava/lang/String;Ljava/lang/String;)V
     .locals 2
 
-    .line 121
+    .line 124
     const-string v0, "ERROR"
 
     const/4 v1, 0x0
@@ -224,7 +234,7 @@
 .method public static e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
     .locals 1
 
-    .line 123
+    .line 126
     const-string v0, "ERROR"
 
     invoke-static {p0, v0, p1, p2}, Lio/kamihama/magianative/CNLog;->write(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
@@ -235,7 +245,7 @@
 .method public static i(Ljava/lang/String;Ljava/lang/String;)V
     .locals 2
 
-    .line 119
+    .line 122
     const-string v0, "INFO"
 
     const/4 v1, 0x0
@@ -248,16 +258,16 @@
 .method public static init(Ljava/io/File;)V
     .locals 5
 
-    .line 76
+    .line 78
     sget-object v0, Lio/kamihama/magianative/CNLog;->FILE_LOCK:Ljava/lang/Object;
 
     monitor-enter v0
 
-    .line 77
+    .line 79
     :try_start_0
     invoke-static {}, Lio/kamihama/magianative/CNLog;->closeWriterLocked()V
 
-    .line 78
+    .line 80
     if-nez p0, :cond_0
 
     monitor-exit v0
@@ -266,7 +276,7 @@
 
     return-void
 
-    .line 80
+    .line 82
     :cond_0
     :try_start_1
     invoke-virtual {p0}, Ljava/io/File;->isDirectory()Z
@@ -296,7 +306,7 @@
 
     return-void
 
-    .line 81
+    .line 83
     :cond_1
     :try_start_3
     new-instance v1, Ljava/io/File;
@@ -305,10 +315,10 @@
 
     invoke-direct {v1, p0, v2}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
 
-    .line 82
+    .line 84
     sget-boolean p0, Lio/kamihama/magianative/CNLog;->openedOnce:Z
 
-    .line 83
+    .line 85
     new-instance v2, Ljava/io/BufferedWriter;
 
     new-instance v3, Ljava/io/OutputStreamWriter;
@@ -325,7 +335,7 @@
 
     sput-object v2, Lio/kamihama/magianative/CNLog;->writer:Ljava/io/BufferedWriter;
 
-    .line 85
+    .line 87
     new-instance v1, Ljava/lang/StringBuilder;
 
     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
@@ -350,7 +360,7 @@
 
     invoke-direct {v4}, Ljava/util/Date;-><init>()V
 
-    .line 86
+    .line 88
     invoke-virtual {v3, v4}, Ljava/text/SimpleDateFormat;->format(Ljava/util/Date;)Ljava/lang/String;
 
     move-result-object v3
@@ -359,7 +369,7 @@
 
     move-result-object v1
 
-    .line 87
+    .line 89
     if-eqz p0, :cond_3
 
     const-string p0, "\uff09 ----\n"
@@ -378,35 +388,35 @@
 
     move-result-object p0
 
-    .line 85
+    .line 87
     invoke-virtual {v2, p0}, Ljava/io/BufferedWriter;->write(Ljava/lang/String;)V
 
-    .line 88
+    .line 90
     sget-object p0, Lio/kamihama/magianative/CNLog;->writer:Ljava/io/BufferedWriter;
 
     invoke-virtual {p0}, Ljava/io/BufferedWriter;->flush()V
 
-    .line 89
+    .line 91
     const/4 p0, 0x1
 
     sput-boolean p0, Lio/kamihama/magianative/CNLog;->openedOnce:Z
     :try_end_3
     .catchall {:try_start_3 .. :try_end_3} :catchall_0
 
-    .line 93
+    .line 95
     goto :goto_2
 
-    .line 90
+    .line 92
     :catchall_0
     move-exception p0
 
-    .line 91
+    .line 93
     const/4 v1, 0x0
 
     :try_start_4
     sput-object v1, Lio/kamihama/magianative/CNLog;->writer:Ljava/io/BufferedWriter;
 
-    .line 92
+    .line 94
     const-string v1, "CNLog"
 
     new-instance v2, Ljava/lang/StringBuilder;
@@ -429,14 +439,14 @@
 
     invoke-static {v1, p0}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;)I
 
-    .line 94
+    .line 96
     :goto_2
     monitor-exit v0
 
-    .line 95
+    .line 97
     return-void
 
-    .line 94
+    .line 96
     :catchall_1
     move-exception p0
 
@@ -450,22 +460,22 @@
 .method public static setListener(Ljava/lang/Runnable;)V
     .locals 0
 
-    .line 114
+    .line 117
     sput-object p0, Lio/kamihama/magianative/CNLog;->listener:Ljava/lang/Runnable;
 
-    .line 115
+    .line 118
     return-void
 .end method
 
 .method public static size()I
     .locals 2
 
-    .line 280
+    .line 311
     sget-object v0, Lio/kamihama/magianative/CNLog;->BUFFER:Ljava/util/ArrayDeque;
 
     monitor-enter v0
 
-    .line 281
+    .line 312
     :try_start_0
     invoke-virtual {v0}, Ljava/util/ArrayDeque;->size()I
 
@@ -475,7 +485,7 @@
 
     return v1
 
-    .line 282
+    .line 313
     :catchall_0
     move-exception v1
 
@@ -489,23 +499,23 @@
 .method public static snapshot()Ljava/lang/String;
     .locals 5
 
-    .line 270
+    .line 301
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
 
-    .line 271
+    .line 302
     sget-object v1, Lio/kamihama/magianative/CNLog;->BUFFER:Ljava/util/ArrayDeque;
 
     monitor-enter v1
 
-    .line 272
+    .line 303
     :try_start_0
     invoke-virtual {v1}, Ljava/util/ArrayDeque;->iterator()Ljava/util/Iterator;
 
     move-result-object v2
 
-    .line 273
+    .line 304
     :goto_0
     invoke-interface {v2}, Ljava/util/Iterator;->hasNext()Z
 
@@ -529,20 +539,20 @@
 
     goto :goto_0
 
-    .line 274
+    .line 305
     :cond_0
     monitor-exit v1
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    .line 275
+    .line 306
     invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
     move-result-object v0
 
     return-object v0
 
-    .line 274
+    .line 305
     :catchall_0
     move-exception v0
 
@@ -561,7 +571,7 @@
 
     monitor-enter v0
 
-    .line 217
+    .line 226
     :try_start_0
     sget-object v1, Lio/kamihama/magianative/CNLog;->logcatThread:Ljava/lang/Thread;
     :try_end_0
@@ -573,7 +583,7 @@
 
     return-void
 
-    .line 218
+    .line 227
     :cond_0
     :try_start_1
     new-instance v1, Ljava/lang/Thread;
@@ -588,25 +598,25 @@
 
     invoke-direct {v1, v2, v3}, Ljava/lang/Thread;-><init>(Ljava/lang/Runnable;Ljava/lang/String;)V
 
-    .line 219
+    .line 228
     const/4 v2, 0x1
 
     invoke-virtual {v1, v2}, Ljava/lang/Thread;->setDaemon(Z)V
 
-    .line 220
+    .line 229
     sput-object v1, Lio/kamihama/magianative/CNLog;->logcatThread:Ljava/lang/Thread;
 
-    .line 221
+    .line 230
     invoke-virtual {v1}, Ljava/lang/Thread;->start()V
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_0
 
-    .line 222
+    .line 231
     monitor-exit v0
 
     return-void
 
-    .line 216
+    .line 225
     :catchall_0
     move-exception v1
 
@@ -622,24 +632,24 @@
 
     monitor-enter v0
 
-    .line 226
+    .line 235
     :try_start_0
     sget-object v1, Lio/kamihama/magianative/CNLog;->logcatProc:Ljava/lang/Process;
 
-    .line 227
+    .line 236
     const/4 v2, 0x0
 
     sput-object v2, Lio/kamihama/magianative/CNLog;->logcatProc:Ljava/lang/Process;
 
-    .line 228
+    .line 237
     sput-object v2, Lio/kamihama/magianative/CNLog;->logcatThread:Ljava/lang/Thread;
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_1
 
-    .line 229
+    .line 238
     if-eqz v1, :cond_0
 
-    .line 230
+    .line 239
     :try_start_1
     invoke-virtual {v1}, Ljava/lang/Process;->destroy()V
     :try_end_1
@@ -650,14 +660,14 @@
     :catchall_0
     move-exception v1
 
-    .line 232
+    .line 241
     :cond_0
     :goto_0
     monitor-exit v0
 
     return-void
 
-    .line 225
+    .line 234
     :catchall_1
     move-exception v1
 
@@ -666,10 +676,105 @@
     throw v1
 .end method
 
+.method public static tail(I)Ljava/lang/String;
+    .locals 6
+
+    .line 285
+    new-instance v0, Ljava/lang/StringBuilder;
+
+    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
+
+    .line 286
+    sget-object v1, Lio/kamihama/magianative/CNLog;->BUFFER:Ljava/util/ArrayDeque;
+
+    monitor-enter v1
+
+    .line 287
+    :try_start_0
+    invoke-virtual {v1}, Ljava/util/ArrayDeque;->size()I
+
+    move-result v2
+
+    sub-int/2addr v2, p0
+
+    .line 288
+    invoke-virtual {v1}, Ljava/util/ArrayDeque;->iterator()Ljava/util/Iterator;
+
+    move-result-object p0
+
+    .line 289
+    const/4 v3, 0x0
+
+    .line 290
+    :goto_0
+    invoke-interface {p0}, Ljava/util/Iterator;->hasNext()Z
+
+    move-result v4
+
+    if-eqz v4, :cond_1
+
+    .line 291
+    invoke-interface {p0}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+
+    move-result-object v4
+
+    check-cast v4, Ljava/lang/String;
+
+    .line 292
+    add-int/lit8 v5, v3, 0x1
+
+    if-ge v3, v2, :cond_0
+
+    goto :goto_1
+
+    .line 293
+    :cond_0
+    invoke-virtual {v0, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v3
+
+    const/16 v4, 0xa
+
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(C)Ljava/lang/StringBuilder;
+
+    .line 294
+    nop
+
+    .line 290
+    :goto_1
+    move v3, v5
+
+    goto :goto_0
+
+    .line 295
+    :cond_1
+    monitor-exit v1
+    :try_end_0
+    .catchall {:try_start_0 .. :try_end_0} :catchall_0
+
+    .line 296
+    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object p0
+
+    return-object p0
+
+    .line 295
+    :catchall_0
+    move-exception p0
+
+    :try_start_1
+    monitor-exit v1
+    :try_end_1
+    .catchall {:try_start_1 .. :try_end_1} :catchall_0
+
+    throw p0
+.end method
+
 .method public static w(Ljava/lang/String;Ljava/lang/String;)V
     .locals 2
 
-    .line 120
+    .line 123
     const-string v0, "WARN"
 
     const/4 v1, 0x0
@@ -682,7 +787,7 @@
 .method public static w(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
     .locals 1
 
-    .line 122
+    .line 125
     const-string v0, "WARN"
 
     invoke-static {p0, v0, p1, p2}, Lio/kamihama/magianative/CNLog;->write(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
@@ -693,24 +798,24 @@
 .method public static write(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
     .locals 2
 
-    .line 130
+    .line 133
     if-nez p0, :cond_0
 
     const-string p0, "\u5e94\u7528"
 
-    .line 131
+    .line 134
     :cond_0
     if-nez p1, :cond_1
 
     const-string p1, "INFO"
 
-    .line 132
+    .line 135
     :cond_1
     if-nez p2, :cond_2
 
     const-string p2, ""
 
-    .line 133
+    .line 136
     :cond_2
     if-eqz p3, :cond_3
 
@@ -736,7 +841,7 @@
 
     move-result-object p2
 
-    .line 137
+    .line 140
     :cond_3
     :try_start_0
     const-string v0, "ERROR"
@@ -757,7 +862,7 @@
 
     goto :goto_0
 
-    .line 139
+    .line 142
     :cond_4
     const-string v0, "WARN"
 
@@ -767,7 +872,7 @@
 
     if-eqz v0, :cond_6
 
-    .line 140
+    .line 143
     if-eqz p3, :cond_5
 
     invoke-static {p0, p2, p3}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
@@ -779,13 +884,13 @@
 
     goto :goto_1
 
-    .line 142
+    .line 145
     :cond_6
     invoke-static {p0, p2}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
     goto :goto_1
 
-    .line 138
+    .line 141
     :cond_7
     :goto_0
     if-eqz p3, :cond_8
@@ -801,19 +906,19 @@
 
     goto :goto_1
 
-    .line 144
+    .line 147
     :catchall_0
     move-exception p3
 
     :goto_1
     nop
 
-    .line 148
+    .line 151
     sget-object p3, Lio/kamihama/magianative/CNLog;->TS:Ljava/text/SimpleDateFormat;
 
     monitor-enter p3
 
-    .line 149
+    .line 152
     :try_start_1
     new-instance v0, Ljava/lang/StringBuilder;
 
@@ -871,21 +976,21 @@
 
     move-result-object p0
 
-    .line 150
+    .line 153
     monitor-exit p3
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_5
 
-    .line 151
+    .line 154
     sget-object p1, Lio/kamihama/magianative/CNLog;->BUFFER:Ljava/util/ArrayDeque;
 
     monitor-enter p1
 
-    .line 152
+    .line 155
     :try_start_2
     invoke-virtual {p1, p0}, Ljava/util/ArrayDeque;->addLast(Ljava/lang/Object;)V
 
-    .line 153
+    .line 156
     :goto_2
     sget-object p2, Lio/kamihama/magianative/CNLog;->BUFFER:Ljava/util/ArrayDeque;
 
@@ -901,18 +1006,18 @@
 
     goto :goto_2
 
-    .line 154
+    .line 157
     :cond_9
     monitor-exit p1
     :try_end_2
     .catchall {:try_start_2 .. :try_end_2} :catchall_4
 
-    .line 157
+    .line 160
     sget-object p2, Lio/kamihama/magianative/CNLog;->FILE_LOCK:Ljava/lang/Object;
 
     monitor-enter p2
 
-    .line 158
+    .line 161
     :try_start_3
     sget-object p1, Lio/kamihama/magianative/CNLog;->writer:Ljava/io/BufferedWriter;
     :try_end_3
@@ -920,32 +1025,32 @@
 
     if-eqz p1, :cond_a
 
-    .line 160
+    .line 163
     :try_start_4
     invoke-virtual {p1, p0}, Ljava/io/BufferedWriter;->write(Ljava/lang/String;)V
 
-    .line 161
+    .line 164
     sget-object p0, Lio/kamihama/magianative/CNLog;->writer:Ljava/io/BufferedWriter;
 
     const/16 p1, 0xa
 
     invoke-virtual {p0, p1}, Ljava/io/BufferedWriter;->write(I)V
 
-    .line 162
+    .line 165
     sget-object p0, Lio/kamihama/magianative/CNLog;->writer:Ljava/io/BufferedWriter;
 
     invoke-virtual {p0}, Ljava/io/BufferedWriter;->flush()V
     :try_end_4
     .catchall {:try_start_4 .. :try_end_4} :catchall_1
 
-    .line 165
+    .line 168
     goto :goto_3
 
-    .line 163
+    .line 166
     :catchall_1
     move-exception p0
 
-    .line 167
+    .line 170
     :cond_a
     :goto_3
     :try_start_5
@@ -953,13 +1058,13 @@
     :try_end_5
     .catchall {:try_start_5 .. :try_end_5} :catchall_3
 
-    .line 169
+    .line 172
     sget-object p0, Lio/kamihama/magianative/CNLog;->listener:Ljava/lang/Runnable;
 
-    .line 170
+    .line 173
     if-eqz p0, :cond_b
 
-    .line 171
+    .line 174
     :try_start_6
     invoke-interface {p0}, Ljava/lang/Runnable;->run()V
     :try_end_6
@@ -970,12 +1075,12 @@
     :catchall_2
     move-exception p0
 
-    .line 173
+    .line 176
     :cond_b
     :goto_4
     return-void
 
-    .line 167
+    .line 170
     :catchall_3
     move-exception p0
 
@@ -986,7 +1091,7 @@
 
     throw p0
 
-    .line 154
+    .line 157
     :catchall_4
     move-exception p0
 
@@ -997,7 +1102,7 @@
 
     throw p0
 
-    .line 150
+    .line 153
     :catchall_5
     move-exception p0
 
@@ -1012,8 +1117,8 @@
 .method public static writeRaw(Ljava/lang/String;)V
     .locals 4
 
-    .line 182
-    if-eqz p0, :cond_4
+    .line 185
+    if-eqz p0, :cond_5
 
     invoke-virtual {p0}, Ljava/lang/String;->length()I
 
@@ -1023,17 +1128,17 @@
 
     goto :goto_3
 
-    .line 183
+    .line 186
     :cond_0
     sget-object v0, Lio/kamihama/magianative/CNLog;->BUFFER:Ljava/util/ArrayDeque;
 
     monitor-enter v0
 
-    .line 184
+    .line 187
     :try_start_0
     invoke-virtual {v0, p0}, Ljava/util/ArrayDeque;->addLast(Ljava/lang/Object;)V
 
-    .line 185
+    .line 188
     :goto_0
     sget-object v1, Lio/kamihama/magianative/CNLog;->BUFFER:Ljava/util/ArrayDeque;
 
@@ -1049,66 +1154,83 @@
 
     goto :goto_0
 
-    .line 186
+    .line 189
     :cond_1
     monitor-exit v0
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_3
 
-    .line 187
+    .line 190
     sget-object v1, Lio/kamihama/magianative/CNLog;->FILE_LOCK:Ljava/lang/Object;
 
     monitor-enter v1
 
-    .line 188
+    .line 191
     :try_start_1
     sget-object v0, Lio/kamihama/magianative/CNLog;->writer:Ljava/io/BufferedWriter;
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_2
 
-    if-eqz v0, :cond_2
+    if-eqz v0, :cond_3
 
-    .line 190
+    .line 193
     :try_start_2
     invoke-virtual {v0, p0}, Ljava/io/BufferedWriter;->write(Ljava/lang/String;)V
 
-    .line 191
+    .line 194
     sget-object p0, Lio/kamihama/magianative/CNLog;->writer:Ljava/io/BufferedWriter;
 
     const/16 v0, 0xa
 
     invoke-virtual {p0, v0}, Ljava/io/BufferedWriter;->write(I)V
 
-    .line 192
+    .line 198
+    sget p0, Lio/kamihama/magianative/CNLog;->rawSinceFlush:I
+
+    add-int/lit8 p0, p0, 0x1
+
+    sput p0, Lio/kamihama/magianative/CNLog;->rawSinceFlush:I
+
+    const/16 v0, 0x32
+
+    if-lt p0, v0, :cond_2
+
+    .line 199
     sget-object p0, Lio/kamihama/magianative/CNLog;->writer:Ljava/io/BufferedWriter;
 
     invoke-virtual {p0}, Ljava/io/BufferedWriter;->flush()V
+
+    .line 200
+    const/4 p0, 0x0
+
+    sput p0, Lio/kamihama/magianative/CNLog;->rawSinceFlush:I
     :try_end_2
     .catchall {:try_start_2 .. :try_end_2} :catchall_0
 
     goto :goto_1
 
-    .line 193
+    .line 202
     :catchall_0
     move-exception p0
 
+    :cond_2
     :goto_1
     nop
 
-    .line 195
-    :cond_2
+    .line 204
+    :cond_3
     :try_start_3
     monitor-exit v1
     :try_end_3
     .catchall {:try_start_3 .. :try_end_3} :catchall_2
 
-    .line 196
+    .line 205
     sget-object p0, Lio/kamihama/magianative/CNLog;->listener:Ljava/lang/Runnable;
 
-    .line 197
-    if-eqz p0, :cond_3
+    .line 206
+    if-eqz p0, :cond_4
 
-    .line 198
+    .line 207
     :try_start_4
     invoke-interface {p0}, Ljava/lang/Runnable;->run()V
     :try_end_4
@@ -1119,12 +1241,12 @@
     :catchall_1
     move-exception p0
 
-    .line 200
-    :cond_3
+    .line 209
+    :cond_4
     :goto_2
     return-void
 
-    .line 195
+    .line 204
     :catchall_2
     move-exception p0
 
@@ -1135,7 +1257,7 @@
 
     throw p0
 
-    .line 186
+    .line 189
     :catchall_3
     move-exception p0
 
@@ -1146,8 +1268,8 @@
 
     throw p0
 
-    .line 182
-    :cond_4
+    .line 185
+    :cond_5
     :goto_3
     return-void
 .end method

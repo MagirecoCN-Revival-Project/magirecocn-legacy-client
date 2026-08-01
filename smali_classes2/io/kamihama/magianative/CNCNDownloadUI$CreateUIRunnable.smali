@@ -25,13 +25,13 @@
 .method public constructor <init>(Landroid/app/Activity;)V
     .locals 0
 
-    .line 1328
+    .line 1370
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
-    .line 1329
+    .line 1371
     iput-object p1, p0, Lio/kamihama/magianative/CNCNDownloadUI$CreateUIRunnable;->context:Landroid/app/Activity;
 
-    .line 1330
+    .line 1372
     return-void
 .end method
 
@@ -40,24 +40,24 @@
 .method public run()V
     .locals 5
 
-    .line 1335
+    .line 1377
     const-string v0, "\u754c\u9762"
 
     :try_start_0
     iget-object v1, p0, Lio/kamihama/magianative/CNCNDownloadUI$CreateUIRunnable;->context:Landroid/app/Activity;
 
-    .line 1336
+    .line 1378
     if-nez v1, :cond_0
 
     return-void
 
-    .line 1338
+    .line 1380
     :cond_0
-    invoke-static {v1}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1302(Landroid/app/Activity;)Landroid/app/Activity;
+    invoke-static {v1}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1402(Landroid/app/Activity;)Landroid/app/Activity;
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_2
 
-    .line 1342
+    .line 1384
     :try_start_1
     invoke-virtual {v1}, Landroid/app/Activity;->getFilesDir()Ljava/io/File;
 
@@ -69,14 +69,14 @@
 
     goto :goto_0
 
-    .line 1343
+    .line 1385
     :catchall_0
     move-exception v2
 
     :goto_0
     nop
 
-    .line 1344
+    .line 1386
     :try_start_2
     new-instance v2, Lio/kamihama/magianative/CNCNDownloadUI$LogChanged;
 
@@ -86,54 +86,54 @@
 
     invoke-static {v2}, Lio/kamihama/magianative/CNLog;->setListener(Ljava/lang/Runnable;)V
 
-    .line 1347
+    .line 1389
     invoke-static {}, Lio/kamihama/magianative/CNLog;->startLogcatCapture()V
     :try_end_2
     .catchall {:try_start_2 .. :try_end_2} :catchall_2
 
-    .line 1350
+    .line 1392
     const/4 v2, 0x0
 
     :try_start_3
     const-string v3, "cnv_bootstrap_ui"
 
-    .line 1351
+    .line 1393
     invoke-virtual {v1, v3, v2}, Landroid/app/Activity;->getSharedPreferences(Ljava/lang/String;I)Landroid/content/SharedPreferences;
 
     move-result-object v3
 
     const-string v4, "dark_mode"
 
-    .line 1352
+    .line 1394
     invoke-interface {v3, v4, v2}, Landroid/content/SharedPreferences;->getBoolean(Ljava/lang/String;Z)Z
 
     move-result v3
 
-    .line 1350
-    invoke-static {v3}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1402(Z)Z
+    .line 1392
+    invoke-static {v3}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1502(Z)Z
     :try_end_3
     .catchall {:try_start_3 .. :try_end_3} :catchall_1
 
-    .line 1355
+    .line 1397
     goto :goto_1
 
-    .line 1353
+    .line 1395
     :catchall_1
     move-exception v3
 
-    .line 1354
+    .line 1396
     :try_start_4
-    invoke-static {v2}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1402(Z)Z
+    invoke-static {v2}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1502(Z)Z
 
-    .line 1356
+    .line 1398
     :goto_1
-    invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1400()Z
+    invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1500()Z
 
     move-result v2
 
-    invoke-static {v2}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1500(Z)V
+    invoke-static {v2}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1600(Z)V
 
-    .line 1357
+    .line 1399
     new-instance v2, Ljava/lang/StringBuilder;
 
     invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
@@ -144,7 +144,7 @@
 
     move-result-object v2
 
-    invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1400()Z
+    invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1500()Z
 
     move-result v3
 
@@ -168,10 +168,10 @@
 
     invoke-static {v0, v2}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 1359
+    .line 1401
     nop
 
-    .line 1360
+    .line 1402
     invoke-virtual {v1}, Landroid/app/Activity;->getWindow()Landroid/view/Window;
 
     move-result-object v2
@@ -184,12 +184,12 @@
 
     sput-object v2, Lio/kamihama/magianative/CNCNDownloadUI;->decorView:Landroid/view/ViewGroup;
 
-    .line 1361
-    invoke-static {v1}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1600(Landroid/app/Activity;)Landroid/widget/FrameLayout;
+    .line 1403
+    invoke-static {v1}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1700(Landroid/app/Activity;)Landroid/widget/FrameLayout;
 
     move-result-object v1
 
-    .line 1362
+    .line 1404
     sget-object v2, Lio/kamihama/magianative/CNCNDownloadUI;->decorView:Landroid/view/ViewGroup;
 
     new-instance v3, Landroid/view/ViewGroup$LayoutParams;
@@ -200,22 +200,22 @@
 
     invoke-virtual {v2, v1, v3}, Landroid/view/ViewGroup;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    .line 1366
+    .line 1408
     sput-object v1, Lio/kamihama/magianative/CNCNDownloadUI;->overlayView:Landroid/widget/FrameLayout;
 
-    .line 1367
-    invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1700()V
+    .line 1409
+    invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1800()V
     :try_end_4
     .catchall {:try_start_4 .. :try_end_4} :catchall_2
 
-    .line 1373
+    .line 1415
     goto :goto_3
 
-    .line 1368
+    .line 1410
     :catchall_2
     move-exception v1
 
-    .line 1372
+    .line 1414
     new-instance v2, Ljava/lang/StringBuilder;
 
     invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
@@ -236,7 +236,7 @@
 
     invoke-static {v0, v2, v1}, Lio/kamihama/magianative/CNLog;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    .line 1374
+    .line 1416
     :goto_3
     return-void
 .end method

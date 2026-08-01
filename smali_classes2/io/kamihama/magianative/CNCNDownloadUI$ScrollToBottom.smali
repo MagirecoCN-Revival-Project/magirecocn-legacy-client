@@ -21,7 +21,7 @@
 .method private constructor <init>()V
     .locals 0
 
-    .line 1082
+    .line 1116
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     return-void
@@ -30,7 +30,7 @@
 .method synthetic constructor <init>(Lio/kamihama/magianative/CNCNDownloadUI$1;)V
     .locals 0
 
-    .line 1082
+    .line 1116
     invoke-direct {p0}, Lio/kamihama/magianative/CNCNDownloadUI$ScrollToBottom;-><init>()V
 
     return-void
@@ -41,14 +41,14 @@
 .method public run()V
     .locals 2
 
-    .line 1084
-    invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1000()Landroid/widget/ScrollView;
+    .line 1118
+    invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1100()Landroid/widget/ScrollView;
 
     move-result-object v0
 
     if-eqz v0, :cond_0
 
-    invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1000()Landroid/widget/ScrollView;
+    invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1100()Landroid/widget/ScrollView;
 
     move-result-object v0
 
@@ -56,7 +56,7 @@
 
     invoke-virtual {v0, v1}, Landroid/widget/ScrollView;->fullScroll(I)Z
 
-    .line 1085
+    .line 1119
     :cond_0
     return-void
 .end method
