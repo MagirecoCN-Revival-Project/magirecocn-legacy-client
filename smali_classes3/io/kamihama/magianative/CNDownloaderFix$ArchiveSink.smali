@@ -25,7 +25,7 @@
 .method constructor <init>(I)V
     .locals 0
 
-    .line 381
+    .line 419
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     iput p1, p0, Lio/kamihama/magianative/CNDownloaderFix$ArchiveSink;->index:I
@@ -38,7 +38,7 @@
 .method public isCancelled()Z
     .locals 1
 
-    .line 394
+    .line 432
     invoke-static {}, Ljava/lang/Thread;->currentThread()Ljava/lang/Thread;
 
     move-result-object v0
@@ -53,7 +53,7 @@
 .method public onProgress(JJ)V
     .locals 4
 
-    .line 387
+    .line 425
     invoke-static {}, Lio/kamihama/magianative/CNDownloaderFix;->access$200()Ljava/util/concurrent/atomic/AtomicLongArray;
 
     move-result-object v0
@@ -66,35 +66,35 @@
 
     invoke-virtual {v0, v1, v2, v3}, Ljava/util/concurrent/atomic/AtomicLongArray;->set(IJ)V
 
-    .line 388
+    .line 426
     iget v0, p0, Lio/kamihama/magianative/CNDownloaderFix$ArchiveSink;->index:I
 
     invoke-static {v0, p1, p2, p3, p4}, Lio/kamihama/magianative/CNDownloaderFix;->access$300(IJJ)V
 
-    .line 389
+    .line 427
     return-void
 .end method
 
 .method public onSpeed(F)V
     .locals 1
 
-    .line 391
+    .line 429
     iget v0, p0, Lio/kamihama/magianative/CNDownloaderFix$ArchiveSink;->index:I
 
     invoke-static {v0, p1}, Lio/kamihama/magianative/CNCNDownloadUI;->setDownloadSpeed(IF)V
 
-    .line 392
+    .line 430
     return-void
 .end method
 
 .method public onTotal(J)V
     .locals 1
 
-    .line 384
+    .line 422
     iget v0, p0, Lio/kamihama/magianative/CNDownloaderFix$ArchiveSink;->index:I
 
     invoke-static {v0, p1, p2}, Lio/kamihama/magianative/CNDownloaderFix;->access$100(IJ)V
 
-    .line 385
+    .line 423
     return-void
 .end method

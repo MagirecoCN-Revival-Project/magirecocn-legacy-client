@@ -24,13 +24,13 @@
 .method constructor <init>(JLjava/lang/String;)V
     .locals 0
 
-    .line 1033
+    .line 1071
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
-    .line 1034
+    .line 1072
     iput-wide p1, p0, Lio/kamihama/magianative/CNDownloaderFix$DownloadMetadata;->totalBytes:J
 
-    .line 1035
+    .line 1073
     if-nez p3, :cond_0
 
     const-string p3, ""
@@ -38,6 +38,6 @@
     :cond_0
     iput-object p3, p0, Lio/kamihama/magianative/CNDownloaderFix$DownloadMetadata;->etag:Ljava/lang/String;
 
-    .line 1036
+    .line 1074
     return-void
 .end method

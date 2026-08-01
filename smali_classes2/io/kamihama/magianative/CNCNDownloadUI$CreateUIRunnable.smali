@@ -55,7 +55,7 @@
     :cond_0
     invoke-static {v1}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1302(Landroid/app/Activity;)Landroid/app/Activity;
     :try_end_0
-    .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :catch_0
+    .catchall {:try_start_0 .. :try_end_0} :catchall_2
 
     .line 1187
     :try_start_1
@@ -86,7 +86,7 @@
 
     invoke-static {v2}, Lio/kamihama/magianative/CNLog;->setListener(Ljava/lang/Runnable;)V
     :try_end_2
-    .catch Ljava/lang/Exception; {:try_start_2 .. :try_end_2} :catch_0
+    .catchall {:try_start_2 .. :try_end_2} :catchall_2
 
     .line 1192
     const/4 v2, 0x0
@@ -203,31 +203,27 @@
     .line 1209
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1800()V
     :try_end_4
-    .catch Ljava/lang/Exception; {:try_start_4 .. :try_end_4} :catch_0
+    .catchall {:try_start_4 .. :try_end_4} :catchall_2
 
-    .line 1212
+    .line 1215
     goto :goto_3
 
     .line 1210
-    :catch_0
+    :catchall_2
     move-exception v1
 
-    .line 1211
+    .line 1214
     new-instance v2, Ljava/lang/StringBuilder;
 
     invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
 
-    const-string v3, "\u6d6e\u5c42\u64cd\u4f5c\u5931\u8d25: "
+    const-string v3, "\u6d6e\u5c42\u521b\u5efa\u5931\u8d25: "
 
     invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
     move-result-object v2
 
-    invoke-virtual {v1}, Ljava/lang/Exception;->getMessage()Ljava/lang/String;
-
-    move-result-object v3
-
-    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v2, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
 
     move-result-object v2
 
@@ -237,7 +233,7 @@
 
     invoke-static {v0, v2, v1}, Lio/kamihama/magianative/CNLog;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    .line 1213
+    .line 1216
     :goto_3
     return-void
 .end method

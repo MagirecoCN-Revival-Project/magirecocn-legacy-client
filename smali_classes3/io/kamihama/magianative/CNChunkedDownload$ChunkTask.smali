@@ -48,6 +48,8 @@
 
 .field part:Ljava/io/File;
 
+.field rangeIgnored:Ljava/util/concurrent/atomic/AtomicBoolean;
+
 .field sink:Lio/kamihama/magianative/CNChunkedDownload$Sink;
 
 .field start:J
@@ -67,7 +69,7 @@
 .method private constructor <init>()V
     .locals 0
 
-    .line 416
+    .line 428
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     return-void
@@ -76,7 +78,7 @@
 .method synthetic constructor <init>(Lio/kamihama/magianative/CNChunkedDownload$1;)V
     .locals 0
 
-    .line 416
+    .line 428
     invoke-direct {p0}, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;-><init>()V
 
     return-void
@@ -85,9 +87,9 @@
 
 # virtual methods
 .method public run()V
-    .locals 21
+    .locals 22
 
-    .line 438
+    .line 451
     move-object/from16 v1, p0
 
     :try_start_0
@@ -129,25 +131,29 @@
 
     move-object/from16 v19, v0
 
-    iget-object v0, v1, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->sink:Lio/kamihama/magianative/CNChunkedDownload$Sink;
+    iget-object v0, v1, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->rangeIgnored:Ljava/util/concurrent/atomic/AtomicBoolean;
 
     move-object/from16 v20, v0
 
-    invoke-static/range {v2 .. v20}, Lio/kamihama/magianative/CNChunkedDownload;->access$200(Ljava/lang/String;Ljava/io/File;JJLjava/util/concurrent/atomic/AtomicLongArray;IZLjava/io/File;JLjava/lang/String;Ljava/util/concurrent/atomic/AtomicLong;Ljava/util/concurrent/atomic/AtomicLong;Ljava/util/concurrent/atomic/AtomicLong;Ljava/util/concurrent/atomic/AtomicLong;Ljava/util/concurrent/atomic/AtomicBoolean;Lio/kamihama/magianative/CNChunkedDownload$Sink;)V
+    iget-object v0, v1, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->sink:Lio/kamihama/magianative/CNChunkedDownload$Sink;
+
+    move-object/from16 v21, v0
+
+    invoke-static/range {v2 .. v21}, Lio/kamihama/magianative/CNChunkedDownload;->access$200(Ljava/lang/String;Ljava/io/File;JJLjava/util/concurrent/atomic/AtomicLongArray;IZLjava/io/File;JLjava/lang/String;Ljava/util/concurrent/atomic/AtomicLong;Ljava/util/concurrent/atomic/AtomicLong;Ljava/util/concurrent/atomic/AtomicLong;Ljava/util/concurrent/atomic/AtomicLong;Ljava/util/concurrent/atomic/AtomicBoolean;Ljava/util/concurrent/atomic/AtomicBoolean;Lio/kamihama/magianative/CNChunkedDownload$Sink;)V
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
     goto :goto_1
 
-    .line 440
+    .line 454
     :catchall_0
     move-exception v0
 
-    .line 441
+    .line 455
     :try_start_1
     iget-object v2, v1, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->firstErr:Ljava/util/concurrent/atomic/AtomicReference;
 
-    .line 442
+    .line 456
     instance-of v3, v0, Ljava/io/IOException;
 
     if-eqz v3, :cond_0
@@ -156,7 +162,7 @@
 
     goto :goto_0
 
-    .line 443
+    .line 457
     :cond_0
     new-instance v3, Ljava/io/IOException;
 
@@ -172,13 +178,13 @@
 
     move-object v0, v3
 
-    .line 441
+    .line 455
     :goto_0
     const/4 v3, 0x0
 
     invoke-static {v2, v3, v0}, Lio/kamihama/magianative/CNChunkedDownload$$ExternalSyntheticBackportWithForwarding0;->m(Ljava/util/concurrent/atomic/AtomicReference;Ljava/lang/Object;Ljava/lang/Object;)Z
 
-    .line 444
+    .line 458
     iget-object v0, v1, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->abort:Ljava/util/concurrent/atomic/AtomicBoolean;
 
     const/4 v2, 0x1
@@ -187,19 +193,19 @@
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_1
 
-    .line 446
+    .line 460
     :goto_1
     iget-object v0, v1, Lio/kamihama/magianative/CNChunkedDownload$ChunkTask;->latch:Ljava/util/concurrent/CountDownLatch;
 
     invoke-virtual {v0}, Ljava/util/concurrent/CountDownLatch;->countDown()V
 
-    .line 447
+    .line 461
     nop
 
-    .line 448
+    .line 462
     return-void
 
-    .line 446
+    .line 460
     :catchall_1
     move-exception v0
 
@@ -207,6 +213,6 @@
 
     invoke-virtual {v2}, Ljava/util/concurrent/CountDownLatch;->countDown()V
 
-    .line 447
+    .line 461
     throw v0
 .end method

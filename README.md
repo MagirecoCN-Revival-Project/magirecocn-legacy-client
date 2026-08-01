@@ -50,6 +50,24 @@ mirrors.json                    ← 线上线路列表的快照（真实配置�
 补丁类的 smali（`smali_classes2/…/CNCNDownloadUI*` 与整个 `smali_classes3/`）
 **每次 CI 构建都会用 Java 源码重新生成**，手工改这些 .smali 不会影响产物。
 
+### 铁律：安装器入口绝不能抛异常
+
+native hook 拦下引擎的 `DownloadSceneLayer::init` 后，用
+`CallStaticVoidMethod` 转调 `RestClient.startCNDownload`（其体即
+`CNDownloaderFix.runInstaller(); return;`），随后做 `ExceptionCheck` /
+`ExceptionClear`。
+
+**一旦有 Throwable 逃逸进 JNI，hook 会清掉它并放行引擎自带的下载场景——
+玩家就会看到原生安装界面。** 这是必须避免的终态。
+
+因此被 native 直接或间接调用的入口（`runInstaller`、`getEndpoint`）都在最外层
+套了 `catch (Throwable)`：宁可停在我们自己的浮层上显示错误，也绝不把控制权
+交回引擎。改动这两个方法时不要破坏这一层。
+
+同理，`CNCNDownloadUI.show()` 只有在浮层**确实挂上 decorView** 之后才置
+`isShowing = true`；无条件置位会导致一次创建失败后，本进程内后续所有
+`show()` 都在开头直接返回，浮层再也建不起来。
+
 ### 唯一一处手工 smali 改动
 
 `smali_classes2/io/kamihama/magianative/RestClient.smali` 里
@@ -156,9 +174,9 @@ python3 tools/server.py 2097152 8771          # 支持 Range 的测试服务器
 # 另开一个终端，按 tools/*.java 头部注释编译运行
 ```
 
-`ResumeTest` 覆盖 23 项断言：完整下载、短读拒绝、断点复用、临时文件丢失、
-同线路 ETag 变化（拒绝复用）、越界多发、**跨线路续传（复用断点）**。
-`HotUpdateTest` 覆盖 12 项。
+`ResumeTest` 覆盖 27 项断言：完整下载、短读拒绝、断点复用、临时文件丢失、
+同线路 ETag 变化（拒绝复用）、越界多发、跨线路续传（复用断点）、
+**服务端忽略 Range 返回 200（清断点而非反复撞墙）**。`HotUpdateTest` 覆盖 12 项。
 
 测试服务器支持用控制端点在不改变请求 URL 的前提下改变服务端行为
 （`/settruncate?v=N` 截断、`/setetag?v=X` 换 ETag）——这很关键：
