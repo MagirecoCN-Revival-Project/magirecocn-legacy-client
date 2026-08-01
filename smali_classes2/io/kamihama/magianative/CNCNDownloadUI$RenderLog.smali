@@ -21,7 +21,7 @@
 .method private constructor <init>()V
     .locals 0
 
-    .line 992
+    .line 1067
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     return-void
@@ -30,7 +30,7 @@
 .method synthetic constructor <init>(Lio/kamihama/magianative/CNCNDownloadUI$1;)V
     .locals 0
 
-    .line 992
+    .line 1067
     invoke-direct {p0}, Lio/kamihama/magianative/CNCNDownloadUI$RenderLog;-><init>()V
 
     return-void
@@ -41,10 +41,10 @@
 .method public run()V
     .locals 4
 
-    .line 994
+    .line 1069
     nop
 
-    .line 995
+    .line 1070
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1000()Landroid/widget/ScrollView;
 
     move-result-object v0
@@ -57,7 +57,7 @@
 
     if-eqz v0, :cond_0
 
-    .line 996
+    .line 1071
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1000()Landroid/widget/ScrollView;
 
     move-result-object v0
@@ -76,7 +76,7 @@
 
     add-int/2addr v0, v2
 
-    .line 997
+    .line 1072
     sget-object v2, Lio/kamihama/magianative/CNCNDownloadUI;->tvLog:Landroid/widget/TextView;
 
     invoke-virtual {v2}, Landroid/widget/TextView;->getHeight()I
@@ -97,11 +97,11 @@
 
     const/4 v1, 0x1
 
-    .line 999
+    .line 1074
     :cond_0
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1200()V
 
-    .line 1000
+    .line 1075
     if-eqz v1, :cond_1
 
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1000()Landroid/widget/ScrollView;
@@ -110,7 +110,7 @@
 
     if-eqz v0, :cond_1
 
-    .line 1001
+    .line 1076
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$1000()Landroid/widget/ScrollView;
 
     move-result-object v0
@@ -123,7 +123,7 @@
 
     invoke-virtual {v0, v1}, Landroid/widget/ScrollView;->post(Ljava/lang/Runnable;)Z
 
-    .line 1003
+    .line 1078
     :cond_1
     return-void
 .end method

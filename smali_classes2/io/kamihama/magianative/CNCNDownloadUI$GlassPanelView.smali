@@ -32,10 +32,10 @@
 .method constructor <init>(Landroid/content/Context;IIF)V
     .locals 1
 
-    .line 293
+    .line 320
     invoke-direct {p0, p1}, Landroid/view/View;-><init>(Landroid/content/Context;)V
 
-    .line 285
+    .line 312
     new-instance p1, Landroid/graphics/Paint;
 
     const/4 v0, 0x1
@@ -44,23 +44,23 @@
 
     iput-object p1, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->paint:Landroid/graphics/Paint;
 
-    .line 286
+    .line 313
     new-instance p1, Landroid/graphics/RectF;
 
     invoke-direct {p1}, Landroid/graphics/RectF;-><init>()V
 
     iput-object p1, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->bounds:Landroid/graphics/RectF;
 
-    .line 294
+    .line 321
     iput p2, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->fillColor:I
 
-    .line 295
+    .line 322
     iput p3, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->strokeColor:I
 
-    .line 296
+    .line 323
     iput p4, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->radius:F
 
-    .line 297
+    .line 324
     return-void
 .end method
 
@@ -69,7 +69,7 @@
 .method protected onDraw(Landroid/graphics/Canvas;)V
     .locals 6
 
-    .line 306
+    .line 333
     iget-object v0, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->bounds:Landroid/graphics/RectF;
 
     invoke-virtual {p0}, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->getWidth()I
@@ -88,24 +88,24 @@
 
     invoke-virtual {v0, v3, v3, v1, v2}, Landroid/graphics/RectF;->set(FFFF)V
 
-    .line 307
+    .line 334
     iget-object v0, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->blurBitmap:Landroid/graphics/Bitmap;
 
     if-eqz v0, :cond_0
 
-    .line 308
+    .line 335
     new-instance v0, Landroid/graphics/Paint;
 
     const/4 v1, 0x1
 
     invoke-direct {v0, v1}, Landroid/graphics/Paint;-><init>(I)V
 
-    .line 309
+    .line 336
     new-instance v1, Landroid/graphics/Matrix;
 
     invoke-direct {v1}, Landroid/graphics/Matrix;-><init>()V
 
-    .line 310
+    .line 337
     invoke-virtual {p0}, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->getWidth()I
 
     move-result v2
@@ -122,7 +122,7 @@
 
     div-float/2addr v2, v3
 
-    .line 311
+    .line 338
     invoke-virtual {p0}, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->getHeight()I
 
     move-result v3
@@ -139,10 +139,10 @@
 
     div-float/2addr v3, v4
 
-    .line 310
+    .line 337
     invoke-virtual {v1, v2, v3}, Landroid/graphics/Matrix;->setScale(FF)V
 
-    .line 312
+    .line 339
     new-instance v2, Landroid/graphics/BitmapShader;
 
     iget-object v3, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->blurBitmap:Landroid/graphics/Bitmap;
@@ -153,20 +153,20 @@
 
     invoke-direct {v2, v3, v4, v5}, Landroid/graphics/BitmapShader;-><init>(Landroid/graphics/Bitmap;Landroid/graphics/Shader$TileMode;Landroid/graphics/Shader$TileMode;)V
 
-    .line 314
+    .line 341
     invoke-virtual {v2, v1}, Landroid/graphics/BitmapShader;->setLocalMatrix(Landroid/graphics/Matrix;)V
 
-    .line 315
+    .line 342
     invoke-virtual {v0, v2}, Landroid/graphics/Paint;->setShader(Landroid/graphics/Shader;)Landroid/graphics/Shader;
 
-    .line 316
+    .line 343
     iget-object v1, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->bounds:Landroid/graphics/RectF;
 
     iget v2, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->radius:F
 
     invoke-virtual {p1, v1, v2, v2, v0}, Landroid/graphics/Canvas;->drawRoundRect(Landroid/graphics/RectF;FFLandroid/graphics/Paint;)V
 
-    .line 317
+    .line 344
     iget-object v0, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->paint:Landroid/graphics/Paint;
 
     iget v1, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->fillColor:I
@@ -177,14 +177,14 @@
 
     invoke-virtual {v0, v1}, Landroid/graphics/Paint;->setColor(I)V
 
-    .line 318
+    .line 345
     iget-object v0, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->paint:Landroid/graphics/Paint;
 
     sget-object v1, Landroid/graphics/Paint$Style;->FILL:Landroid/graphics/Paint$Style;
 
     invoke-virtual {v0, v1}, Landroid/graphics/Paint;->setStyle(Landroid/graphics/Paint$Style;)V
 
-    .line 319
+    .line 346
     iget-object v0, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->bounds:Landroid/graphics/RectF;
 
     iget v1, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->radius:F
@@ -193,10 +193,10 @@
 
     invoke-virtual {p1, v0, v1, v1, v2}, Landroid/graphics/Canvas;->drawRoundRect(Landroid/graphics/RectF;FFLandroid/graphics/Paint;)V
 
-    .line 320
+    .line 347
     goto :goto_0
 
-    .line 321
+    .line 348
     :cond_0
     iget-object v0, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->paint:Landroid/graphics/Paint;
 
@@ -204,14 +204,14 @@
 
     invoke-virtual {v0, v1}, Landroid/graphics/Paint;->setColor(I)V
 
-    .line 322
+    .line 349
     iget-object v0, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->paint:Landroid/graphics/Paint;
 
     sget-object v1, Landroid/graphics/Paint$Style;->FILL:Landroid/graphics/Paint$Style;
 
     invoke-virtual {v0, v1}, Landroid/graphics/Paint;->setStyle(Landroid/graphics/Paint$Style;)V
 
-    .line 323
+    .line 350
     iget-object v0, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->bounds:Landroid/graphics/RectF;
 
     iget v1, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->radius:F
@@ -220,7 +220,7 @@
 
     invoke-virtual {p1, v0, v1, v1, v2}, Landroid/graphics/Canvas;->drawRoundRect(Landroid/graphics/RectF;FFLandroid/graphics/Paint;)V
 
-    .line 325
+    .line 352
     :goto_0
     iget-object v0, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->paint:Landroid/graphics/Paint;
 
@@ -228,21 +228,21 @@
 
     invoke-virtual {v0, v1}, Landroid/graphics/Paint;->setColor(I)V
 
-    .line 326
+    .line 353
     iget-object v0, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->paint:Landroid/graphics/Paint;
 
     sget-object v1, Landroid/graphics/Paint$Style;->STROKE:Landroid/graphics/Paint$Style;
 
     invoke-virtual {v0, v1}, Landroid/graphics/Paint;->setStyle(Landroid/graphics/Paint$Style;)V
 
-    .line 327
+    .line 354
     iget-object v0, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->paint:Landroid/graphics/Paint;
 
     const/high16 v1, 0x40000000    # 2.0f
 
     invoke-virtual {v0, v1}, Landroid/graphics/Paint;->setStrokeWidth(F)V
 
-    .line 328
+    .line 355
     iget-object v0, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->bounds:Landroid/graphics/RectF;
 
     iget v1, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->radius:F
@@ -251,19 +251,19 @@
 
     invoke-virtual {p1, v0, v1, v1, v2}, Landroid/graphics/Canvas;->drawRoundRect(Landroid/graphics/RectF;FFLandroid/graphics/Paint;)V
 
-    .line 329
+    .line 356
     return-void
 .end method
 
 .method setBlurBitmap(Landroid/graphics/Bitmap;)V
     .locals 0
 
-    .line 300
+    .line 327
     iput-object p1, p0, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->blurBitmap:Landroid/graphics/Bitmap;
 
-    .line 301
+    .line 328
     invoke-virtual {p0}, Lio/kamihama/magianative/CNCNDownloadUI$GlassPanelView;->postInvalidate()V
 
-    .line 302
+    .line 329
     return-void
 .end method

@@ -21,7 +21,7 @@
 .method constructor <init>()V
     .locals 0
 
-    .line 713
+    .line 740
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     return-void
@@ -32,7 +32,7 @@
 .method public onClick(Landroid/view/View;)V
     .locals 0
 
-    .line 714
+    .line 741
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$200()V
 
     return-void

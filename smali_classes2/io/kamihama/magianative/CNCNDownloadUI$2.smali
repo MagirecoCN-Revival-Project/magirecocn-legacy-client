@@ -30,7 +30,7 @@
         }
     .end annotation
 
-    .line 589
+    .line 616
     iput-object p1, p0, Lio/kamihama/magianative/CNCNDownloadUI$2;->val$act:Landroid/app/Activity;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -43,7 +43,7 @@
 .method public onClick(Landroid/view/View;)V
     .locals 0
 
-    .line 590
+    .line 617
     iget-object p1, p0, Lio/kamihama/magianative/CNCNDownloadUI$2;->val$act:Landroid/app/Activity;
 
     invoke-static {p1}, Lio/kamihama/magianative/CNCNDownloadUI;->access$100(Landroid/app/Activity;)V

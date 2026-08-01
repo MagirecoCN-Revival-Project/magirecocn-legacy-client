@@ -7,6 +7,7 @@
 .annotation system Ldalvik/annotation/MemberClasses;
     value = {
         Lio/kamihama/magianative/CNDownloaderFix$ArchiveTask;,
+        Lio/kamihama/magianative/CNDownloaderFix$SizeProbeTask;,
         Lio/kamihama/magianative/CNDownloaderFix$DownloadMetadata;,
         Lio/kamihama/magianative/CNDownloaderFix$ResetRequired;,
         Lio/kamihama/magianative/CNDownloaderFix$ArchiveSink;,
@@ -49,11 +50,15 @@
 
 .field private static final RESOURCE_BASE_URL:Ljava/lang/String; = "https://assets.magireco.top/"
 
+.field private static final RETRY_LOCK:Ljava/lang/Object;
+
 .field private static final STALE_SPEED_NS:J
 
 .field private static final STATE_ROOT:Ljava/lang/String; = "/data/data/io.kamihama.totentanz/files/madomagi/magica/.cn_installer/r128-downloader-v1"
 
 .field private static final TAG:Ljava/lang/String; = "MagiaCNDownloader"
+
+.field private static volatile retryRequested:Z
 
 
 # direct methods
@@ -115,7 +120,19 @@
 
     sput-object v0, Lio/kamihama/magianative/CNDownloaderFix;->FILE_NAMES:[Ljava/lang/String;
 
-    .line 88
+    .line 89
+    new-instance v0, Ljava/lang/Object;
+
+    invoke-direct {v0}, Ljava/lang/Object;-><init>()V
+
+    sput-object v0, Lio/kamihama/magianative/CNDownloaderFix;->RETRY_LOCK:Ljava/lang/Object;
+
+    .line 90
+    const/4 v0, 0x0
+
+    sput-boolean v0, Lio/kamihama/magianative/CNDownloaderFix;->retryRequested:Z
+
+    .line 92
     new-instance v0, Ljava/util/concurrent/atomic/AtomicLongArray;
 
     const/16 v1, 0xf
@@ -124,7 +141,7 @@
 
     sput-object v0, Lio/kamihama/magianative/CNDownloaderFix;->LAST_PROGRESS_NS:Ljava/util/concurrent/atomic/AtomicLongArray;
 
-    .line 89
+    .line 93
     new-instance v0, Ljava/util/concurrent/atomic/AtomicIntegerArray;
 
     invoke-direct {v0, v1}, Ljava/util/concurrent/atomic/AtomicIntegerArray;-><init>(I)V
@@ -137,14 +154,54 @@
 .method private constructor <init>()V
     .locals 0
 
-    .line 91
+    .line 95
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
-    .line 92
+    .line 96
     return-void
 .end method
 
-.method static synthetic access$000(I)Z
+.method static synthetic access$000()[Ljava/lang/String;
+    .locals 1
+
+    .line 58
+    sget-object v0, Lio/kamihama/magianative/CNDownloaderFix;->FILE_NAMES:[Ljava/lang/String;
+
+    return-object v0
+.end method
+
+.method static synthetic access$100(Ljava/lang/String;)Ljava/io/File;
+    .locals 0
+
+    .line 58
+    invoke-static {p0}, Lio/kamihama/magianative/CNDownloaderFix;->markerFor(Ljava/lang/String;)Ljava/io/File;
+
+    move-result-object p0
+
+    return-object p0
+.end method
+
+.method static synthetic access$200(Ljava/io/File;)J
+    .locals 2
+
+    .line 58
+    invoke-static {p0}, Lio/kamihama/magianative/CNDownloaderFix;->readMarkerBytes(Ljava/io/File;)J
+
+    move-result-wide v0
+
+    return-wide v0
+.end method
+
+.method static synthetic access$300(IJ)V
+    .locals 0
+
+    .line 58
+    invoke-static {p0, p1, p2}, Lio/kamihama/magianative/CNDownloaderFix;->updateSize(IJ)V
+
+    return-void
+.end method
+
+.method static synthetic access$400(I)Z
     .locals 0
 
     .line 58
@@ -155,16 +212,7 @@
     return p0
 .end method
 
-.method static synthetic access$100(IJ)V
-    .locals 0
-
-    .line 58
-    invoke-static {p0, p1, p2}, Lio/kamihama/magianative/CNDownloaderFix;->updateSize(IJ)V
-
-    return-void
-.end method
-
-.method static synthetic access$200()Ljava/util/concurrent/atomic/AtomicLongArray;
+.method static synthetic access$500()Ljava/util/concurrent/atomic/AtomicLongArray;
     .locals 1
 
     .line 58
@@ -173,7 +221,7 @@
     return-object v0
 .end method
 
-.method static synthetic access$300(IJJ)V
+.method static synthetic access$600(IJJ)V
     .locals 0
 
     .line 58
@@ -182,7 +230,7 @@
     return-void
 .end method
 
-.method static synthetic access$500()Ljava/util/concurrent/atomic/AtomicIntegerArray;
+.method static synthetic access$800()Ljava/util/concurrent/atomic/AtomicIntegerArray;
     .locals 1
 
     .line 58
@@ -191,7 +239,7 @@
     return-object v0
 .end method
 
-.method static synthetic access$600()J
+.method static synthetic access$900()J
     .locals 2
 
     .line 58
@@ -200,19 +248,10 @@
     return-wide v0
 .end method
 
-.method static synthetic access$700()[Ljava/lang/String;
-    .locals 1
-
-    .line 58
-    sget-object v0, Lio/kamihama/magianative/CNDownloaderFix;->FILE_NAMES:[Ljava/lang/String;
-
-    return-object v0
-.end method
-
 .method private static allMarkersValid()Z
     .locals 8
 
-    .line 794
+    .line 939
     sget-object v0, Lio/kamihama/magianative/CNDownloaderFix;->FILE_NAMES:[Ljava/lang/String;
 
     array-length v1, v0
@@ -226,7 +265,7 @@
 
     aget-object v4, v0, v3
 
-    .line 795
+    .line 940
     invoke-static {v4}, Lio/kamihama/magianative/CNDownloaderFix;->markerFor(Ljava/lang/String;)Ljava/io/File;
 
     move-result-object v5
@@ -255,7 +294,7 @@
 
     if-nez v5, :cond_0
 
-    .line 796
+    .line 941
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
@@ -278,16 +317,16 @@
 
     invoke-static {v1, v0}, Lio/kamihama/magianative/CNLog;->e(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 797
+    .line 942
     return v2
 
-    .line 794
+    .line 939
     :cond_0
     add-int/lit8 v3, v3, 0x1
 
     goto :goto_0
 
-    .line 800
+    .line 945
     :cond_1
     const/4 v0, 0x1
 
@@ -297,7 +336,7 @@
 .method private static cleanHeader(Ljava/lang/String;)Ljava/lang/String;
     .locals 0
 
-    .line 1051
+    .line 1196
     if-nez p0, :cond_0
 
     const-string p0, ""
@@ -316,23 +355,23 @@
 .method private static closeQuietly(Ljava/io/InputStream;)V
     .locals 0
 
-    .line 1065
+    .line 1210
     if-eqz p0, :cond_0
 
-    .line 1067
+    .line 1212
     :try_start_0
     invoke-virtual {p0}, Ljava/io/InputStream;->close()V
     :try_end_0
     .catch Ljava/io/IOException; {:try_start_0 .. :try_end_0} :catch_0
 
-    .line 1069
+    .line 1214
     goto :goto_0
 
-    .line 1068
+    .line 1213
     :catch_0
     move-exception p0
 
-    .line 1071
+    .line 1216
     :cond_0
     :goto_0
     return-void
@@ -341,23 +380,23 @@
 .method private static closeQuietly(Ljava/io/OutputStream;)V
     .locals 0
 
-    .line 1074
+    .line 1219
     if-eqz p0, :cond_0
 
-    .line 1076
+    .line 1221
     :try_start_0
     invoke-virtual {p0}, Ljava/io/OutputStream;->close()V
     :try_end_0
     .catch Ljava/io/IOException; {:try_start_0 .. :try_end_0} :catch_0
 
-    .line 1078
+    .line 1223
     goto :goto_0
 
-    .line 1077
+    .line 1222
     :catch_0
     move-exception p0
 
-    .line 1080
+    .line 1225
     :cond_0
     :goto_0
     return-void
@@ -366,7 +405,7 @@
 .method private static deleteQuietly(Ljava/io/File;)V
     .locals 2
 
-    .line 1059
+    .line 1204
     invoke-virtual {p0}, Ljava/io/File;->exists()Z
 
     move-result v0
@@ -379,7 +418,7 @@
 
     if-nez v0, :cond_0
 
-    .line 1060
+    .line 1205
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
@@ -402,7 +441,7 @@
 
     invoke-static {v0, p0}, Lio/kamihama/magianative/CNLog;->w(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 1062
+    .line 1207
     :cond_0
     return-void
 .end method
@@ -415,7 +454,7 @@
         }
     .end annotation
 
-    .line 456
+    .line 601
     move-object/from16 v0, p0
 
     move-object/from16 v1, p1
@@ -430,7 +469,7 @@
 
     if-eqz v4, :cond_0
 
-    .line 457
+    .line 602
     new-instance v0, Lio/kamihama/magianative/CNDownloaderFix$DownloadMetadata;
 
     invoke-virtual/range {p1 .. p1}, Ljava/io/File;->length()J
@@ -445,7 +484,7 @@
 
     return-object v0
 
-    .line 460
+    .line 605
     :cond_0
     new-instance v4, Ljava/io/File;
 
@@ -473,7 +512,7 @@
 
     invoke-direct {v4, v5}, Ljava/io/File;-><init>(Ljava/lang/String;)V
 
-    .line 461
+    .line 606
     new-instance v5, Ljava/io/File;
 
     new-instance v6, Ljava/lang/StringBuilder;
@@ -500,12 +539,12 @@
 
     invoke-direct {v5, v6}, Ljava/io/File;-><init>(Ljava/lang/String;)V
 
-    .line 462
+    .line 607
     invoke-virtual {v4}, Ljava/io/File;->getParentFile()Ljava/io/File;
 
     move-result-object v6
 
-    .line 463
+    .line 608
     if-eqz v6, :cond_2
 
     invoke-virtual {v6}, Ljava/io/File;->isDirectory()Z
@@ -528,7 +567,7 @@
 
     goto :goto_0
 
-    .line 464
+    .line 609
     :cond_1
     new-instance v0, Ljava/io/IOException;
 
@@ -554,7 +593,7 @@
 
     throw v0
 
-    .line 472
+    .line 617
     :cond_2
     :goto_0
     invoke-virtual {v4}, Ljava/io/File;->isFile()Z
@@ -574,7 +613,7 @@
     :cond_3
     move-wide v9, v7
 
-    .line 473
+    .line 618
     :goto_1
     const-string v6, "MagiaCNDownloader"
 
@@ -582,12 +621,12 @@
 
     if-lez v11, :cond_4
 
-    .line 474
+    .line 619
     invoke-static/range {p1 .. p1}, Lio/kamihama/magianative/CNDownloaderFix;->readSidecarBytes(Ljava/io/File;)J
 
     move-result-wide v11
 
-    .line 475
+    .line 620
     cmp-long v13, v11, v7
 
     if-lez v13, :cond_4
@@ -596,7 +635,7 @@
 
     if-lez v13, :cond_4
 
-    .line 476
+    .line 621
     new-instance v13, Ljava/lang/StringBuilder;
 
     invoke-direct {v13}, Ljava/lang/StringBuilder;-><init>()V
@@ -647,19 +686,19 @@
 
     invoke-static {v6, v9}, Lio/kamihama/magianative/CNLog;->w(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 478
+    .line 623
     invoke-static {v4}, Lio/kamihama/magianative/CNDownloaderFix;->truncate(Ljava/io/File;)V
 
-    .line 479
+    .line 624
     invoke-static {v5}, Lio/kamihama/magianative/CNDownloaderFix;->deleteQuietly(Ljava/io/File;)V
 
-    .line 480
+    .line 625
     invoke-static/range {p2 .. p2}, Lio/kamihama/magianative/CNDownloaderFix;->resetProgress(I)V
 
-    .line 481
+    .line 626
     move-wide v9, v7
 
-    .line 484
+    .line 629
     :cond_4
     new-instance v11, Ljava/lang/StringBuilder;
 
@@ -705,12 +744,12 @@
 
     invoke-static {v6, v11}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 487
+    .line 632
     new-instance v6, Ljava/net/URL;
 
     invoke-direct {v6, v0}, Ljava/net/URL;-><init>(Ljava/lang/String;)V
 
-    .line 489
+    .line 634
     if-eqz v3, :cond_5
 
     sget-object v3, Ljava/net/Proxy;->NO_PROXY:Ljava/net/Proxy;
@@ -729,46 +768,46 @@
     :goto_2
     check-cast v3, Ljava/net/HttpURLConnection;
 
-    .line 490
+    .line 635
     const/16 v6, 0x3a98
 
     invoke-virtual {v3, v6}, Ljava/net/HttpURLConnection;->setConnectTimeout(I)V
 
-    .line 491
+    .line 636
     const/16 v6, 0x7530
 
     invoke-virtual {v3, v6}, Ljava/net/HttpURLConnection;->setReadTimeout(I)V
 
-    .line 492
+    .line 637
     const/4 v6, 0x0
 
     invoke-virtual {v3, v6}, Ljava/net/HttpURLConnection;->setUseCaches(Z)V
 
-    .line 493
+    .line 638
     const-string v11, "Accept-Encoding"
 
     const-string v13, "identity"
 
     invoke-virtual {v3, v11, v13}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 494
+    .line 639
     const-string v11, "Connection"
 
     const-string v13, "close"
 
     invoke-virtual {v3, v11, v13}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 496
+    .line 641
     invoke-static/range {p1 .. p1}, Lio/kamihama/magianative/CNDownloaderFix;->readSidecarEtag(Ljava/io/File;)Ljava/lang/String;
 
     move-result-object v11
 
-    .line 497
+    .line 642
     cmp-long v13, v9, v7
 
     if-lez v13, :cond_6
 
-    .line 498
+    .line 643
     new-instance v14, Ljava/lang/StringBuilder;
 
     invoke-direct {v14}, Ljava/lang/StringBuilder;-><init>()V
@@ -797,32 +836,32 @@
 
     invoke-virtual {v3, v15, v14}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 499
+    .line 644
     invoke-virtual {v11}, Ljava/lang/String;->length()I
 
     move-result v14
 
     if-lez v14, :cond_6
 
-    .line 500
+    .line 645
     const-string v14, "If-Range"
 
     invoke-virtual {v3, v14, v11}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 504
+    .line 649
     :cond_6
     nop
 
-    .line 505
+    .line 650
     nop
 
-    .line 507
+    .line 652
     :try_start_0
     invoke-virtual {v3}, Ljava/net/HttpURLConnection;->getResponseCode()I
 
     move-result v15
 
-    .line 508
+    .line 653
     const-string v14, "ETag"
 
     invoke-virtual {v3, v14}, Ljava/net/HttpURLConnection;->getHeaderField(Ljava/lang/String;)Ljava/lang/String;
@@ -835,7 +874,7 @@
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_8
 
-    .line 514
+    .line 659
     const/16 v6, 0xc8
 
     if-lez v13, :cond_8
@@ -844,18 +883,18 @@
 
     goto :goto_5
 
-    .line 516
+    .line 661
     :cond_7
     :try_start_1
     invoke-static {v4}, Lio/kamihama/magianative/CNDownloaderFix;->truncate(Ljava/io/File;)V
 
-    .line 517
+    .line 662
     invoke-static {v5}, Lio/kamihama/magianative/CNDownloaderFix;->deleteQuietly(Ljava/io/File;)V
 
-    .line 518
+    .line 663
     invoke-static/range {p2 .. p2}, Lio/kamihama/magianative/CNDownloaderFix;->resetProgress(I)V
 
-    .line 519
+    .line 664
     new-instance v0, Lio/kamihama/magianative/CNDownloaderFix$ResetRequired;
 
     new-instance v1, Ljava/lang/StringBuilder;
@@ -882,7 +921,7 @@
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_0
 
-    .line 614
+    .line 759
     :catchall_0
     move-exception v0
 
@@ -894,7 +933,7 @@
 
     goto/16 :goto_d
 
-    .line 520
+    .line 665
     :cond_8
     :goto_5
     const-string v7, "Content-Length"
@@ -907,7 +946,7 @@
 
     if-ne v15, v6, :cond_c
 
-    .line 521
+    .line 666
     :try_start_2
     invoke-virtual {v3, v8}, Ljava/net/HttpURLConnection;->getHeaderField(Ljava/lang/String;)Ljava/lang/String;
 
@@ -917,7 +956,7 @@
 
     move-result-object v0
 
-    .line 522
+    .line 667
     if-eqz v0, :cond_b
 
     iget-wide v12, v0, Lio/kamihama/magianative/CNDownloaderFix$ContentRange;->start:J
@@ -942,7 +981,7 @@
 
     if-lez v6, :cond_b
 
-    .line 528
+    .line 673
     invoke-virtual {v11}, Ljava/lang/String;->length()I
 
     move-result v1
@@ -963,17 +1002,17 @@
 
     goto :goto_6
 
-    .line 529
+    .line 674
     :cond_9
     invoke-static {v4}, Lio/kamihama/magianative/CNDownloaderFix;->truncate(Ljava/io/File;)V
 
-    .line 530
+    .line 675
     invoke-static {v5}, Lio/kamihama/magianative/CNDownloaderFix;->deleteQuietly(Ljava/io/File;)V
 
-    .line 531
+    .line 676
     invoke-static/range {p2 .. p2}, Lio/kamihama/magianative/CNDownloaderFix;->resetProgress(I)V
 
-    .line 532
+    .line 677
     new-instance v0, Lio/kamihama/magianative/CNDownloaderFix$ResetRequired;
 
     const-string v1, "ETag changed while resuming"
@@ -982,12 +1021,12 @@
 
     throw v0
 
-    .line 534
+    .line 679
     :cond_a
     :goto_6
     iget-wide v1, v0, Lio/kamihama/magianative/CNDownloaderFix$ContentRange;->total:J
 
-    .line 535
+    .line 680
     iget-wide v11, v0, Lio/kamihama/magianative/CNDownloaderFix$ContentRange;->end:J
 
     move-wide/from16 v21, v1
@@ -1000,10 +1039,10 @@
 
     add-long/2addr v11, v0
 
-    .line 536
+    .line 681
     nop
 
-    .line 537
+    .line 682
     const/4 v0, 0x1
 
     move-wide/from16 v23, v11
@@ -1014,17 +1053,17 @@
 
     goto :goto_7
 
-    .line 523
+    .line 668
     :cond_b
     invoke-static {v4}, Lio/kamihama/magianative/CNDownloaderFix;->truncate(Ljava/io/File;)V
 
-    .line 524
+    .line 669
     invoke-static {v5}, Lio/kamihama/magianative/CNDownloaderFix;->deleteQuietly(Ljava/io/File;)V
 
-    .line 525
+    .line 670
     invoke-static/range {p2 .. p2}, Lio/kamihama/magianative/CNDownloaderFix;->resetProgress(I)V
 
-    .line 526
+    .line 671
     new-instance v0, Lio/kamihama/magianative/CNDownloaderFix$ResetRequired;
 
     new-instance v1, Ljava/lang/StringBuilder;
@@ -1049,7 +1088,7 @@
 
     throw v0
 
-    .line 537
+    .line 682
     :cond_c
     if-nez v13, :cond_15
 
@@ -1057,7 +1096,7 @@
 
     if-ne v15, v1, :cond_15
 
-    .line 538
+    .line 683
     invoke-virtual {v3, v7}, Ljava/net/HttpURLConnection;->getHeaderField(Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v0
@@ -1068,15 +1107,15 @@
 
     move-result-wide v11
 
-    .line 539
+    .line 684
     nop
 
-    .line 540
+    .line 685
     move-wide/from16 v23, v11
 
     const/4 v0, 0x0
 
-    .line 558
+    .line 703
     :goto_7
     invoke-virtual {v3, v7}, Ljava/net/HttpURLConnection;->getHeaderField(Ljava/lang/String;)Ljava/lang/String;
 
@@ -1086,7 +1125,7 @@
 
     move-result-wide v1
 
-    .line 559
+    .line 704
     move-wide/from16 v6, v23
 
     const-wide/16 v16, 0x0
@@ -1105,7 +1144,7 @@
 
     goto :goto_8
 
-    .line 560
+    .line 705
     :cond_d
     new-instance v0, Ljava/io/IOException;
 
@@ -1141,7 +1180,7 @@
 
     throw v0
 
-    .line 563
+    .line 708
     :cond_e
     :goto_8
     const-wide/16 v1, 0x0
@@ -1150,18 +1189,18 @@
 
     if-lez v13, :cond_14
 
-    .line 567
+    .line 712
     invoke-static {v5, v14, v11, v12}, Lio/kamihama/magianative/CNDownloaderFix;->writeSidecar(Ljava/io/File;Ljava/lang/String;J)V
 
-    .line 568
+    .line 713
     move/from16 v1, p2
 
     invoke-static {v1, v11, v12}, Lio/kamihama/magianative/CNDownloaderFix;->updateSize(IJ)V
 
-    .line 569
+    .line 714
     invoke-static {v1, v9, v10, v11, v12}, Lio/kamihama/magianative/CNDownloaderFix;->updateProgress(IJJ)V
 
-    .line 571
+    .line 716
     new-instance v2, Ljava/io/BufferedInputStream;
 
     invoke-virtual {v3}, Ljava/net/HttpURLConnection;->getInputStream()Ljava/io/InputStream;
@@ -1174,7 +1213,7 @@
     :try_end_2
     .catchall {:try_start_2 .. :try_end_2} :catchall_0
 
-    .line 572
+    .line 717
     :try_start_3
     new-instance v13, Ljava/io/FileOutputStream;
 
@@ -1182,33 +1221,33 @@
     :try_end_3
     .catchall {:try_start_3 .. :try_end_3} :catchall_5
 
-    .line 573
+    .line 718
     :try_start_4
     move-object v0, v13
 
     check-cast v0, Ljava/io/FileOutputStream;
 
-    .line 575
+    .line 720
     new-array v0, v15, [B
 
-    .line 576
+    .line 721
     invoke-static {}, Ljava/lang/System;->nanoTime()J
 
     move-result-wide v18
     :try_end_4
     .catchall {:try_start_4 .. :try_end_4} :catchall_4
 
-    .line 577
+    .line 722
     nop
 
-    .line 578
+    .line 723
     move-object/from16 v20, v14
 
     const-wide/16 v14, 0x0
 
     const-wide/16 v16, 0x0
 
-    .line 580
+    .line 725
     :goto_9
     move-object/from16 v21, v3
 
@@ -1219,33 +1258,33 @@
 
     if-ltz v3, :cond_10
 
-    .line 581
+    .line 726
     move-object/from16 v22, v5
 
     const/4 v5, 0x0
 
     invoke-virtual {v13, v0, v5, v3}, Ljava/io/FileOutputStream;->write([BII)V
 
-    .line 582
+    .line 727
     move-wide/from16 v23, v6
 
     int-to-long v5, v3
 
     add-long/2addr v14, v5
 
-    .line 583
+    .line 728
     invoke-static {}, Ljava/lang/System;->nanoTime()J
 
     move-result-wide v5
 
-    .line 584
+    .line 729
     sget-object v3, Lio/kamihama/magianative/CNDownloaderFix;->LAST_PROGRESS_NS:Ljava/util/concurrent/atomic/AtomicLongArray;
 
     invoke-virtual {v3, v1, v5, v6}, Ljava/util/concurrent/atomic/AtomicLongArray;->set(IJ)V
     :try_end_5
     .catchall {:try_start_5 .. :try_end_5} :catchall_3
 
-    .line 585
+    .line 730
     move-object/from16 p0, v2
 
     add-long v2, v9, v14
@@ -1253,10 +1292,10 @@
     :try_start_6
     invoke-static {v1, v2, v3, v11, v12}, Lio/kamihama/magianative/CNDownloaderFix;->updateProgress(IJJ)V
 
-    .line 586
+    .line 731
     sub-long v2, v5, v18
 
-    .line 587
+    .line 732
     sget-object v7, Ljava/util/concurrent/TimeUnit;->MILLISECONDS:Ljava/util/concurrent/TimeUnit;
 
     move-wide/from16 v25, v5
@@ -1271,7 +1310,7 @@
 
     if-ltz v7, :cond_f
 
-    .line 588
+    .line 733
     sub-long v5, v14, v16
 
     long-to-double v5, v5
@@ -1292,15 +1331,15 @@
 
     invoke-static {v1, v2}, Lio/kamihama/magianative/CNCNDownloadUI;->setDownloadSpeed(IF)V
 
-    .line 590
+    .line 735
     nop
 
-    .line 591
+    .line 736
     move-wide/from16 v16, v14
 
     move-wide/from16 v18, v25
 
-    .line 593
+    .line 738
     :cond_f
     move-object/from16 v2, p0
 
@@ -1312,7 +1351,7 @@
 
     goto :goto_9
 
-    .line 594
+    .line 739
     :cond_10
     move-object/from16 p0, v2
 
@@ -1322,14 +1361,14 @@
 
     invoke-virtual {v13}, Ljava/io/FileOutputStream;->flush()V
 
-    .line 595
+    .line 740
     invoke-virtual {v13}, Ljava/io/FileOutputStream;->getFD()Ljava/io/FileDescriptor;
 
     move-result-object v0
 
     invoke-virtual {v0}, Ljava/io/FileDescriptor;->sync()V
 
-    .line 597
+    .line 742
     if-ltz v8, :cond_12
 
     cmp-long v0, v14, v23
@@ -1338,7 +1377,7 @@
 
     goto :goto_a
 
-    .line 598
+    .line 743
     :cond_11
     new-instance v0, Ljava/io/IOException;
 
@@ -1376,39 +1415,39 @@
 
     throw v0
 
-    .line 601
+    .line 746
     :cond_12
     :goto_a
     invoke-virtual {v4}, Ljava/io/File;->length()J
 
     move-result-wide v0
 
-    .line 602
+    .line 747
     cmp-long v2, v0, v11
 
     if-nez v2, :cond_13
 
-    .line 607
+    .line 752
     invoke-static {v13}, Lio/kamihama/magianative/CNDownloaderFix;->closeQuietly(Ljava/io/OutputStream;)V
     :try_end_6
     .catchall {:try_start_6 .. :try_end_6} :catchall_2
 
-    .line 608
+    .line 753
     :try_start_7
     invoke-static/range {p0 .. p0}, Lio/kamihama/magianative/CNDownloaderFix;->closeQuietly(Ljava/io/InputStream;)V
     :try_end_7
     .catchall {:try_start_7 .. :try_end_7} :catchall_1
 
-    .line 610
+    .line 755
     move-object/from16 v2, p1
 
     :try_start_8
     invoke-static {v4, v2}, Lio/kamihama/magianative/CNDownloaderFix;->promotePart(Ljava/io/File;Ljava/io/File;)V
 
-    .line 611
+    .line 756
     invoke-static/range {v22 .. v22}, Lio/kamihama/magianative/CNDownloaderFix;->deleteQuietly(Ljava/io/File;)V
 
-    .line 612
+    .line 757
     new-instance v0, Lio/kamihama/magianative/CNDownloaderFix$DownloadMetadata;
 
     move-object/from16 v1, v20
@@ -1417,21 +1456,21 @@
     :try_end_8
     .catchall {:try_start_8 .. :try_end_8} :catchall_6
 
-    .line 614
+    .line 759
     const/4 v1, 0x0
 
     invoke-static {v1}, Lio/kamihama/magianative/CNDownloaderFix;->closeQuietly(Ljava/io/OutputStream;)V
 
-    .line 615
+    .line 760
     invoke-static {v1}, Lio/kamihama/magianative/CNDownloaderFix;->closeQuietly(Ljava/io/InputStream;)V
 
-    .line 616
+    .line 761
     invoke-virtual/range {v21 .. v21}, Ljava/net/HttpURLConnection;->disconnect()V
 
-    .line 612
+    .line 757
     return-object v0
 
-    .line 614
+    .line 759
     :catchall_1
     move-exception v0
 
@@ -1441,7 +1480,7 @@
 
     goto/16 :goto_4
 
-    .line 603
+    .line 748
     :cond_13
     :try_start_9
     new-instance v2, Ljava/io/IOException;
@@ -1480,7 +1519,7 @@
     :try_end_9
     .catchall {:try_start_9 .. :try_end_9} :catchall_2
 
-    .line 614
+    .line 759
     :catchall_2
     move-exception v0
 
@@ -1516,7 +1555,7 @@
 
     goto/16 :goto_4
 
-    .line 564
+    .line 709
     :cond_14
     move-object/from16 v21, v3
 
@@ -1531,7 +1570,7 @@
     :try_end_a
     .catchall {:try_start_a .. :try_end_a} :catchall_6
 
-    .line 614
+    .line 759
     :catchall_6
     move-exception v0
 
@@ -1539,7 +1578,7 @@
 
     goto/16 :goto_3
 
-    .line 537
+    .line 682
     :cond_15
     move-object/from16 v2, p1
 
@@ -1549,14 +1588,14 @@
 
     move-object/from16 v22, v5
 
-    .line 541
+    .line 686
     if-lez v13, :cond_17
 
     const/16 v3, 0x1a0
 
     if-ne v15, v3, :cond_17
 
-    .line 542
+    .line 687
     move-object/from16 v3, v21
 
     :try_start_b
@@ -1568,7 +1607,7 @@
 
     move-result-wide v5
 
-    .line 543
+    .line 688
     const-wide/16 v7, 0x0
 
     cmp-long v0, v5, v7
@@ -1579,48 +1618,48 @@
 
     if-nez v0, :cond_16
 
-    .line 550
+    .line 695
     invoke-static {v4, v2}, Lio/kamihama/magianative/CNDownloaderFix;->promotePart(Ljava/io/File;Ljava/io/File;)V
 
-    .line 551
+    .line 696
     invoke-static/range {v22 .. v22}, Lio/kamihama/magianative/CNDownloaderFix;->deleteQuietly(Ljava/io/File;)V
 
-    .line 552
+    .line 697
     new-instance v0, Lio/kamihama/magianative/CNDownloaderFix$DownloadMetadata;
 
     invoke-direct {v0, v5, v6, v11}, Lio/kamihama/magianative/CNDownloaderFix$DownloadMetadata;-><init>(JLjava/lang/String;)V
     :try_end_b
     .catchall {:try_start_b .. :try_end_b} :catchall_8
 
-    .line 614
+    .line 759
     const/4 v2, 0x0
 
     invoke-static {v2}, Lio/kamihama/magianative/CNDownloaderFix;->closeQuietly(Ljava/io/OutputStream;)V
 
-    .line 615
+    .line 760
     invoke-static {v2}, Lio/kamihama/magianative/CNDownloaderFix;->closeQuietly(Ljava/io/InputStream;)V
 
-    .line 616
+    .line 761
     invoke-virtual {v3}, Ljava/net/HttpURLConnection;->disconnect()V
 
-    .line 552
+    .line 697
     return-object v0
 
-    .line 543
+    .line 688
     :cond_16
     const/4 v2, 0x0
 
-    .line 544
+    .line 689
     :try_start_c
     invoke-static {v4}, Lio/kamihama/magianative/CNDownloaderFix;->truncate(Ljava/io/File;)V
 
-    .line 545
+    .line 690
     invoke-static/range {v22 .. v22}, Lio/kamihama/magianative/CNDownloaderFix;->deleteQuietly(Ljava/io/File;)V
 
-    .line 546
+    .line 691
     invoke-static/range {p2 .. p2}, Lio/kamihama/magianative/CNDownloaderFix;->resetProgress(I)V
 
-    .line 547
+    .line 692
     new-instance v0, Lio/kamihama/magianative/CNDownloaderFix$ResetRequired;
 
     const-string v1, "HTTP 416 did not match local length"
@@ -1629,13 +1668,13 @@
 
     throw v0
 
-    .line 541
+    .line 686
     :cond_17
     move-object/from16 v3, v21
 
     const/4 v2, 0x0
 
-    .line 554
+    .line 699
     new-instance v1, Ljava/io/IOException;
 
     new-instance v4, Ljava/lang/StringBuilder;
@@ -1680,7 +1719,7 @@
     :try_end_c
     .catchall {:try_start_c .. :try_end_c} :catchall_7
 
-    .line 614
+    .line 759
     :catchall_7
     move-exception v0
 
@@ -1697,13 +1736,13 @@
     :goto_d
     invoke-static {v14}, Lio/kamihama/magianative/CNDownloaderFix;->closeQuietly(Ljava/io/OutputStream;)V
 
-    .line 615
+    .line 760
     invoke-static {v2}, Lio/kamihama/magianative/CNDownloaderFix;->closeQuietly(Ljava/io/InputStream;)V
 
-    .line 616
+    .line 761
     invoke-virtual {v3}, Ljava/net/HttpURLConnection;->disconnect()V
 
-    .line 617
+    .line 762
     throw v0
 .end method
 
@@ -1715,7 +1754,7 @@
         }
     .end annotation
 
-    .line 625
+    .line 770
     move-object/from16 v0, p0
 
     move-object/from16 v1, p1
@@ -1726,7 +1765,7 @@
 
     if-eqz v2, :cond_e
 
-    .line 628
+    .line 773
     invoke-virtual/range {p1 .. p1}, Ljava/io/File;->isDirectory()Z
 
     move-result v2
@@ -1747,7 +1786,7 @@
 
     goto :goto_0
 
-    .line 629
+    .line 774
     :cond_0
     new-instance v0, Ljava/io/IOException;
 
@@ -1773,14 +1812,14 @@
 
     throw v0
 
-    .line 631
+    .line 776
     :cond_1
     :goto_0
     invoke-virtual/range {p1 .. p1}, Ljava/io/File;->getCanonicalPath()Ljava/lang/String;
 
     move-result-object v2
 
-    .line 632
+    .line 777
     new-instance v3, Ljava/lang/StringBuilder;
 
     invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
@@ -1799,23 +1838,23 @@
 
     move-result-object v3
 
-    .line 634
+    .line 779
     new-instance v4, Ljava/util/zip/ZipFile;
 
     invoke-direct {v4, v0}, Ljava/util/zip/ZipFile;-><init>(Ljava/io/File;)V
 
-    .line 636
+    .line 781
     :try_start_0
     invoke-virtual {v4}, Ljava/util/zip/ZipFile;->entries()Ljava/util/Enumeration;
 
     move-result-object v5
 
-    .line 637
+    .line 782
     const/4 v6, 0x0
 
     const/4 v7, 0x0
 
-    .line 638
+    .line 783
     :cond_2
     :goto_1
     invoke-interface {v5}, Ljava/util/Enumeration;->hasMoreElements()Z
@@ -1824,14 +1863,14 @@
 
     if-eqz v8, :cond_c
 
-    .line 639
+    .line 784
     invoke-interface {v5}, Ljava/util/Enumeration;->nextElement()Ljava/lang/Object;
 
     move-result-object v8
 
     check-cast v8, Ljava/util/zip/ZipEntry;
 
-    .line 640
+    .line 785
     new-instance v9, Ljava/io/File;
 
     invoke-virtual {v8}, Ljava/util/zip/ZipEntry;->getName()Ljava/lang/String;
@@ -1840,12 +1879,12 @@
 
     invoke-direct {v9, v1, v10}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
 
-    .line 641
+    .line 786
     invoke-virtual {v9}, Ljava/io/File;->getCanonicalPath()Ljava/lang/String;
 
     move-result-object v10
 
-    .line 643
+    .line 788
     invoke-virtual {v10, v2}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
 
     move-result v11
@@ -1860,7 +1899,7 @@
 
     goto :goto_2
 
-    .line 644
+    .line 789
     :cond_3
     new-instance v0, Ljava/util/zip/ZipException;
 
@@ -1890,7 +1929,7 @@
 
     throw v0
 
-    .line 646
+    .line 791
     :cond_4
     :goto_2
     invoke-virtual {v8}, Ljava/util/zip/ZipEntry;->isDirectory()Z
@@ -1903,7 +1942,7 @@
 
     if-eqz v10, :cond_6
 
-    .line 647
+    .line 792
     :try_start_1
     invoke-virtual {v9}, Ljava/io/File;->isDirectory()Z
 
@@ -1925,7 +1964,7 @@
 
     goto :goto_1
 
-    .line 648
+    .line 793
     :cond_5
     new-instance v0, Ljava/io/IOException;
 
@@ -1949,13 +1988,13 @@
 
     throw v0
 
-    .line 652
+    .line 797
     :cond_6
     invoke-virtual {v9}, Ljava/io/File;->getParentFile()Ljava/io/File;
 
     move-result-object v7
 
-    .line 653
+    .line 798
     if-eqz v7, :cond_8
 
     invoke-virtual {v7}, Ljava/io/File;->isDirectory()Z
@@ -1970,7 +2009,7 @@
 
     if-nez v10, :cond_8
 
-    .line 654
+    .line 799
     invoke-virtual {v7}, Ljava/io/File;->isDirectory()Z
 
     move-result v10
@@ -1979,7 +2018,7 @@
 
     goto :goto_3
 
-    .line 655
+    .line 800
     :cond_7
     new-instance v0, Ljava/io/IOException;
 
@@ -2005,15 +2044,15 @@
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_3
 
-    .line 657
+    .line 802
     :cond_8
     :goto_3
     nop
 
-    .line 658
+    .line 803
     nop
 
-    .line 660
+    .line 805
     const/4 v7, 0x0
 
     :try_start_2
@@ -2029,7 +2068,7 @@
     :try_end_2
     .catchall {:try_start_2 .. :try_end_2} :catchall_2
 
-    .line 661
+    .line 806
     :try_start_3
     new-instance v11, Ljava/io/BufferedOutputStream;
 
@@ -2041,16 +2080,16 @@
     :try_end_3
     .catchall {:try_start_3 .. :try_end_3} :catchall_1
 
-    .line 662
+    .line 807
     :try_start_4
     new-array v7, v12, [B
 
-    .line 663
+    .line 808
     const-wide/16 v12, 0x0
 
     move-wide v14, v12
 
-    .line 665
+    .line 810
     :goto_4
     invoke-virtual {v10, v7}, Ljava/io/InputStream;->read([B)I
 
@@ -2058,10 +2097,10 @@
 
     if-ltz v9, :cond_9
 
-    .line 666
+    .line 811
     invoke-virtual {v11, v7, v6, v9}, Ljava/io/OutputStream;->write([BII)V
 
-    .line 667
+    .line 812
     move-object/from16 v16, v7
 
     int-to-long v6, v9
@@ -2074,11 +2113,11 @@
 
     goto :goto_4
 
-    .line 669
+    .line 814
     :cond_9
     invoke-virtual {v11}, Ljava/io/OutputStream;->flush()V
 
-    .line 670
+    .line 815
     invoke-virtual {v8}, Ljava/util/zip/ZipEntry;->getSize()J
 
     move-result-wide v6
@@ -2097,7 +2136,7 @@
 
     goto :goto_5
 
-    .line 671
+    .line 816
     :cond_a
     new-instance v0, Ljava/util/zip/ZipException;
 
@@ -2129,29 +2168,29 @@
     :try_end_4
     .catchall {:try_start_4 .. :try_end_4} :catchall_0
 
-    .line 673
+    .line 818
     :cond_b
     :goto_5
     nop
 
-    .line 675
+    .line 820
     :try_start_5
     invoke-static {v11}, Lio/kamihama/magianative/CNDownloaderFix;->closeQuietly(Ljava/io/OutputStream;)V
 
-    .line 676
+    .line 821
     invoke-static {v10}, Lio/kamihama/magianative/CNDownloaderFix;->closeQuietly(Ljava/io/InputStream;)V
 
-    .line 677
+    .line 822
     nop
 
-    .line 678
+    .line 823
     const/4 v7, 0x1
 
     const/4 v6, 0x0
 
     goto/16 :goto_1
 
-    .line 675
+    .line 820
     :catchall_0
     move-exception v0
 
@@ -2172,28 +2211,28 @@
     :goto_6
     invoke-static {v7}, Lio/kamihama/magianative/CNDownloaderFix;->closeQuietly(Ljava/io/OutputStream;)V
 
-    .line 676
+    .line 821
     invoke-static {v10}, Lio/kamihama/magianative/CNDownloaderFix;->closeQuietly(Ljava/io/InputStream;)V
 
-    .line 677
+    .line 822
     throw v0
     :try_end_5
     .catchall {:try_start_5 .. :try_end_5} :catchall_3
 
-    .line 679
+    .line 824
     :cond_c
     if-eqz v7, :cond_d
 
-    .line 683
+    .line 828
     invoke-virtual {v4}, Ljava/util/zip/ZipFile;->close()V
 
-    .line 684
+    .line 829
     nop
 
-    .line 685
+    .line 830
     return-void
 
-    .line 680
+    .line 825
     :cond_d
     :try_start_6
     new-instance v1, Ljava/util/zip/ZipException;
@@ -2222,16 +2261,16 @@
     :try_end_6
     .catchall {:try_start_6 .. :try_end_6} :catchall_3
 
-    .line 683
+    .line 828
     :catchall_3
     move-exception v0
 
     invoke-virtual {v4}, Ljava/util/zip/ZipFile;->close()V
 
-    .line 684
+    .line 829
     throw v0
 
-    .line 626
+    .line 771
     :cond_e
     new-instance v1, Ljava/io/IOException;
 
@@ -2261,7 +2300,7 @@
 .method private static extractJsonInt(Ljava/lang/String;Ljava/lang/String;)I
     .locals 2
 
-    .line 151
+    .line 155
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
@@ -2298,7 +2337,7 @@
 
     move-result-object p0
 
-    .line 152
+    .line 156
     invoke-virtual {p0}, Ljava/util/regex/Matcher;->find()Z
 
     move-result p1
@@ -2307,10 +2346,10 @@
 
     if-nez p1, :cond_0
 
-    .line 153
+    .line 157
     return v0
 
-    .line 156
+    .line 160
     :cond_0
     const/4 p1, 0x1
 
@@ -2327,35 +2366,35 @@
 
     return p0
 
-    .line 157
+    .line 161
     :catch_0
     move-exception p0
 
-    .line 158
+    .line 162
     return v0
 .end method
 
 .method private static failInstaller(Ljava/lang/String;Ljava/lang/Throwable;)V
     .locals 1
 
-    .line 1037
+    .line 1182
     invoke-static {}, Lio/kamihama/magianative/CNDownloaderFix;->zeroAllSpeeds()V
 
-    .line 1038
+    .line 1183
     const-string v0, "MagiaCNDownloader"
 
     if-nez p1, :cond_0
 
-    .line 1039
+    .line 1184
     invoke-static {v0, p0}, Lio/kamihama/magianative/CNLog;->e(Ljava/lang/String;Ljava/lang/String;)V
 
     goto :goto_0
 
-    .line 1041
+    .line 1186
     :cond_0
     invoke-static {v0, p0, p1}, Lio/kamihama/magianative/CNLog;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    .line 1043
+    .line 1188
     :goto_0
     const-string p1, "\u5b89\u88c5\u6682\u505c"
 
@@ -2363,7 +2402,7 @@
 
     invoke-static {p1, p0, v0}, Lio/kamihama/magianative/CNCNDownloadUI;->updateSimple(Ljava/lang/String;Ljava/lang/String;I)V
 
-    .line 1044
+    .line 1189
     return-void
 .end method
 
@@ -2375,7 +2414,7 @@
         }
     .end annotation
 
-    .line 397
+    .line 542
     move-object v0, p0
 
     move-object/from16 v1, p1
@@ -2390,7 +2429,7 @@
 
     if-eqz v4, :cond_0
 
-    .line 398
+    .line 543
     new-instance v0, Lio/kamihama/magianative/CNDownloaderFix$DownloadMetadata;
 
     invoke-virtual/range {p2 .. p2}, Ljava/io/File;->length()J
@@ -2405,28 +2444,28 @@
 
     return-object v0
 
-    .line 401
+    .line 546
     :cond_0
     invoke-virtual/range {p0 .. p1}, Lio/kamihama/magianative/CNMirrors$Mirror;->urlFor(Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v4
 
-    .line 402
+    .line 547
     invoke-virtual {p0}, Lio/kamihama/magianative/CNMirrors$Mirror;->effectiveChunks()I
 
     move-result v5
 
-    .line 404
+    .line 549
     const/4 v6, 0x1
 
     if-le v5, v6, :cond_3
 
-    .line 405
+    .line 550
     invoke-static {v4, v3}, Lio/kamihama/magianative/CNChunkedDownload;->probe(Ljava/lang/String;Z)Lio/kamihama/magianative/CNChunkedDownload$Probe;
 
     move-result-object v7
 
-    .line 406
+    .line 551
     iget-boolean v8, v7, Lio/kamihama/magianative/CNChunkedDownload$Probe;->rangeSupported:Z
 
     const-string v9, " mirror="
@@ -2443,25 +2482,25 @@
 
     if-lez v8, :cond_2
 
-    .line 407
+    .line 552
     nop
 
-    .line 408
+    .line 553
     invoke-static {}, Lio/kamihama/magianative/CNMirrors;->minChunkBytes()J
 
     move-result-wide v11
 
-    .line 409
+    .line 554
     cmp-long v8, v11, v13
 
     if-lez v8, :cond_1
 
-    .line 410
+    .line 555
     iget-wide v13, v7, Lio/kamihama/magianative/CNChunkedDownload$Probe;->total:J
 
     div-long/2addr v13, v11
 
-    .line 411
+    .line 556
     int-to-long v11, v5
 
     cmp-long v8, v13, v11
@@ -2476,11 +2515,11 @@
 
     long-to-int v5, v11
 
-    .line 413
+    .line 558
     :cond_1
     if-le v5, v6, :cond_2
 
-    .line 414
+    .line 559
     new-instance v6, Ljava/lang/StringBuilder;
 
     invoke-direct {v6}, Ljava/lang/StringBuilder;-><init>()V
@@ -2543,19 +2582,19 @@
 
     invoke-static {v10, v0}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 416
+    .line 561
     iget-wide v0, v7, Lio/kamihama/magianative/CNChunkedDownload$Probe;->total:J
 
     invoke-static {v2, v0, v1}, Lio/kamihama/magianative/CNDownloaderFix;->updateSize(IJ)V
 
-    .line 417
+    .line 562
     iget-wide v0, v7, Lio/kamihama/magianative/CNChunkedDownload$Probe;->total:J
 
     const-wide/16 v8, 0x0
 
     invoke-static {v2, v8, v9, v0, v1}, Lio/kamihama/magianative/CNDownloaderFix;->updateProgress(IJJ)V
 
-    .line 418
+    .line 563
     new-instance v6, Lio/kamihama/magianative/CNDownloaderFix$ArchiveSink;
 
     invoke-direct {v6, v2}, Lio/kamihama/magianative/CNDownloaderFix$ArchiveSink;-><init>(I)V
@@ -2576,7 +2615,7 @@
 
     move-result-object v0
 
-    .line 420
+    .line 565
     new-instance v1, Lio/kamihama/magianative/CNDownloaderFix$DownloadMetadata;
 
     iget-wide v2, v0, Lio/kamihama/magianative/CNChunkedDownload$Result;->totalBytes:J
@@ -2587,7 +2626,7 @@
 
     return-object v1
 
-    .line 423
+    .line 568
     :cond_2
     new-instance v5, Ljava/lang/StringBuilder;
 
@@ -2625,7 +2664,7 @@
 
     invoke-static {v10, v0}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 426
+    .line 571
     :cond_3
     move-object/from16 v0, p2
 
@@ -2639,7 +2678,7 @@
 .method public static getEndpoint(I)Ljava/lang/String;
     .locals 2
 
-    .line 105
+    .line 109
     :try_start_0
     invoke-static {p0}, Lio/kamihama/magianative/CNDownloaderFix;->getEndpointInner(I)Ljava/lang/String;
 
@@ -2649,11 +2688,11 @@
 
     return-object p0
 
-    .line 106
+    .line 110
     :catchall_0
     move-exception p0
 
-    .line 107
+    .line 111
     :try_start_1
     const-string v0, "MagiaCNDownloader"
 
@@ -2668,7 +2707,7 @@
     :catchall_1
     move-exception p0
 
-    .line 108
+    .line 112
     :goto_0
     const-string p0, ""
 
@@ -2678,7 +2717,7 @@
 .method private static getEndpointInner(I)Ljava/lang/String;
     .locals 8
 
-    .line 113
+    .line 117
     const-string v0, "snaa-response direct=true body="
 
     const-string v1, "https://totentanz-9b.magi-reco.com/magica/api/snaa"
@@ -2689,7 +2728,7 @@
 
     move-result v2
 
-    .line 114
+    .line 118
     new-instance v3, Ljava/lang/StringBuilder;
 
     invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
@@ -2714,7 +2753,7 @@
 
     move-result-object v3
 
-    .line 115
+    .line 119
     new-instance v4, Ljava/lang/StringBuilder;
 
     invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
@@ -2747,10 +2786,10 @@
 
     invoke-static {v4, p0}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 116
+    .line 120
     nop
 
-    .line 118
+    .line 122
     const/4 p0, 0x1
 
     const/4 v5, 0x0
@@ -2762,7 +2801,7 @@
 
     move-result-object v5
 
-    .line 119
+    .line 123
     new-instance v6, Ljava/lang/StringBuilder;
 
     invoke-direct {v6}, Ljava/lang/StringBuilder;-><init>()V
@@ -2783,28 +2822,28 @@
 
     invoke-static {v4, v6}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 120
+    .line 124
     invoke-static {v5, v2}, Lio/kamihama/magianative/CNDownloaderFix;->isSnaaResponseCurrent(Ljava/lang/String;I)Z
 
     move-result v2
 
     if-eqz v2, :cond_0
 
-    .line 121
+    .line 125
     return-object v5
 
-    .line 123
+    .line 127
     :cond_0
     const-string v2, "SNAA response is stale/incompatible; retrying direct"
 
     invoke-static {v4, v2}, Lio/kamihama/magianative/CNLog;->w(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 124
+    .line 128
     invoke-static {v1, v3, p0}, Lio/kamihama/magianative/CNDownloaderFix;->postJson(Ljava/lang/String;Ljava/lang/String;Z)Ljava/lang/String;
 
     move-result-object v2
 
-    .line 125
+    .line 129
     new-instance v6, Ljava/lang/StringBuilder;
 
     invoke-direct {v6}, Ljava/lang/StringBuilder;-><init>()V
@@ -2825,25 +2864,25 @@
     :try_end_0
     .catch Ljava/io/IOException; {:try_start_0 .. :try_end_0} :catch_0
 
-    .line 126
+    .line 130
     return-object v2
 
-    .line 127
+    .line 131
     :catch_0
     move-exception v2
 
-    .line 128
+    .line 132
     const-string v6, "SNAA via configured network failed; retrying direct"
 
     invoke-static {v4, v6, v2}, Lio/kamihama/magianative/CNLog;->w(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    .line 130
+    .line 134
     :try_start_1
     invoke-static {v1, v3, p0}, Lio/kamihama/magianative/CNDownloaderFix;->postJson(Ljava/lang/String;Ljava/lang/String;Z)Ljava/lang/String;
 
     move-result-object p0
 
-    .line 131
+    .line 135
     new-instance v1, Ljava/lang/StringBuilder;
 
     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
@@ -2864,22 +2903,22 @@
     :try_end_1
     .catch Ljava/io/IOException; {:try_start_1 .. :try_end_1} :catch_1
 
-    .line 132
+    .line 136
     return-object p0
 
-    .line 133
+    .line 137
     :catch_1
     move-exception p0
 
-    .line 134
+    .line 138
     invoke-virtual {p0, v2}, Ljava/io/IOException;->addSuppressed(Ljava/lang/Throwable;)V
 
-    .line 135
+    .line 139
     const-string v0, "SNAA discovery failed"
 
     invoke-static {v4, v0, p0}, Lio/kamihama/magianative/CNLog;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    .line 136
+    .line 140
     if-nez v5, :cond_1
 
     const-string v5, ""
@@ -2891,12 +2930,12 @@
 .method private static installArchive(I)Z
     .locals 14
 
-    .line 300
+    .line 445
     sget-object v0, Lio/kamihama/magianative/CNDownloaderFix;->FILE_NAMES:[Ljava/lang/String;
 
     aget-object v0, v0, p0
 
-    .line 301
+    .line 446
     new-instance v1, Ljava/lang/StringBuilder;
 
     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
@@ -2915,19 +2954,19 @@
 
     move-result-object v1
 
-    .line 302
+    .line 447
     new-instance v2, Ljava/io/File;
 
     const-string v3, "/data/data/io.kamihama.totentanz/files"
 
     invoke-direct {v2, v3, v0}, Ljava/io/File;-><init>(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 303
+    .line 448
     invoke-static {v0}, Lio/kamihama/magianative/CNDownloaderFix;->markerFor(Ljava/lang/String;)Ljava/io/File;
 
     move-result-object v3
 
-    .line 305
+    .line 450
     invoke-static {v3, v0, v1}, Lio/kamihama/magianative/CNDownloaderFix;->isMarkerValid(Ljava/io/File;Ljava/lang/String;Ljava/lang/String;)Z
 
     move-result v4
@@ -2936,10 +2975,10 @@
 
     if-eqz v4, :cond_0
 
-    .line 306
+    .line 451
     invoke-static {p0}, Lio/kamihama/magianative/CNDownloaderFix;->markDone(I)V
 
-    .line 307
+    .line 452
     const-string p0, "MagiaCNDownloader"
 
     new-instance v1, Ljava/lang/StringBuilder;
@@ -2962,10 +3001,10 @@
 
     invoke-static {p0, v0}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 308
+    .line 453
     return v5
 
-    .line 311
+    .line 456
     :cond_0
     const/4 v4, 0x1
 
@@ -2976,7 +3015,7 @@
 
     if-gt v4, v6, :cond_6
 
-    .line 312
+    .line 457
     invoke-static {}, Ljava/lang/Thread;->currentThread()Ljava/lang/Thread;
 
     move-result-object v8
@@ -2987,19 +3026,19 @@
 
     if-eqz v8, :cond_1
 
-    .line 313
+    .line 458
     invoke-static {p0}, Lio/kamihama/magianative/CNDownloaderFix;->markFailed(I)V
 
-    .line 314
+    .line 459
     return v7
 
-    .line 317
+    .line 462
     :cond_1
     invoke-static {v4}, Lio/kamihama/magianative/CNMirrors;->pick(I)Lio/kamihama/magianative/CNMirrors$Mirror;
 
     move-result-object v8
 
-    .line 318
+    .line 463
     rem-int/lit8 v9, v4, 0x2
 
     if-nez v9, :cond_2
@@ -3011,22 +3050,22 @@
     :cond_2
     const/4 v9, 0x0
 
-    .line 320
+    .line 465
     :goto_1
     invoke-static {p0, v5}, Lio/kamihama/magianative/CNDownloaderFix;->setActive(IZ)V
 
-    .line 321
+    .line 466
     const/4 v10, 0x0
 
     invoke-static {p0, v10}, Lio/kamihama/magianative/CNCNDownloadUI;->setDownloadSpeed(IF)V
 
-    .line 323
+    .line 468
     :try_start_0
     invoke-static {v8, v0, v2, p0, v9}, Lio/kamihama/magianative/CNDownloaderFix;->fetchArchive(Lio/kamihama/magianative/CNMirrors$Mirror;Ljava/lang/String;Ljava/io/File;IZ)Lio/kamihama/magianative/CNDownloaderFix$DownloadMetadata;
 
     move-result-object v9
 
-    .line 324
+    .line 469
     sget-object v11, Lio/kamihama/magianative/CNDownloaderFix;->EXTRACT_LOCK:Ljava/lang/Object;
 
     monitor-enter v11
@@ -3037,7 +3076,7 @@
     .catch Ljava/lang/RuntimeException; {:try_start_0 .. :try_end_0} :catch_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_1
 
-    .line 325
+    .line 470
     :try_start_1
     new-instance v12, Ljava/io/File;
 
@@ -3047,16 +3086,16 @@
 
     invoke-static {v2, v12}, Lio/kamihama/magianative/CNDownloaderFix;->extractChecked(Ljava/io/File;Ljava/io/File;)V
 
-    .line 326
+    .line 471
     monitor-exit v11
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_0
 
-    .line 327
+    .line 472
     :try_start_2
     invoke-static {v3, v0, v1, v9}, Lio/kamihama/magianative/CNDownloaderFix;->writeMarker(Ljava/io/File;Ljava/lang/String;Ljava/lang/String;Lio/kamihama/magianative/CNDownloaderFix$DownloadMetadata;)V
 
-    .line 328
+    .line 473
     invoke-virtual {v2}, Ljava/io/File;->delete()Z
 
     move-result v9
@@ -3069,7 +3108,7 @@
 
     if-eqz v9, :cond_3
 
-    .line 329
+    .line 474
     const-string v9, "MagiaCNDownloader"
 
     new-instance v11, Ljava/lang/StringBuilder;
@@ -3092,7 +3131,7 @@
 
     invoke-static {v9, v11}, Lio/kamihama/magianative/CNLog;->w(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 333
+    .line 478
     :cond_3
     new-instance v9, Ljava/io/File;
 
@@ -3122,7 +3161,7 @@
 
     invoke-static {v9}, Lio/kamihama/magianative/CNDownloaderFix;->deleteQuietly(Ljava/io/File;)V
 
-    .line 334
+    .line 479
     new-instance v9, Ljava/io/File;
 
     new-instance v11, Ljava/lang/StringBuilder;
@@ -3151,27 +3190,27 @@
 
     invoke-static {v9}, Lio/kamihama/magianative/CNDownloaderFix;->deleteQuietly(Ljava/io/File;)V
 
-    .line 335
+    .line 480
     invoke-static {v2}, Lio/kamihama/magianative/CNChunkedDownload;->partFileFor(Ljava/io/File;)Ljava/io/File;
 
     move-result-object v9
 
     invoke-static {v9}, Lio/kamihama/magianative/CNDownloaderFix;->deleteQuietly(Ljava/io/File;)V
 
-    .line 336
+    .line 481
     invoke-static {v2}, Lio/kamihama/magianative/CNChunkedDownload;->metaFileFor(Ljava/io/File;)Ljava/io/File;
 
     move-result-object v9
 
     invoke-static {v9}, Lio/kamihama/magianative/CNDownloaderFix;->deleteQuietly(Ljava/io/File;)V
 
-    .line 337
+    .line 482
     invoke-static {v8}, Lio/kamihama/magianative/CNMirrors;->reportSuccess(Lio/kamihama/magianative/CNMirrors$Mirror;)V
 
-    .line 338
+    .line 483
     invoke-static {p0}, Lio/kamihama/magianative/CNDownloaderFix;->markDone(I)V
 
-    .line 339
+    .line 484
     const-string v9, "MagiaCNDownloader"
 
     new-instance v11, Ljava/lang/StringBuilder;
@@ -3222,22 +3261,22 @@
     .catch Ljava/lang/RuntimeException; {:try_start_2 .. :try_end_2} :catch_0
     .catchall {:try_start_2 .. :try_end_2} :catchall_1
 
-    .line 341
+    .line 486
     nop
 
-    .line 364
+    .line 509
     invoke-static {p0, v7}, Lio/kamihama/magianative/CNDownloaderFix;->setActive(IZ)V
 
-    .line 365
+    .line 510
     invoke-static {p0, v10}, Lio/kamihama/magianative/CNCNDownloadUI;->setDownloadSpeed(IF)V
 
-    .line 366
+    .line 511
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->throttledUpdate()V
 
-    .line 341
+    .line 486
     return v5
 
-    .line 326
+    .line 471
     :catchall_0
     move-exception v9
 
@@ -3255,17 +3294,17 @@
     .catch Ljava/lang/RuntimeException; {:try_start_4 .. :try_end_4} :catch_0
     .catchall {:try_start_4 .. :try_end_4} :catchall_1
 
-    .line 364
+    .line 509
     :catchall_1
     move-exception v0
 
     goto/16 :goto_4
 
-    .line 360
+    .line 505
     :catch_0
     move-exception v9
 
-    .line 361
+    .line 506
     :try_start_5
     const-string v11, "MagiaCNDownloader"
 
@@ -3299,7 +3338,7 @@
 
     invoke-static {v11, v12, v9}, Lio/kamihama/magianative/CNLog;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    .line 362
+    .line 507
     new-instance v11, Ljava/lang/StringBuilder;
 
     invoke-direct {v11}, Ljava/lang/StringBuilder;-><init>()V
@@ -3322,11 +3361,11 @@
 
     goto/16 :goto_2
 
-    .line 353
+    .line 498
     :catch_1
     move-exception v9
 
-    .line 354
+    .line 499
     const-string v11, "MagiaCNDownloader"
 
     new-instance v12, Ljava/lang/StringBuilder;
@@ -3371,7 +3410,7 @@
 
     invoke-static {v11, v12, v9}, Lio/kamihama/magianative/CNLog;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    .line 356
+    .line 501
     invoke-virtual {v9}, Ljava/io/IOException;->getMessage()Ljava/lang/String;
 
     move-result-object v9
@@ -3382,23 +3421,23 @@
 
     invoke-static {v8, v9}, Lio/kamihama/magianative/CNMirrors;->reportFailure(Lio/kamihama/magianative/CNMirrors$Mirror;Ljava/lang/String;)V
 
-    .line 357
+    .line 502
     invoke-virtual {v2}, Ljava/io/File;->isFile()Z
 
     move-result v8
 
     if-eqz v8, :cond_4
 
-    .line 358
+    .line 503
     invoke-static {v2}, Lio/kamihama/magianative/CNDownloaderFix;->deleteQuietly(Ljava/io/File;)V
 
     goto/16 :goto_2
 
-    .line 345
+    .line 490
     :catch_2
     move-exception v9
 
-    .line 346
+    .line 491
     const-string v11, "MagiaCNDownloader"
 
     new-instance v12, Ljava/lang/StringBuilder;
@@ -3431,15 +3470,15 @@
 
     invoke-static {v11, v12, v9}, Lio/kamihama/magianative/CNLog;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    .line 347
+    .line 492
     const-string v9, "corrupt-zip"
 
     invoke-static {v8, v9}, Lio/kamihama/magianative/CNMirrors;->reportFailure(Lio/kamihama/magianative/CNMirrors$Mirror;Ljava/lang/String;)V
 
-    .line 348
+    .line 493
     invoke-static {v2}, Lio/kamihama/magianative/CNDownloaderFix;->deleteQuietly(Ljava/io/File;)V
 
-    .line 349
+    .line 494
     new-instance v8, Ljava/io/File;
 
     new-instance v9, Ljava/lang/StringBuilder;
@@ -3468,7 +3507,7 @@
 
     invoke-static {v8}, Lio/kamihama/magianative/CNDownloaderFix;->deleteQuietly(Ljava/io/File;)V
 
-    .line 350
+    .line 495
     new-instance v8, Ljava/io/File;
 
     new-instance v9, Ljava/lang/StringBuilder;
@@ -3497,14 +3536,14 @@
 
     invoke-static {v8}, Lio/kamihama/magianative/CNDownloaderFix;->deleteQuietly(Ljava/io/File;)V
 
-    .line 351
+    .line 496
     invoke-static {v2}, Lio/kamihama/magianative/CNChunkedDownload;->partFileFor(Ljava/io/File;)Ljava/io/File;
 
     move-result-object v8
 
     invoke-static {v8}, Lio/kamihama/magianative/CNDownloaderFix;->deleteQuietly(Ljava/io/File;)V
 
-    .line 352
+    .line 497
     invoke-static {v2}, Lio/kamihama/magianative/CNChunkedDownload;->metaFileFor(Ljava/io/File;)Ljava/io/File;
 
     move-result-object v8
@@ -3513,11 +3552,11 @@
 
     goto :goto_2
 
-    .line 342
+    .line 487
     :catch_3
     move-exception v8
 
-    .line 343
+    .line 488
     const-string v9, "MagiaCNDownloader"
 
     new-instance v11, Ljava/lang/StringBuilder;
@@ -3550,7 +3589,7 @@
 
     move-result-object v11
 
-    .line 344
+    .line 489
     invoke-virtual {v8}, Lio/kamihama/magianative/CNDownloaderFix$ResetRequired;->getMessage()Ljava/lang/String;
 
     move-result-object v8
@@ -3563,36 +3602,36 @@
 
     move-result-object v8
 
-    .line 343
+    .line 488
     invoke-static {v9, v8}, Lio/kamihama/magianative/CNLog;->w(Ljava/lang/String;Ljava/lang/String;)V
     :try_end_5
     .catchall {:try_start_5 .. :try_end_5} :catchall_1
 
-    .line 364
+    .line 509
     :cond_4
     :goto_2
     invoke-static {p0, v7}, Lio/kamihama/magianative/CNDownloaderFix;->setActive(IZ)V
 
-    .line 365
+    .line 510
     invoke-static {p0, v10}, Lio/kamihama/magianative/CNCNDownloadUI;->setDownloadSpeed(IF)V
 
-    .line 366
+    .line 511
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->throttledUpdate()V
 
-    .line 367
+    .line 512
     nop
 
-    .line 369
+    .line 514
     if-ge v4, v6, :cond_5
 
-    .line 370
+    .line 515
     add-int/lit8 v6, v4, -0x1
 
     const-wide/16 v8, 0x7d0
 
     shl-long/2addr v8, v6
 
-    .line 371
+    .line 516
     const-string v6, "MagiaCNDownloader"
 
     new-instance v10, Ljava/lang/StringBuilder;
@@ -3625,57 +3664,57 @@
 
     invoke-static {v6, v10}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 373
+    .line 518
     :try_start_6
     invoke-static {v8, v9}, Ljava/lang/Thread;->sleep(J)V
     :try_end_6
     .catch Ljava/lang/InterruptedException; {:try_start_6 .. :try_end_6} :catch_4
 
-    .line 378
+    .line 523
     goto :goto_3
 
-    .line 374
+    .line 519
     :catch_4
     move-exception v0
 
-    .line 375
+    .line 520
     invoke-static {}, Ljava/lang/Thread;->currentThread()Ljava/lang/Thread;
 
     move-result-object v0
 
     invoke-virtual {v0}, Ljava/lang/Thread;->interrupt()V
 
-    .line 376
+    .line 521
     invoke-static {p0}, Lio/kamihama/magianative/CNDownloaderFix;->markFailed(I)V
 
-    .line 377
+    .line 522
     return v7
 
-    .line 311
+    .line 456
     :cond_5
     :goto_3
     add-int/lit8 v4, v4, 0x1
 
     goto/16 :goto_0
 
-    .line 364
+    .line 509
     :goto_4
     invoke-static {p0, v7}, Lio/kamihama/magianative/CNDownloaderFix;->setActive(IZ)V
 
-    .line 365
+    .line 510
     invoke-static {p0, v10}, Lio/kamihama/magianative/CNCNDownloadUI;->setDownloadSpeed(IF)V
 
-    .line 366
+    .line 511
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->throttledUpdate()V
 
-    .line 367
+    .line 512
     throw v0
 
-    .line 382
+    .line 527
     :cond_6
     invoke-static {p0}, Lio/kamihama/magianative/CNDownloaderFix;->markFailed(I)V
 
-    .line 383
+    .line 528
     const-string p0, "MagiaCNDownloader"
 
     new-instance v1, Ljava/lang/StringBuilder;
@@ -3698,14 +3737,14 @@
 
     invoke-static {p0, v0}, Lio/kamihama/magianative/CNLog;->e(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 384
+    .line 529
     return v7
 .end method
 
 .method private static isMarkerValid(Ljava/io/File;Ljava/lang/String;Ljava/lang/String;)Z
     .locals 7
 
-    .line 776
+    .line 921
     const-string v0, "\n"
 
     invoke-virtual {p0}, Ljava/io/File;->isFile()Z
@@ -3738,14 +3777,14 @@
 
     goto :goto_0
 
-    .line 780
+    .line 925
     :cond_0
     :try_start_0
     invoke-static {p0}, Lio/kamihama/magianative/CNDownloaderFix;->readSmallUtf8(Ljava/io/File;)Ljava/lang/String;
 
     move-result-object v1
 
-    .line 781
+    .line 926
     const-string v3, "schema=1\n"
 
     invoke-virtual {v1, v3}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
@@ -3776,7 +3815,7 @@
 
     move-result-object p1
 
-    .line 782
+    .line 927
     invoke-virtual {v1, p1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
 
     move-result p1
@@ -3805,14 +3844,14 @@
 
     move-result-object p1
 
-    .line 783
+    .line 928
     invoke-virtual {v1, p1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
 
     move-result p1
 
     if-eqz p1, :cond_1
 
-    .line 784
+    .line 929
     const-string p1, "(?s).*\\nbytes=[1-9][0-9]*\\n.*"
 
     invoke-virtual {v1, p1}, Ljava/lang/String;->matches(Ljava/lang/String;)Z
@@ -3823,15 +3862,15 @@
 
     return p0
 
-    .line 786
+    .line 931
     :cond_1
     return v2
 
-    .line 787
+    .line 932
     :catch_0
     move-exception p1
 
-    .line 788
+    .line 933
     new-instance p2, Ljava/lang/StringBuilder;
 
     invoke-direct {p2}, Ljava/lang/StringBuilder;-><init>()V
@@ -3854,10 +3893,10 @@
 
     invoke-static {p2, p0, p1}, Lio/kamihama/magianative/CNLog;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    .line 789
+    .line 934
     return v2
 
-    .line 777
+    .line 922
     :cond_2
     :goto_0
     return v2
@@ -3866,7 +3905,7 @@
 .method private static isSnaaResponseCurrent(Ljava/lang/String;I)Z
     .locals 3
 
-    .line 142
+    .line 146
     const/4 v0, 0x0
 
     if-eqz p0, :cond_2
@@ -3881,7 +3920,7 @@
 
     goto :goto_1
 
-    .line 145
+    .line 149
     :cond_0
     const-string v1, "status"
 
@@ -3893,7 +3932,7 @@
 
     if-ne v1, v2, :cond_1
 
-    .line 146
+    .line 150
     const-string v1, "version"
 
     invoke-static {p0, v1}, Lio/kamihama/magianative/CNDownloaderFix;->extractJsonInt(Ljava/lang/String;Ljava/lang/String;)I
@@ -3902,7 +3941,7 @@
 
     if-lt v1, p1, :cond_1
 
-    .line 147
+    .line 151
     const-string p1, "max_threads"
 
     invoke-static {p0, p1}, Lio/kamihama/magianative/CNDownloaderFix;->extractJsonInt(Ljava/lang/String;Ljava/lang/String;)I
@@ -3918,11 +3957,11 @@
     :cond_1
     nop
 
-    .line 145
+    .line 149
     :goto_0
     return v0
 
-    .line 143
+    .line 147
     :cond_2
     :goto_1
     return v0
@@ -3931,60 +3970,60 @@
 .method private static markDone(I)V
     .locals 1
 
-    .line 1008
+    .line 1153
     const/4 v0, 0x0
 
     invoke-static {p0, v0}, Lio/kamihama/magianative/CNDownloaderFix;->setActive(IZ)V
 
-    .line 1009
+    .line 1154
     const/4 v0, 0x0
 
     invoke-static {p0, v0}, Lio/kamihama/magianative/CNCNDownloadUI;->setDownloadSpeed(IF)V
 
-    .line 1010
+    .line 1155
     invoke-static {p0}, Lio/kamihama/magianative/CNCNDownloadUI;->markFileDone(I)V
 
-    .line 1011
+    .line 1156
     return-void
 .end method
 
 .method private static markFailed(I)V
     .locals 2
 
-    .line 1014
+    .line 1159
     const/4 v0, 0x0
 
     invoke-static {p0, v0}, Lio/kamihama/magianative/CNDownloaderFix;->setActive(IZ)V
 
-    .line 1015
+    .line 1160
     const/4 v0, 0x0
 
     invoke-static {p0, v0}, Lio/kamihama/magianative/CNCNDownloadUI;->setDownloadSpeed(IF)V
 
-    .line 1016
+    .line 1161
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->fileStatus:[I
 
     if-eqz v0, :cond_0
 
-    .line 1017
+    .line 1162
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->fileStatus:[I
 
     const/4 v1, 0x3
 
     aput v1, v0, p0
 
-    .line 1019
+    .line 1164
     :cond_0
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->throttledUpdate()V
 
-    .line 1020
+    .line 1165
     return-void
 .end method
 
 .method private static markerFor(Ljava/lang/String;)Ljava/io/File;
     .locals 2
 
-    .line 804
+    .line 949
     new-instance v0, Ljava/io/File;
 
     new-instance v1, Ljava/lang/StringBuilder;
@@ -4015,15 +4054,15 @@
 .method private static parseContentRange(Ljava/lang/String;)Lio/kamihama/magianative/CNDownloaderFix$ContentRange;
     .locals 13
 
-    .line 918
+    .line 1063
     const/4 v0, 0x0
 
     if-nez p0, :cond_0
 
-    .line 919
+    .line 1064
     return-object v0
 
-    .line 921
+    .line 1066
     :cond_0
     invoke-virtual {p0}, Ljava/lang/String;->trim()Ljava/lang/String;
 
@@ -4035,7 +4074,7 @@
 
     move-result-object p0
 
-    .line 922
+    .line 1067
     const-string v1, "bytes "
 
     invoke-virtual {p0, v1}, Ljava/lang/String;->startsWith(Ljava/lang/String;)Z
@@ -4044,10 +4083,10 @@
 
     if-nez v1, :cond_1
 
-    .line 923
+    .line 1068
     return-object v0
 
-    .line 925
+    .line 1070
     :cond_1
     const/16 v1, 0x2d
 
@@ -4057,7 +4096,7 @@
 
     move-result v1
 
-    .line 926
+    .line 1071
     add-int/lit8 v3, v1, 0x1
 
     const/16 v4, 0x2f
@@ -4066,19 +4105,19 @@
 
     move-result v4
 
-    .line 927
+    .line 1072
     if-ltz v1, :cond_3
 
     if-gez v4, :cond_2
 
     goto :goto_0
 
-    .line 931
+    .line 1076
     :cond_2
     :try_start_0
     new-instance v12, Lio/kamihama/magianative/CNDownloaderFix$ContentRange;
 
-    .line 932
+    .line 1077
     invoke-virtual {p0, v2, v1}, Ljava/lang/String;->substring(II)Ljava/lang/String;
 
     move-result-object v1
@@ -4091,7 +4130,7 @@
 
     move-result-wide v6
 
-    .line 933
+    .line 1078
     invoke-virtual {p0, v3, v4}, Ljava/lang/String;->substring(II)Ljava/lang/String;
 
     move-result-object v1
@@ -4106,7 +4145,7 @@
 
     add-int/lit8 v4, v4, 0x1
 
-    .line 934
+    .line 1079
     invoke-virtual {p0, v4}, Ljava/lang/String;->substring(I)Ljava/lang/String;
 
     move-result-object p0
@@ -4125,17 +4164,17 @@
     :try_end_0
     .catch Ljava/lang/NumberFormatException; {:try_start_0 .. :try_end_0} :catch_0
 
-    .line 931
+    .line 1076
     return-object v12
 
-    .line 935
+    .line 1080
     :catch_0
     move-exception p0
 
-    .line 936
+    .line 1081
     return-object v0
 
-    .line 928
+    .line 1073
     :cond_3
     :goto_0
     return-object v0
@@ -4144,13 +4183,13 @@
 .method private static parsePositiveLong(Ljava/lang/String;J)J
     .locals 4
 
-    .line 952
+    .line 1097
     if-nez p0, :cond_0
 
-    .line 953
+    .line 1098
     return-wide p1
 
-    .line 956
+    .line 1101
     :cond_0
     :try_start_0
     invoke-virtual {p0}, Ljava/lang/String;->trim()Ljava/lang/String;
@@ -4163,7 +4202,7 @@
     :try_end_0
     .catch Ljava/lang/NumberFormatException; {:try_start_0 .. :try_end_0} :catch_0
 
-    .line 957
+    .line 1102
     const-wide/16 v2, 0x0
 
     cmp-long p0, v0, v2
@@ -4175,26 +4214,26 @@
     :cond_1
     return-wide p1
 
-    .line 958
+    .line 1103
     :catch_0
     move-exception p0
 
-    .line 959
+    .line 1104
     return-wide p1
 .end method
 
 .method private static parseUnsatisfiedTotal(Ljava/lang/String;)J
     .locals 3
 
-    .line 941
+    .line 1086
     const-wide/16 v0, -0x1
 
     if-nez p0, :cond_0
 
-    .line 942
+    .line 1087
     return-wide v0
 
-    .line 944
+    .line 1089
     :cond_0
     invoke-virtual {p0}, Ljava/lang/String;->trim()Ljava/lang/String;
 
@@ -4206,7 +4245,7 @@
 
     move-result-object p0
 
-    .line 945
+    .line 1090
     const-string v2, "bytes */"
 
     invoke-virtual {p0, v2}, Ljava/lang/String;->startsWith(Ljava/lang/String;)Z
@@ -4215,10 +4254,10 @@
 
     if-nez v2, :cond_1
 
-    .line 946
+    .line 1091
     return-wide v0
 
-    .line 948
+    .line 1093
     :cond_1
     const/16 v2, 0x8
 
@@ -4241,12 +4280,12 @@
         }
     .end annotation
 
-    .line 728
+    .line 873
     new-instance v0, Ljava/net/URL;
 
     invoke-direct {v0, p0}, Ljava/net/URL;-><init>(Ljava/lang/String;)V
 
-    .line 730
+    .line 875
     if-eqz p2, :cond_0
 
     sget-object p0, Ljava/net/Proxy;->NO_PROXY:Ljava/net/Proxy;
@@ -4265,59 +4304,59 @@
     :goto_0
     check-cast p0, Ljava/net/HttpURLConnection;
 
-    .line 731
+    .line 876
     const/16 p2, 0x3a98
 
     invoke-virtual {p0, p2}, Ljava/net/HttpURLConnection;->setConnectTimeout(I)V
 
-    .line 732
+    .line 877
     const/16 p2, 0x7530
 
     invoke-virtual {p0, p2}, Ljava/net/HttpURLConnection;->setReadTimeout(I)V
 
-    .line 733
+    .line 878
     const-string p2, "POST"
 
     invoke-virtual {p0, p2}, Ljava/net/HttpURLConnection;->setRequestMethod(Ljava/lang/String;)V
 
-    .line 734
+    .line 879
     const/4 p2, 0x1
 
     invoke-virtual {p0, p2}, Ljava/net/HttpURLConnection;->setDoOutput(Z)V
 
-    .line 735
+    .line 880
     const/4 p2, 0x0
 
     invoke-virtual {p0, p2}, Ljava/net/HttpURLConnection;->setUseCaches(Z)V
 
-    .line 736
+    .line 881
     const-string v0, "Content-Type"
 
     const-string v1, "application/json; charset=utf-8"
 
     invoke-virtual {p0, v0, v1}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 737
+    .line 882
     const-string v0, "Accept"
 
     const-string v1, "application/json"
 
     invoke-virtual {p0, v0, v1}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 738
+    .line 883
     const-string v0, "Connection"
 
     const-string v1, "close"
 
     invoke-virtual {p0, v0, v1}, Ljava/net/HttpURLConnection;->setRequestProperty(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 740
+    .line 885
     nop
 
-    .line 741
+    .line 886
     nop
 
-    .line 743
+    .line 888
     const/4 v0, 0x0
 
     :try_start_0
@@ -4327,31 +4366,31 @@
 
     move-result-object p1
 
-    .line 744
+    .line 889
     array-length v1, p1
 
     invoke-virtual {p0, v1}, Ljava/net/HttpURLConnection;->setFixedLengthStreamingMode(I)V
 
-    .line 745
+    .line 890
     invoke-virtual {p0}, Ljava/net/HttpURLConnection;->getOutputStream()Ljava/io/OutputStream;
 
     move-result-object v1
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_1
 
-    .line 746
+    .line 891
     :try_start_1
     invoke-virtual {v1, p1}, Ljava/io/OutputStream;->write([B)V
 
-    .line 747
+    .line 892
     invoke-virtual {v1}, Ljava/io/OutputStream;->flush()V
 
-    .line 749
+    .line 894
     invoke-virtual {p0}, Ljava/net/HttpURLConnection;->getResponseCode()I
 
     move-result p1
 
-    .line 750
+    .line 895
     const/16 v2, 0xc8
 
     if-lt p1, v2, :cond_2
@@ -4360,22 +4399,22 @@
 
     if-ge p1, v2, :cond_2
 
-    .line 753
+    .line 898
     invoke-virtual {p0}, Ljava/net/HttpURLConnection;->getInputStream()Ljava/io/InputStream;
 
     move-result-object v0
 
-    .line 754
+    .line 899
     new-instance p1, Ljava/io/ByteArrayOutputStream;
 
     invoke-direct {p1}, Ljava/io/ByteArrayOutputStream;-><init>()V
 
-    .line 755
+    .line 900
     const/16 v2, 0x2000
 
     new-array v2, v2, [B
 
-    .line 757
+    .line 902
     :goto_1
     invoke-virtual {v0, v2}, Ljava/io/InputStream;->read([B)I
 
@@ -4383,12 +4422,12 @@
 
     if-ltz v3, :cond_1
 
-    .line 758
+    .line 903
     invoke-virtual {p1, v2, p2, v3}, Ljava/io/ByteArrayOutputStream;->write([BII)V
 
     goto :goto_1
 
-    .line 760
+    .line 905
     :cond_1
     new-instance p2, Ljava/lang/String;
 
@@ -4402,19 +4441,19 @@
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_0
 
-    .line 762
+    .line 907
     invoke-static {v1}, Lio/kamihama/magianative/CNDownloaderFix;->closeQuietly(Ljava/io/OutputStream;)V
 
-    .line 763
+    .line 908
     invoke-static {v0}, Lio/kamihama/magianative/CNDownloaderFix;->closeQuietly(Ljava/io/InputStream;)V
 
-    .line 764
+    .line 909
     invoke-virtual {p0}, Ljava/net/HttpURLConnection;->disconnect()V
 
-    .line 760
+    .line 905
     return-object p2
 
-    .line 751
+    .line 896
     :cond_2
     :try_start_2
     new-instance p2, Ljava/io/IOException;
@@ -4443,7 +4482,7 @@
     :try_end_2
     .catchall {:try_start_2 .. :try_end_2} :catchall_0
 
-    .line 762
+    .line 907
     :catchall_0
     move-exception p1
 
@@ -4461,14 +4500,226 @@
     :goto_2
     invoke-static {v0}, Lio/kamihama/magianative/CNDownloaderFix;->closeQuietly(Ljava/io/OutputStream;)V
 
-    .line 763
+    .line 908
     invoke-static {p2}, Lio/kamihama/magianative/CNDownloaderFix;->closeQuietly(Ljava/io/InputStream;)V
 
-    .line 764
+    .line 909
     invoke-virtual {p0}, Ljava/net/HttpURLConnection;->disconnect()V
 
-    .line 765
+    .line 910
     throw p1
+.end method
+
+.method private static probeAllSizes()V
+    .locals 8
+
+    .line 363
+    const-string v0, "\u51c6\u5907\u4e2d"
+
+    const-string v1, "\u6b63\u5728\u83b7\u53d6\u6587\u4ef6\u5927\u5c0f\u2026"
+
+    const/4 v2, 0x0
+
+    invoke-static {v0, v1, v2}, Lio/kamihama/magianative/CNCNDownloadUI;->updateSimple(Ljava/lang/String;Ljava/lang/String;I)V
+
+    .line 364
+    const/4 v0, 0x4
+
+    invoke-static {v0}, Ljava/util/concurrent/Executors;->newFixedThreadPool(I)Ljava/util/concurrent/ExecutorService;
+
+    move-result-object v0
+
+    .line 365
+    new-instance v1, Ljava/util/ArrayList;
+
+    const/16 v3, 0xf
+
+    invoke-direct {v1, v3}, Ljava/util/ArrayList;-><init>(I)V
+
+    .line 366
+    const/4 v4, 0x0
+
+    :goto_0
+    if-ge v4, v3, :cond_0
+
+    .line 367
+    new-instance v5, Lio/kamihama/magianative/CNDownloaderFix$SizeProbeTask;
+
+    invoke-direct {v5, v4}, Lio/kamihama/magianative/CNDownloaderFix$SizeProbeTask;-><init>(I)V
+
+    invoke-interface {v0, v5}, Ljava/util/concurrent/ExecutorService;->submit(Ljava/util/concurrent/Callable;)Ljava/util/concurrent/Future;
+
+    move-result-object v5
+
+    invoke-interface {v1, v5}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    .line 366
+    add-int/lit8 v4, v4, 0x1
+
+    goto :goto_0
+
+    .line 369
+    :cond_0
+    invoke-interface {v0}, Ljava/util/concurrent/ExecutorService;->shutdown()V
+
+    .line 370
+    const/4 v4, 0x0
+
+    :goto_1
+    invoke-interface {v1}, Ljava/util/List;->size()I
+
+    move-result v5
+
+    if-ge v4, v5, :cond_1
+
+    .line 371
+    :try_start_0
+    invoke-interface {v1, v4}, Ljava/util/List;->get(I)Ljava/lang/Object;
+
+    move-result-object v5
+
+    check-cast v5, Ljava/util/concurrent/Future;
+
+    invoke-interface {v5}, Ljava/util/concurrent/Future;->get()Ljava/lang/Object;
+    :try_end_0
+    .catch Ljava/lang/InterruptedException; {:try_start_0 .. :try_end_0} :catch_0
+    .catchall {:try_start_0 .. :try_end_0} :catchall_0
+
+    goto :goto_2
+
+    .line 373
+    :catchall_0
+    move-exception v5
+
+    goto :goto_2
+
+    .line 372
+    :catch_0
+    move-exception v5
+
+    invoke-static {}, Ljava/lang/Thread;->currentThread()Ljava/lang/Thread;
+
+    move-result-object v5
+
+    invoke-virtual {v5}, Ljava/lang/Thread;->interrupt()V
+
+    .line 373
+    :goto_2
+    nop
+
+    .line 370
+    add-int/lit8 v4, v4, 0x1
+
+    goto :goto_1
+
+    .line 375
+    :cond_1
+    invoke-interface {v0}, Ljava/util/concurrent/ExecutorService;->shutdownNow()Ljava/util/List;
+
+    .line 377
+    nop
+
+    .line 378
+    nop
+
+    .line 379
+    sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->fileSize:[F
+
+    const-wide/16 v4, 0x0
+
+    if-eqz v0, :cond_4
+
+    .line 380
+    const/4 v0, 0x0
+
+    :goto_3
+    if-ge v2, v3, :cond_3
+
+    .line 381
+    sget-object v1, Lio/kamihama/magianative/CNCNDownloadUI;->fileSize:[F
+
+    aget v1, v1, v2
+
+    const/4 v6, 0x0
+
+    cmpl-float v1, v1, v6
+
+    if-lez v1, :cond_2
+
+    sget-object v1, Lio/kamihama/magianative/CNCNDownloadUI;->fileSize:[F
+
+    aget v1, v1, v2
+
+    float-to-long v6, v1
+
+    add-long/2addr v4, v6
+
+    add-int/lit8 v0, v0, 0x1
+
+    .line 380
+    :cond_2
+    add-int/lit8 v2, v2, 0x1
+
+    goto :goto_3
+
+    :cond_3
+    move v2, v0
+
+    .line 384
+    :cond_4
+    new-instance v0, Ljava/lang/StringBuilder;
+
+    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v1, "\u5c3a\u5bf8\u63a2\u6d4b\u5b8c\u6210 "
+
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    const-string v1, "/"
+
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    invoke-virtual {v0, v3}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    const-string v1, " \u4e2a\uff0c\u5408\u8ba1\u7ea6 "
+
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    invoke-virtual {v0, v4, v5}, Ljava/lang/StringBuilder;->append(J)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    const-string v1, " MB"
+
+    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v0
+
+    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v0
+
+    const-string v1, "MagiaCNDownloader"
+
+    invoke-static {v1, v0}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 385
+    invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->throttledUpdate()V
+
+    .line 386
+    return-void
 .end method
 
 .method private static promotePart(Ljava/io/File;Ljava/io/File;)V
@@ -4479,7 +4730,7 @@
         }
     .end annotation
 
-    .line 898
+    .line 1043
     invoke-virtual {p1}, Ljava/io/File;->exists()Z
 
     move-result v0
@@ -4494,7 +4745,7 @@
 
     goto :goto_0
 
-    .line 899
+    .line 1044
     :cond_0
     new-instance p0, Ljava/io/IOException;
 
@@ -4520,7 +4771,7 @@
 
     throw p0
 
-    .line 901
+    .line 1046
     :cond_1
     :goto_0
     invoke-virtual {p0, p1}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
@@ -4529,10 +4780,10 @@
 
     if-eqz v0, :cond_2
 
-    .line 904
+    .line 1049
     return-void
 
-    .line 902
+    .line 1047
     :cond_2
     new-instance v0, Ljava/io/IOException;
 
@@ -4569,10 +4820,107 @@
     throw v0
 .end method
 
+.method private static readMarkerBytes(Ljava/io/File;)J
+    .locals 7
+
+    .line 423
+    invoke-virtual {p0}, Ljava/io/File;->isFile()Z
+
+    move-result v0
+
+    const-wide/16 v1, -0x1
+
+    if-eqz v0, :cond_3
+
+    invoke-virtual {p0}, Ljava/io/File;->length()J
+
+    move-result-wide v3
+
+    const-wide/16 v5, 0x4000
+
+    cmp-long v0, v3, v5
+
+    if-lez v0, :cond_0
+
+    goto :goto_1
+
+    .line 425
+    :cond_0
+    :try_start_0
+    invoke-static {p0}, Lio/kamihama/magianative/CNDownloaderFix;->readSmallUtf8(Ljava/io/File;)Ljava/lang/String;
+
+    move-result-object p0
+
+    const-string v0, "\\n"
+
+    invoke-virtual {p0, v0}, Ljava/lang/String;->split(Ljava/lang/String;)[Ljava/lang/String;
+
+    move-result-object p0
+
+    .line 426
+    array-length v0, p0
+
+    const/4 v3, 0x0
+
+    :goto_0
+    if-ge v3, v0, :cond_2
+
+    aget-object v4, p0, v3
+
+    .line 427
+    const-string v5, "bytes="
+
+    invoke-virtual {v4, v5}, Ljava/lang/String;->startsWith(Ljava/lang/String;)Z
+
+    move-result v5
+
+    if-eqz v5, :cond_1
+
+    .line 428
+    const/4 p0, 0x6
+
+    invoke-virtual {v4, p0}, Ljava/lang/String;->substring(I)Ljava/lang/String;
+
+    move-result-object p0
+
+    invoke-virtual {p0}, Ljava/lang/String;->trim()Ljava/lang/String;
+
+    move-result-object p0
+
+    invoke-static {p0, v1, v2}, Lio/kamihama/magianative/CNDownloaderFix;->parsePositiveLong(Ljava/lang/String;J)J
+
+    move-result-wide v0
+    :try_end_0
+    .catchall {:try_start_0 .. :try_end_0} :catchall_0
+
+    return-wide v0
+
+    .line 426
+    :cond_1
+    add-int/lit8 v3, v3, 0x1
+
+    goto :goto_0
+
+    .line 431
+    :catchall_0
+    move-exception p0
+
+    :cond_2
+    nop
+
+    .line 432
+    return-wide v1
+
+    .line 423
+    :cond_3
+    :goto_1
+    return-wide v1
+.end method
+
 .method private static readSidecarBytes(Ljava/io/File;)J
     .locals 7
 
-    .line 841
+    .line 986
     new-instance v0, Ljava/io/File;
 
     new-instance v1, Ljava/lang/StringBuilder;
@@ -4599,7 +4947,7 @@
 
     invoke-direct {v0, p0}, Ljava/io/File;-><init>(Ljava/lang/String;)V
 
-    .line 842
+    .line 987
     invoke-virtual {v0}, Ljava/io/File;->isFile()Z
 
     move-result p0
@@ -4620,7 +4968,7 @@
 
     goto :goto_2
 
-    .line 846
+    .line 991
     :cond_0
     :try_start_0
     invoke-static {v0}, Lio/kamihama/magianative/CNDownloaderFix;->readSmallUtf8(Ljava/io/File;)Ljava/lang/String;
@@ -4633,7 +4981,7 @@
 
     move-result-object p0
 
-    .line 847
+    .line 992
     array-length v3, p0
 
     const/4 v4, 0x0
@@ -4643,7 +4991,7 @@
 
     aget-object v5, p0, v4
 
-    .line 848
+    .line 993
     const-string v6, "bytes="
 
     invoke-virtual {v5, v6}, Ljava/lang/String;->startsWith(Ljava/lang/String;)Z
@@ -4652,7 +5000,7 @@
 
     if-eqz v6, :cond_1
 
-    .line 849
+    .line 994
     const/4 p0, 0x6
 
     invoke-virtual {v5, p0}, Ljava/lang/String;->substring(I)Ljava/lang/String;
@@ -4671,21 +5019,21 @@
 
     return-wide v0
 
-    .line 847
+    .line 992
     :cond_1
     add-int/lit8 v4, v4, 0x1
 
     goto :goto_0
 
-    .line 854
+    .line 999
     :cond_2
     goto :goto_1
 
-    .line 852
+    .line 997
     :catch_0
     move-exception p0
 
-    .line 853
+    .line 998
     new-instance v3, Ljava/lang/StringBuilder;
 
     invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
@@ -4708,11 +5056,11 @@
 
     invoke-static {v3, v0, p0}, Lio/kamihama/magianative/CNLog;->w(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    .line 855
+    .line 1000
     :goto_1
     return-wide v1
 
-    .line 843
+    .line 988
     :cond_3
     :goto_2
     return-wide v1
@@ -4721,7 +5069,7 @@
 .method private static readSidecarEtag(Ljava/io/File;)Ljava/lang/String;
     .locals 6
 
-    .line 859
+    .line 1004
     new-instance v0, Ljava/io/File;
 
     new-instance v1, Ljava/lang/StringBuilder;
@@ -4748,7 +5096,7 @@
 
     invoke-direct {v0, p0}, Ljava/io/File;-><init>(Ljava/lang/String;)V
 
-    .line 860
+    .line 1005
     invoke-virtual {v0}, Ljava/io/File;->isFile()Z
 
     move-result p0
@@ -4769,7 +5117,7 @@
 
     goto :goto_2
 
-    .line 864
+    .line 1009
     :cond_0
     :try_start_0
     invoke-static {v0}, Lio/kamihama/magianative/CNDownloaderFix;->readSmallUtf8(Ljava/io/File;)Ljava/lang/String;
@@ -4782,7 +5130,7 @@
 
     move-result-object p0
 
-    .line 865
+    .line 1010
     array-length v2, p0
 
     const/4 v3, 0x0
@@ -4792,7 +5140,7 @@
 
     aget-object v4, p0, v3
 
-    .line 866
+    .line 1011
     const-string v5, "etag="
 
     invoke-virtual {v4, v5}, Ljava/lang/String;->startsWith(Ljava/lang/String;)Z
@@ -4801,7 +5149,7 @@
 
     if-eqz v5, :cond_1
 
-    .line 867
+    .line 1012
     const/4 p0, 0x5
 
     invoke-virtual {v4, p0}, Ljava/lang/String;->substring(I)Ljava/lang/String;
@@ -4816,21 +5164,21 @@
 
     return-object p0
 
-    .line 865
+    .line 1010
     :cond_1
     add-int/lit8 v3, v3, 0x1
 
     goto :goto_0
 
-    .line 872
+    .line 1017
     :cond_2
     goto :goto_1
 
-    .line 870
+    .line 1015
     :catch_0
     move-exception p0
 
-    .line 871
+    .line 1016
     new-instance v2, Ljava/lang/StringBuilder;
 
     invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
@@ -4853,11 +5201,11 @@
 
     invoke-static {v2, v0, p0}, Lio/kamihama/magianative/CNLog;->w(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    .line 873
+    .line 1018
     :goto_1
     return-object v1
 
-    .line 861
+    .line 1006
     :cond_3
     :goto_2
     return-object v1
@@ -4871,15 +5219,15 @@
         }
     .end annotation
 
-    .line 877
+    .line 1022
     new-instance v0, Ljava/io/ByteArrayOutputStream;
 
     invoke-direct {v0}, Ljava/io/ByteArrayOutputStream;-><init>()V
 
-    .line 878
+    .line 1023
     nop
 
-    .line 880
+    .line 1025
     const/4 v1, 0x0
 
     :try_start_0
@@ -4889,18 +5237,18 @@
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_1
 
-    .line 881
+    .line 1026
     const/16 v1, 0x1000
 
     :try_start_1
     new-array v1, v1, [B
 
-    .line 882
+    .line 1027
     const/4 v3, 0x0
 
     const/4 v4, 0x0
 
-    .line 884
+    .line 1029
     :goto_0
     invoke-virtual {v2, v1}, Ljava/io/FileInputStream;->read([B)I
 
@@ -4908,20 +5256,20 @@
 
     if-ltz v5, :cond_1
 
-    .line 885
+    .line 1030
     add-int/2addr v4, v5
 
-    .line 886
+    .line 1031
     const/16 v6, 0x4000
 
     if-gt v4, v6, :cond_0
 
-    .line 889
+    .line 1034
     invoke-virtual {v0, v1, v3, v5}, Ljava/io/ByteArrayOutputStream;->write([BII)V
 
     goto :goto_0
 
-    .line 887
+    .line 1032
     :cond_0
     new-instance v0, Ljava/io/IOException;
 
@@ -4947,7 +5295,7 @@
 
     throw v0
 
-    .line 891
+    .line 1036
     :cond_1
     new-instance p0, Ljava/lang/String;
 
@@ -4961,13 +5309,13 @@
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_0
 
-    .line 893
+    .line 1038
     invoke-static {v2}, Lio/kamihama/magianative/CNDownloaderFix;->closeQuietly(Ljava/io/InputStream;)V
 
-    .line 891
+    .line 1036
     return-object p0
 
-    .line 893
+    .line 1038
     :catchall_0
     move-exception p0
 
@@ -4981,34 +5329,141 @@
     :goto_1
     invoke-static {v1}, Lio/kamihama/magianative/CNDownloaderFix;->closeQuietly(Ljava/io/InputStream;)V
 
-    .line 894
+    .line 1039
     throw p0
+.end method
+
+.method public static requestRetry(I)V
+    .locals 3
+
+    .line 175
+    if-ltz p0, :cond_2
+
+    const/16 v0, 0xf
+
+    if-ge p0, v0, :cond_2
+
+    .line 176
+    :try_start_0
+    sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->fileStatus:[I
+
+    const/4 v1, 0x0
+
+    if-eqz v0, :cond_0
+
+    sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->fileStatus:[I
+
+    aput v1, v0, p0
+
+    .line 177
+    :cond_0
+    sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->fileProgress:[I
+
+    if-eqz v0, :cond_1
+
+    sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->fileProgress:[I
+
+    aput v1, v0, p0
+
+    .line 178
+    :cond_1
+    const/4 v0, 0x0
+
+    invoke-static {p0, v0}, Lio/kamihama/magianative/CNCNDownloadUI;->setFileDownloaded(IF)V
+
+    .line 179
+    invoke-static {p0, v0}, Lio/kamihama/magianative/CNCNDownloadUI;->setDownloadSpeed(IF)V
+
+    .line 181
+    :cond_2
+    const-string v0, "MagiaCNDownloader"
+
+    new-instance v1, Ljava/lang/StringBuilder;
+
+    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v2, "\u6536\u5230\u91cd\u8bd5\u8bf7\u6c42 index="
+
+    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v1
+
+    invoke-virtual {v1, p0}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    move-result-object p0
+
+    invoke-virtual {p0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object p0
+
+    invoke-static {v0, p0}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
+    :try_end_0
+    .catchall {:try_start_0 .. :try_end_0} :catchall_0
+
+    goto :goto_0
+
+    .line 182
+    :catchall_0
+    move-exception p0
+
+    :goto_0
+    nop
+
+    .line 183
+    sget-object p0, Lio/kamihama/magianative/CNDownloaderFix;->RETRY_LOCK:Ljava/lang/Object;
+
+    monitor-enter p0
+
+    .line 184
+    const/4 v0, 0x1
+
+    :try_start_1
+    sput-boolean v0, Lio/kamihama/magianative/CNDownloaderFix;->retryRequested:Z
+
+    .line 185
+    invoke-virtual {p0}, Ljava/lang/Object;->notifyAll()V
+
+    .line 186
+    monitor-exit p0
+
+    .line 187
+    return-void
+
+    .line 186
+    :catchall_1
+    move-exception v0
+
+    monitor-exit p0
+    :try_end_1
+    .catchall {:try_start_1 .. :try_end_1} :catchall_1
+
+    throw v0
 .end method
 
 .method private static resetProgress(I)V
     .locals 1
 
-    .line 1002
+    .line 1147
     const/4 v0, 0x0
 
     invoke-static {p0, v0}, Lio/kamihama/magianative/CNCNDownloadUI;->setDownloadSpeed(IF)V
 
-    .line 1003
+    .line 1148
     invoke-static {p0, v0}, Lio/kamihama/magianative/CNCNDownloadUI;->setFileDownloaded(IF)V
 
-    .line 1004
+    .line 1149
     const/4 v0, 0x0
 
     invoke-static {p0, v0}, Lio/kamihama/magianative/CNCNDownloadUI;->updateFileProgress(II)V
 
-    .line 1005
+    .line 1150
     return-void
 .end method
 
 .method private static resetUiForRun()V
     .locals 7
 
-    .line 968
+    .line 1113
     const/4 v0, 0x0
 
     const/4 v1, 0x0
@@ -5018,7 +5473,7 @@
 
     if-ge v1, v2, :cond_3
 
-    .line 969
+    .line 1114
     sget-object v2, Lio/kamihama/magianative/CNDownloaderFix;->FILE_NAMES:[Ljava/lang/String;
 
     aget-object v3, v2, v1
@@ -5055,73 +5510,73 @@
 
     if-nez v2, :cond_2
 
-    .line 971
+    .line 1116
     sget-object v2, Lio/kamihama/magianative/CNCNDownloadUI;->fileStatus:[I
 
     if-eqz v2, :cond_0
 
-    .line 972
+    .line 1117
     sget-object v2, Lio/kamihama/magianative/CNCNDownloadUI;->fileStatus:[I
 
     aput v0, v2, v1
 
-    .line 974
+    .line 1119
     :cond_0
     sget-object v2, Lio/kamihama/magianative/CNCNDownloadUI;->fileProgress:[I
 
     if-eqz v2, :cond_1
 
-    .line 975
+    .line 1120
     sget-object v2, Lio/kamihama/magianative/CNCNDownloadUI;->fileProgress:[I
 
     aput v0, v2, v1
 
-    .line 977
+    .line 1122
     :cond_1
     const/4 v2, 0x0
 
     invoke-static {v1, v2}, Lio/kamihama/magianative/CNCNDownloadUI;->setDownloadSpeed(IF)V
 
-    .line 978
+    .line 1123
     invoke-static {v1, v2}, Lio/kamihama/magianative/CNCNDownloadUI;->setFileDownloaded(IF)V
 
     goto :goto_1
 
-    .line 980
+    .line 1125
     :cond_2
     invoke-static {v1}, Lio/kamihama/magianative/CNDownloaderFix;->markDone(I)V
 
-    .line 968
+    .line 1113
     :goto_1
     add-int/lit8 v1, v1, 0x1
 
     goto :goto_0
 
-    .line 983
+    .line 1128
     :cond_3
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->throttledUpdate()V
 
-    .line 984
+    .line 1129
     return-void
 .end method
 
 .method public static runInstaller()V
     .locals 3
 
-    .line 179
+    .line 206
     :try_start_0
     invoke-static {}, Lio/kamihama/magianative/CNDownloaderFix;->runInstallerInner()V
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    .line 187
+    .line 214
     goto :goto_1
 
-    .line 180
+    .line 207
     :catchall_0
     move-exception v0
 
-    .line 184
+    .line 211
     :try_start_1
     const-string v1, "MagiaCNDownloader"
 
@@ -5129,7 +5584,7 @@
 
     invoke-static {v1, v2, v0}, Lio/kamihama/magianative/CNLog;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    .line 185
+    .line 212
     new-instance v1, Ljava/lang/StringBuilder;
 
     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
@@ -5154,220 +5609,228 @@
 
     goto :goto_0
 
-    .line 186
+    .line 213
     :catchall_1
     move-exception v0
 
     :goto_0
     nop
 
-    .line 188
+    .line 215
     :goto_1
     return-void
 .end method
 
 .method private static runInstallerInner()V
-    .locals 12
+    .locals 13
 
-    .line 191
-    const-string v0, "installer=v2 max_downloads=4"
+    .line 218
+    const-string v0, "MagiaCNDownloader"
 
-    const-string v1, "MagiaCNDownloader"
+    const-string v1, "installer=v2 max_downloads=4"
 
-    invoke-static {v1, v0}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
+    invoke-static {v0, v1}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 196
+    .line 223
     nop
 
-    .line 197
+    .line 224
     const/4 v0, 0x0
+
+    const/4 v1, 0x0
+
+    move-object v3, v0
 
     const/4 v2, 0x0
 
-    move-object v4, v0
-
-    const/4 v3, 0x0
-
     :goto_0
-    const/16 v5, 0x1e
+    const/16 v4, 0x1e
 
-    if-ge v3, v5, :cond_1
+    if-ge v2, v4, :cond_1
 
-    .line 198
+    .line 225
     :try_start_0
     invoke-static {}, Lio/kamihama/magianative/RestClient;->getCurrentActivity()Landroid/app/Activity;
 
-    move-result-object v4
+    move-result-object v3
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    .line 199
-    if-eqz v4, :cond_0
+    .line 226
+    if-eqz v3, :cond_0
 
     goto :goto_1
 
-    .line 200
+    .line 227
     :cond_0
-    const-wide/16 v5, 0x64
+    const-wide/16 v4, 0x64
 
     :try_start_1
-    invoke-static {v5, v6}, Ljava/lang/Thread;->sleep(J)V
+    invoke-static {v4, v5}, Ljava/lang/Thread;->sleep(J)V
     :try_end_1
     .catch Ljava/lang/InterruptedException; {:try_start_1 .. :try_end_1} :catch_0
     .catchall {:try_start_1 .. :try_end_1} :catchall_0
 
-    .line 203
+    .line 230
     nop
 
-    .line 197
-    add-int/lit8 v3, v3, 0x1
+    .line 224
+    add-int/lit8 v2, v2, 0x1
 
     goto :goto_0
 
-    .line 200
+    .line 227
     :catch_0
-    move-exception v3
+    move-exception v2
 
-    .line 201
+    .line 228
     :try_start_2
     invoke-static {}, Ljava/lang/Thread;->currentThread()Ljava/lang/Thread;
 
-    move-result-object v3
+    move-result-object v2
 
-    invoke-virtual {v3}, Ljava/lang/Thread;->interrupt()V
+    invoke-virtual {v2}, Ljava/lang/Thread;->interrupt()V
 
-    .line 202
+    .line 229
     goto :goto_1
 
-    .line 210
+    .line 237
     :catchall_0
-    move-exception v3
+    move-exception v2
 
     goto :goto_3
 
-    .line 205
+    .line 232
     :cond_1
     :goto_1
-    if-eqz v4, :cond_2
+    if-eqz v3, :cond_2
 
-    .line 206
-    invoke-static {v4}, Lio/kamihama/magianative/CNCNDownloadUI;->show(Landroid/app/Activity;)V
+    .line 233
+    invoke-static {v3}, Lio/kamihama/magianative/CNCNDownloadUI;->show(Landroid/app/Activity;)V
 
     goto :goto_2
 
-    .line 208
+    .line 235
     :cond_2
+    const-string v2, "MagiaCNDownloader"
+
     const-string v3, "\u53d6\u4e0d\u5230 Activity\uff0c\u6d6e\u5c42\u65e0\u6cd5\u663e\u793a\uff08\u5f15\u64ce\u573a\u666f\u53ef\u80fd\u5916\u9732\uff09"
 
-    invoke-static {v1, v3}, Lio/kamihama/magianative/CNLog;->e(Ljava/lang/String;Ljava/lang/String;)V
+    invoke-static {v2, v3}, Lio/kamihama/magianative/CNLog;->e(Ljava/lang/String;Ljava/lang/String;)V
     :try_end_2
     .catchall {:try_start_2 .. :try_end_2} :catchall_0
 
-    .line 212
+    .line 239
     :goto_2
     goto :goto_4
 
-    .line 211
+    .line 238
     :goto_3
+    const-string v3, "MagiaCNDownloader"
+
     const-string v4, "Unable to show installer UI"
 
-    invoke-static {v1, v4, v3}, Lio/kamihama/magianative/CNLog;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
+    invoke-static {v3, v4, v2}, Lio/kamihama/magianative/CNLog;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    .line 214
+    .line 241
     :goto_4
+    new-instance v2, Ljava/io/File;
+
+    const-string v3, "/data/data/io.kamihama.totentanz/files/madomagi/magica/cn_base_done.flag"
+
+    invoke-direct {v2, v3}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+
+    .line 242
+    invoke-virtual {v2}, Ljava/io/File;->isFile()Z
+
+    move-result v3
+
+    if-eqz v3, :cond_3
+
+    .line 243
+    const-string v0, "MagiaCNDownloader"
+
+    const-string v1, "Final flag already exists; installer skipped"
+
+    invoke-static {v0, v1}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 244
+    invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->hide()V
+
+    .line 245
+    return-void
+
+    .line 248
+    :cond_3
     new-instance v3, Ljava/io/File;
 
-    const-string v4, "/data/data/io.kamihama.totentanz/files/madomagi/magica/cn_base_done.flag"
+    const-string v4, "/data/data/io.kamihama.totentanz/files/madomagi/magica/.cn_installer/r128-downloader-v1"
 
     invoke-direct {v3, v4}, Ljava/io/File;-><init>(Ljava/lang/String;)V
 
-    .line 215
-    invoke-virtual {v3}, Ljava/io/File;->isFile()Z
-
-    move-result v4
-
-    if-eqz v4, :cond_3
-
-    .line 216
-    const-string v0, "Final flag already exists; installer skipped"
-
-    invoke-static {v1, v0}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 217
-    invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->hide()V
-
-    .line 218
-    return-void
-
-    .line 221
-    :cond_3
-    new-instance v4, Ljava/io/File;
-
-    const-string v5, "/data/data/io.kamihama.totentanz/files/madomagi/magica/.cn_installer/r128-downloader-v1"
-
-    invoke-direct {v4, v5}, Ljava/io/File;-><init>(Ljava/lang/String;)V
-
-    .line 222
-    invoke-virtual {v4}, Ljava/io/File;->isDirectory()Z
-
-    move-result v5
-
-    if-nez v5, :cond_4
-
-    invoke-virtual {v4}, Ljava/io/File;->mkdirs()Z
-
-    move-result v5
-
-    if-nez v5, :cond_4
-
-    invoke-virtual {v4}, Ljava/io/File;->isDirectory()Z
+    .line 249
+    invoke-virtual {v3}, Ljava/io/File;->isDirectory()Z
 
     move-result v4
 
     if-nez v4, :cond_4
 
-    .line 223
+    invoke-virtual {v3}, Ljava/io/File;->mkdirs()Z
+
+    move-result v4
+
+    if-nez v4, :cond_4
+
+    invoke-virtual {v3}, Ljava/io/File;->isDirectory()Z
+
+    move-result v3
+
+    if-nez v3, :cond_4
+
+    .line 250
     const-string v1, "Cannot create installer state directory"
 
     invoke-static {v1, v0}, Lio/kamihama/magianative/CNDownloaderFix;->failInstaller(Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    .line 224
+    .line 251
     return-void
 
-    .line 228
+    .line 255
     :cond_4
-    const-string v4, "\u51c6\u5907\u4e2d"
+    const-string v3, "\u51c6\u5907\u4e2d"
 
-    const-string v5, "\u6b63\u5728\u83b7\u53d6\u4e0b\u8f7d\u7ebf\u8def\u2026"
+    const-string v4, "\u6b63\u5728\u83b7\u53d6\u4e0b\u8f7d\u7ebf\u8def\u2026"
 
-    invoke-static {v4, v5, v2}, Lio/kamihama/magianative/CNCNDownloadUI;->updateSimple(Ljava/lang/String;Ljava/lang/String;I)V
+    invoke-static {v3, v4, v1}, Lio/kamihama/magianative/CNCNDownloadUI;->updateSimple(Ljava/lang/String;Ljava/lang/String;I)V
 
-    .line 229
-    invoke-static {v2}, Lio/kamihama/magianative/CNMirrors;->refresh(Z)V
+    .line 256
+    invoke-static {v1}, Lio/kamihama/magianative/CNMirrors;->refresh(Z)V
 
-    .line 230
+    .line 257
     invoke-static {}, Lio/kamihama/magianative/CNMirrors;->isLoaded()Z
 
-    move-result v4
+    move-result v3
 
-    const/4 v5, 0x1
+    const/4 v4, 0x1
 
-    if-nez v4, :cond_5
+    if-nez v3, :cond_5
 
-    .line 231
-    invoke-static {v5}, Lio/kamihama/magianative/CNMirrors;->refresh(Z)V
+    .line 258
+    invoke-static {v4}, Lio/kamihama/magianative/CNMirrors;->refresh(Z)V
 
-    .line 233
+    .line 260
     :cond_5
     invoke-static {}, Lio/kamihama/magianative/CNMirrors;->healthy()Ljava/util/List;
 
-    move-result-object v4
+    move-result-object v3
 
-    invoke-interface {v4}, Ljava/util/List;->size()I
+    invoke-interface {v3}, Ljava/util/List;->size()I
 
-    move-result v4
+    move-result v3
 
-    .line 234
+    .line 261
+    const-string v5, "MagiaCNDownloader"
+
     new-instance v6, Ljava/lang/StringBuilder;
 
     invoke-direct {v6}, Ljava/lang/StringBuilder;-><init>()V
@@ -5378,7 +5841,7 @@
 
     move-result-object v6
 
-    invoke-virtual {v6, v4}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    invoke-virtual {v6, v3}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
     move-result-object v6
 
@@ -5400,9 +5863,11 @@
 
     move-result-object v6
 
-    invoke-static {v1, v6}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
+    invoke-static {v5, v6}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
 
-    .line 235
+    .line 262
+    const-string v5, "\u5f00\u59cb\u4e0b\u8f7d"
+
     new-instance v6, Ljava/lang/StringBuilder;
 
     invoke-direct {v6}, Ljava/lang/StringBuilder;-><init>()V
@@ -5413,299 +5878,314 @@
 
     move-result-object v6
 
-    invoke-virtual {v6, v4}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    invoke-virtual {v6, v3}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
-    move-result-object v4
+    move-result-object v3
 
     const-string v6, " \u6761\uff0c\u5355\u6587\u4ef6\u5206\u7247 "
 
-    invoke-virtual {v4, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v3, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v4
+    move-result-object v3
 
-    .line 236
+    .line 263
     invoke-static {}, Lio/kamihama/magianative/CNMirrors;->chunks()I
 
     move-result v6
 
-    invoke-virtual {v4, v6}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+    invoke-virtual {v3, v6}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 
-    move-result-object v4
+    move-result-object v3
 
     const-string v6, " \u7ebf\u7a0b"
 
-    invoke-virtual {v4, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v3, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v4
+    move-result-object v3
 
-    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
-    move-result-object v4
+    move-result-object v3
 
-    .line 235
-    const-string v6, "\u5f00\u59cb\u4e0b\u8f7d"
+    .line 262
+    invoke-static {v5, v3, v1}, Lio/kamihama/magianative/CNCNDownloadUI;->updateSimple(Ljava/lang/String;Ljava/lang/String;I)V
 
-    invoke-static {v6, v4, v2}, Lio/kamihama/magianative/CNCNDownloadUI;->updateSimple(Ljava/lang/String;Ljava/lang/String;I)V
-
-    .line 238
+    .line 265
     invoke-static {}, Lio/kamihama/magianative/CNDownloaderFix;->resetUiForRun()V
 
-    .line 239
+    .line 266
     invoke-static {}, Lio/kamihama/magianative/CNDownloaderFix;->startSpeedWatchdog()Ljava/util/concurrent/ScheduledExecutorService;
 
-    move-result-object v4
+    move-result-object v3
 
-    .line 240
-    const/4 v6, 0x4
+    .line 271
+    invoke-static {}, Lio/kamihama/magianative/CNDownloaderFix;->probeAllSizes()V
 
-    invoke-static {v6}, Ljava/util/concurrent/Executors;->newFixedThreadPool(I)Ljava/util/concurrent/ExecutorService;
-
-    move-result-object v6
-
-    .line 241
-    new-instance v7, Ljava/util/ArrayList;
-
-    const/16 v8, 0xf
-
-    invoke-direct {v7, v8}, Ljava/util/ArrayList;-><init>(I)V
-
-    .line 242
-    const/4 v9, 0x0
-
-    :goto_5
-    if-ge v9, v8, :cond_6
-
-    .line 243
-    new-instance v10, Lio/kamihama/magianative/CNDownloaderFix$ArchiveTask;
-
-    invoke-direct {v10, v9}, Lio/kamihama/magianative/CNDownloaderFix$ArchiveTask;-><init>(I)V
-
-    invoke-interface {v6, v10}, Ljava/util/concurrent/ExecutorService;->submit(Ljava/util/concurrent/Callable;)Ljava/util/concurrent/Future;
-
-    move-result-object v10
-
-    invoke-interface {v7, v10}, Ljava/util/List;->add(Ljava/lang/Object;)Z
-
-    .line 242
-    add-int/lit8 v9, v9, 0x1
-
-    goto :goto_5
-
-    .line 245
-    :cond_6
-    invoke-interface {v6}, Ljava/util/concurrent/ExecutorService;->shutdown()V
-
-    .line 247
+    .line 273
     nop
 
-    .line 248
+    .line 277
+    :goto_5
+    const/4 v5, 0x4
+
+    invoke-static {v5}, Ljava/util/concurrent/Executors;->newFixedThreadPool(I)Ljava/util/concurrent/ExecutorService;
+
+    move-result-object v5
+
+    .line 278
+    new-instance v6, Ljava/util/ArrayList;
+
+    const/16 v7, 0xf
+
+    invoke-direct {v6, v7}, Ljava/util/ArrayList;-><init>(I)V
+
+    .line 279
     const/4 v8, 0x0
 
     :goto_6
-    invoke-interface {v7}, Ljava/util/List;->size()I
+    if-ge v8, v7, :cond_6
 
-    move-result v9
+    .line 280
+    new-instance v9, Lio/kamihama/magianative/CNDownloaderFix$ArchiveTask;
 
-    if-ge v8, v9, :cond_8
+    invoke-direct {v9, v8}, Lio/kamihama/magianative/CNDownloaderFix$ArchiveTask;-><init>(I)V
 
-    .line 250
+    invoke-interface {v5, v9}, Ljava/util/concurrent/ExecutorService;->submit(Ljava/util/concurrent/Callable;)Ljava/util/concurrent/Future;
+
+    move-result-object v9
+
+    invoke-interface {v6, v9}, Ljava/util/List;->add(Ljava/lang/Object;)Z
+
+    .line 279
+    add-int/lit8 v8, v8, 0x1
+
+    goto :goto_6
+
+    .line 282
+    :cond_6
+    invoke-interface {v5}, Ljava/util/concurrent/ExecutorService;->shutdown()V
+
+    .line 284
+    nop
+
+    .line 285
+    const/4 v8, 0x0
+
+    const/4 v9, 0x1
+
+    :goto_7
+    invoke-interface {v6}, Ljava/util/List;->size()I
+
+    move-result v10
+
+    if-ge v8, v10, :cond_8
+
+    .line 287
     :try_start_3
-    invoke-interface {v7, v8}, Ljava/util/List;->get(I)Ljava/lang/Object;
+    invoke-interface {v6, v8}, Ljava/util/List;->get(I)Ljava/lang/Object;
 
-    move-result-object v9
+    move-result-object v10
 
-    check-cast v9, Ljava/util/concurrent/Future;
+    check-cast v10, Ljava/util/concurrent/Future;
 
-    invoke-interface {v9}, Ljava/util/concurrent/Future;->get()Ljava/lang/Object;
+    invoke-interface {v10}, Ljava/util/concurrent/Future;->get()Ljava/lang/Object;
 
-    move-result-object v9
+    move-result-object v10
 
-    check-cast v9, Ljava/lang/Boolean;
+    check-cast v10, Ljava/lang/Boolean;
 
-    invoke-virtual {v9}, Ljava/lang/Boolean;->booleanValue()Z
+    invoke-virtual {v10}, Ljava/lang/Boolean;->booleanValue()Z
 
-    move-result v9
+    move-result v10
     :try_end_3
     .catch Ljava/lang/InterruptedException; {:try_start_3 .. :try_end_3} :catch_2
     .catch Ljava/util/concurrent/ExecutionException; {:try_start_3 .. :try_end_3} :catch_1
 
-    if-nez v9, :cond_7
+    if-nez v10, :cond_7
 
-    .line 251
-    const/4 v5, 0x0
+    .line 288
+    const/4 v9, 0x0
 
-    goto :goto_7
+    .line 297
+    :cond_7
+    goto :goto_8
 
-    .line 256
+    .line 294
     :catch_1
-    move-exception v5
+    move-exception v9
 
-    .line 257
-    new-instance v9, Ljava/lang/StringBuilder;
+    .line 295
+    const-string v10, "MagiaCNDownloader"
 
-    invoke-direct {v9}, Ljava/lang/StringBuilder;-><init>()V
+    new-instance v11, Ljava/lang/StringBuilder;
 
-    const-string v10, "Installer worker crashed for "
+    invoke-direct {v11}, Ljava/lang/StringBuilder;-><init>()V
 
-    invoke-virtual {v9, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const-string v12, "Installer worker crashed for "
 
-    move-result-object v9
+    invoke-virtual {v11, v12}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    sget-object v10, Lio/kamihama/magianative/CNDownloaderFix;->FILE_NAMES:[Ljava/lang/String;
+    move-result-object v11
 
-    aget-object v10, v10, v8
+    sget-object v12, Lio/kamihama/magianative/CNDownloaderFix;->FILE_NAMES:[Ljava/lang/String;
 
-    invoke-virtual {v9, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    aget-object v12, v12, v8
 
-    move-result-object v9
+    invoke-virtual {v11, v12}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    invoke-virtual {v9}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v11
 
-    move-result-object v9
+    invoke-virtual {v11}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
-    invoke-static {v1, v9, v5}, Lio/kamihama/magianative/CNLog;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
+    move-result-object v11
 
-    .line 258
-    const/4 v5, 0x0
+    invoke-static {v10, v11, v9}, Lio/kamihama/magianative/CNLog;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
+
+    .line 296
+    const/4 v9, 0x0
 
     goto :goto_8
 
-    .line 253
+    .line 290
     :catch_2
     move-exception v9
 
-    .line 254
+    .line 291
     invoke-static {}, Ljava/lang/Thread;->currentThread()Ljava/lang/Thread;
 
     move-result-object v10
 
     invoke-virtual {v10}, Ljava/lang/Thread;->interrupt()V
 
-    .line 255
-    new-instance v10, Ljava/lang/StringBuilder;
+    .line 292
+    const-string v10, "MagiaCNDownloader"
 
-    invoke-direct {v10}, Ljava/lang/StringBuilder;-><init>()V
+    new-instance v11, Ljava/lang/StringBuilder;
 
-    const-string v11, "Installer interrupted while waiting for "
+    invoke-direct {v11}, Ljava/lang/StringBuilder;-><init>()V
 
-    invoke-virtual {v10, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    const-string v12, "Installer interrupted while waiting for "
 
-    move-result-object v10
+    invoke-virtual {v11, v12}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    sget-object v11, Lio/kamihama/magianative/CNDownloaderFix;->FILE_NAMES:[Ljava/lang/String;
+    move-result-object v11
 
-    aget-object v11, v11, v8
+    sget-object v12, Lio/kamihama/magianative/CNDownloaderFix;->FILE_NAMES:[Ljava/lang/String;
 
-    invoke-virtual {v10, v11}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    aget-object v12, v12, v8
 
-    move-result-object v10
+    invoke-virtual {v11, v12}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    invoke-virtual {v10}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    move-result-object v11
 
-    move-result-object v10
+    invoke-virtual {v11}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
-    invoke-static {v1, v10, v9}, Lio/kamihama/magianative/CNLog;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
+    move-result-object v11
 
-    .line 259
-    :cond_7
-    :goto_7
+    invoke-static {v10, v11, v9}, Lio/kamihama/magianative/CNLog;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
+
+    .line 293
     nop
 
-    .line 248
+    .line 297
+    const/4 v9, 0x0
+
+    .line 285
     :goto_8
     add-int/lit8 v8, v8, 0x1
 
-    goto :goto_6
+    goto :goto_7
 
-    .line 261
+    .line 299
     :cond_8
-    invoke-interface {v6}, Ljava/util/concurrent/ExecutorService;->shutdownNow()Ljava/util/List;
+    invoke-interface {v5}, Ljava/util/concurrent/ExecutorService;->shutdownNow()Ljava/util/List;
 
-    .line 262
-    invoke-interface {v4}, Ljava/util/concurrent/ScheduledExecutorService;->shutdownNow()Ljava/util/List;
-
-    .line 263
+    .line 300
     invoke-static {}, Lio/kamihama/magianative/CNDownloaderFix;->zeroAllSpeeds()V
 
-    .line 265
-    if-eqz v5, :cond_b
+    .line 302
+    if-eqz v9, :cond_a
 
     invoke-static {}, Lio/kamihama/magianative/CNDownloaderFix;->allMarkersValid()Z
 
-    move-result v2
+    move-result v5
 
-    if-nez v2, :cond_9
+    if-eqz v5, :cond_a
 
-    goto :goto_b
+    .line 327
+    invoke-interface {v3}, Ljava/util/concurrent/ScheduledExecutorService;->shutdownNow()Ljava/util/List;
 
-    .line 271
-    :cond_9
+    .line 330
     :try_start_4
     const-string v0, "schema=2\narchives=15\n"
 
-    invoke-static {v3, v0}, Lio/kamihama/magianative/CNDownloaderFix;->writeAtomic(Ljava/io/File;Ljava/lang/String;)V
+    invoke-static {v2, v0}, Lio/kamihama/magianative/CNDownloaderFix;->writeAtomic(Ljava/io/File;Ljava/lang/String;)V
 
-    .line 272
+    .line 331
     const-string v0, "\u5b89\u88c5\u5b8c\u6210"
 
-    const-string v2, "\u6240\u6709\u8d44\u6e90\u5df2\u9a8c\u8bc1\u5e76\u63d0\u4ea4\u5b8c\u6210\u6807\u8bb0"
+    const-string v1, "\u6240\u6709\u8d44\u6e90\u5df2\u9a8c\u8bc1\u5e76\u63d0\u4ea4\u5b8c\u6210\u6807\u8bb0"
 
-    const/16 v3, 0x64
+    const/16 v2, 0x64
 
-    invoke-static {v0, v2, v3}, Lio/kamihama/magianative/CNCNDownloadUI;->updateSimple(Ljava/lang/String;Ljava/lang/String;I)V
+    invoke-static {v0, v1, v2}, Lio/kamihama/magianative/CNCNDownloadUI;->updateSimple(Ljava/lang/String;Ljava/lang/String;I)V
 
-    .line 273
+    .line 332
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->hide()V
 
-    .line 274
-    const-string v0, "All archives installed; final flag committed atomically"
+    .line 333
+    const-string v0, "MagiaCNDownloader"
 
-    invoke-static {v1, v0}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
+    const-string v1, "All archives installed; final flag committed atomically"
 
-    .line 275
+    invoke-static {v0, v1}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 334
     new-instance v0, Ljava/io/File;
 
-    const-string v2, "/data/data/io.kamihama.totentanz/files/madomagi/magica/.cn_installer/r128-downloader-v1/no_restart"
+    const-string v1, "/data/data/io.kamihama.totentanz/files/madomagi/magica/.cn_installer/r128-downloader-v1/no_restart"
 
-    invoke-direct {v0, v2}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+    invoke-direct {v0, v1}, Ljava/io/File;-><init>(Ljava/lang/String;)V
 
     invoke-virtual {v0}, Ljava/io/File;->isFile()Z
 
     move-result v0
 
-    if-eqz v0, :cond_a
+    if-eqz v0, :cond_9
 
-    .line 276
-    const-string v0, "Test no-restart marker present; restart suppressed"
+    .line 335
+    const-string v0, "MagiaCNDownloader"
 
-    invoke-static {v1, v0}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
+    const-string v1, "Test no-restart marker present; restart suppressed"
+
+    invoke-static {v0, v1}, Lio/kamihama/magianative/CNLog;->i(Ljava/lang/String;Ljava/lang/String;)V
     :try_end_4
     .catch Ljava/io/IOException; {:try_start_4 .. :try_end_4} :catch_4
 
-    .line 277
+    .line 336
     return-void
 
-    .line 280
-    :cond_a
+    .line 339
+    :cond_9
     const-wide/16 v0, 0x7d0
 
     :try_start_5
     invoke-static {v0, v1}, Ljava/lang/Thread;->sleep(J)V
 
-    .line 281
+    .line 340
     invoke-static {}, Lio/kamihama/magianative/RestClient;->restartApp()V
     :try_end_5
     .catch Ljava/lang/InterruptedException; {:try_start_5 .. :try_end_5} :catch_3
     .catch Ljava/io/IOException; {:try_start_5 .. :try_end_5} :catch_4
 
-    .line 284
+    .line 343
     goto :goto_9
 
-    .line 282
+    .line 341
     :catch_3
     move-exception v0
 
-    .line 283
+    .line 342
     :try_start_6
     invoke-static {}, Ljava/lang/Thread;->currentThread()Ljava/lang/Thread;
 
@@ -5715,38 +6195,201 @@
     :try_end_6
     .catch Ljava/io/IOException; {:try_start_6 .. :try_end_6} :catch_4
 
-    .line 287
+    .line 346
     :goto_9
     goto :goto_a
 
-    .line 285
+    .line 344
     :catch_4
     move-exception v0
 
-    .line 286
+    .line 345
     const-string v1, "Final flag commit failed"
 
     invoke-static {v1, v0}, Lio/kamihama/magianative/CNDownloaderFix;->failInstaller(Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    .line 288
+    .line 347
     :goto_a
     return-void
 
-    .line 266
-    :cond_b
+    .line 304
+    :cond_a
+    nop
+
+    .line 305
+    sget-object v5, Lio/kamihama/magianative/CNCNDownloadUI;->fileStatus:[I
+
+    if-eqz v5, :cond_c
+
+    .line 306
+    const/4 v5, 0x0
+
+    const/4 v6, 0x0
+
     :goto_b
-    const-string v1, "One or more archives failed; restart to resume"
+    if-ge v5, v7, :cond_d
 
-    invoke-static {v1, v0}, Lio/kamihama/magianative/CNDownloaderFix;->failInstaller(Ljava/lang/String;Ljava/lang/Throwable;)V
+    .line 307
+    sget-object v8, Lio/kamihama/magianative/CNCNDownloadUI;->fileStatus:[I
 
-    .line 267
-    return-void
+    aget v8, v8, v5
+
+    const/4 v9, 0x3
+
+    if-ne v8, v9, :cond_b
+
+    add-int/lit8 v6, v6, 0x1
+
+    .line 306
+    :cond_b
+    add-int/lit8 v5, v5, 0x1
+
+    goto :goto_b
+
+    .line 305
+    :cond_c
+    const/4 v6, 0x0
+
+    .line 310
+    :cond_d
+    const-string v5, "MagiaCNDownloader"
+
+    new-instance v7, Ljava/lang/StringBuilder;
+
+    invoke-direct {v7}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v8, "\u672c\u8f6e\u6709 "
+
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v7
+
+    invoke-virtual {v7, v6}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    move-result-object v7
+
+    const-string v8, " \u4e2a\u6587\u4ef6\u5931\u8d25\uff0c\u7b49\u5f85\u73a9\u5bb6\u91cd\u8bd5"
+
+    invoke-virtual {v7, v8}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v7
+
+    invoke-virtual {v7}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v7
+
+    invoke-static {v5, v7}, Lio/kamihama/magianative/CNLog;->w(Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 311
+    new-instance v5, Ljava/lang/StringBuilder;
+
+    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v7, "\u6709 "
+
+    invoke-virtual {v5, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v5
+
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
+
+    move-result-object v5
+
+    const-string v6, " \u4e2a\u6587\u4ef6\u4e0b\u8f7d\u5931\u8d25\uff0c\u70b9\u51fb\u6587\u4ef6\u53f3\u4fa7\u7684\u300c\u91cd\u8bd5\u300d\u7ee7\u7eed"
+
+    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v5
+
+    invoke-virtual {v5}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v5
+
+    invoke-static {v5, v0}, Lio/kamihama/magianative/CNDownloaderFix;->failInstaller(Ljava/lang/String;Ljava/lang/Throwable;)V
+
+    .line 314
+    sget-object v5, Lio/kamihama/magianative/CNDownloaderFix;->RETRY_LOCK:Ljava/lang/Object;
+
+    monitor-enter v5
+
+    .line 315
+    :goto_c
+    :try_start_7
+    sget-boolean v6, Lio/kamihama/magianative/CNDownloaderFix;->retryRequested:Z
+    :try_end_7
+    .catchall {:try_start_7 .. :try_end_7} :catchall_1
+
+    if-nez v6, :cond_e
+
+    .line 317
+    :try_start_8
+    sget-object v6, Lio/kamihama/magianative/CNDownloaderFix;->RETRY_LOCK:Ljava/lang/Object;
+
+    invoke-virtual {v6}, Ljava/lang/Object;->wait()V
+    :try_end_8
+    .catch Ljava/lang/InterruptedException; {:try_start_8 .. :try_end_8} :catch_5
+    .catchall {:try_start_8 .. :try_end_8} :catchall_1
+
+    .line 321
+    :goto_d
+    goto :goto_c
+
+    .line 318
+    :catch_5
+    move-exception v6
+
+    .line 319
+    :try_start_9
+    invoke-static {}, Ljava/lang/Thread;->currentThread()Ljava/lang/Thread;
+
+    move-result-object v6
+
+    invoke-virtual {v6}, Ljava/lang/Thread;->interrupt()V
+
+    .line 320
+    const-string v6, "MagiaCNDownloader"
+
+    const-string v7, "\u7b49\u5f85\u91cd\u8bd5\u65f6\u88ab\u4e2d\u65ad\uff0c\u7ee7\u7eed\u7b49\u5f85\u4ee5\u907f\u514d\u9000\u56de\u539f\u751f\u754c\u9762"
+
+    invoke-static {v6, v7}, Lio/kamihama/magianative/CNLog;->w(Ljava/lang/String;Ljava/lang/String;)V
+
+    goto :goto_d
+
+    .line 323
+    :cond_e
+    sput-boolean v1, Lio/kamihama/magianative/CNDownloaderFix;->retryRequested:Z
+
+    .line 324
+    monitor-exit v5
+    :try_end_9
+    .catchall {:try_start_9 .. :try_end_9} :catchall_1
+
+    .line 325
+    const-string v5, "\u91cd\u8bd5\u4e2d"
+
+    const-string v6, "\u6b63\u5728\u91cd\u65b0\u4e0b\u8f7d\u5931\u8d25\u7684\u6587\u4ef6\u2026"
+
+    invoke-static {v5, v6, v1}, Lio/kamihama/magianative/CNCNDownloadUI;->updateSimple(Ljava/lang/String;Ljava/lang/String;I)V
+
+    .line 326
+    goto/16 :goto_5
+
+    .line 324
+    :catchall_1
+    move-exception v0
+
+    :try_start_a
+    monitor-exit v5
+    :try_end_a
+    .catchall {:try_start_a .. :try_end_a} :catchall_1
+
+    throw v0
 .end method
 
 .method private static sanitizeLine(Ljava/lang/String;)Ljava/lang/String;
     .locals 2
 
-    .line 1055
+    .line 1200
     if-nez p0, :cond_0
 
     const-string p0, ""
@@ -5775,12 +6418,12 @@
 .method private static setActive(IZ)V
     .locals 3
 
-    .line 1023
+    .line 1168
     sget-object v0, Lio/kamihama/magianative/CNDownloaderFix;->ACTIVE:Ljava/util/concurrent/atomic/AtomicIntegerArray;
 
     invoke-virtual {v0, p0, p1}, Ljava/util/concurrent/atomic/AtomicIntegerArray;->set(II)V
 
-    .line 1024
+    .line 1169
     sget-object v0, Lio/kamihama/magianative/CNDownloaderFix;->LAST_PROGRESS_NS:Ljava/util/concurrent/atomic/AtomicLongArray;
 
     if-eqz p1, :cond_0
@@ -5797,19 +6440,19 @@
     :goto_0
     invoke-virtual {v0, p0, v1, v2}, Ljava/util/concurrent/atomic/AtomicLongArray;->set(IJ)V
 
-    .line 1025
+    .line 1170
     return-void
 .end method
 
 .method private static startSpeedWatchdog()Ljava/util/concurrent/ScheduledExecutorService;
     .locals 8
 
-    .line 692
+    .line 837
     invoke-static {}, Ljava/util/concurrent/Executors;->newSingleThreadScheduledExecutor()Ljava/util/concurrent/ScheduledExecutorService;
 
     move-result-object v7
 
-    .line 693
+    .line 838
     new-instance v1, Lio/kamihama/magianative/CNDownloaderFix$SpeedWatchdog;
 
     const/4 v0, 0x0
@@ -5826,7 +6469,7 @@
 
     invoke-interface/range {v0 .. v6}, Ljava/util/concurrent/ScheduledExecutorService;->scheduleAtFixedRate(Ljava/lang/Runnable;JJLjava/util/concurrent/TimeUnit;)Ljava/util/concurrent/ScheduledFuture;
 
-    .line 694
+    .line 839
     return-object v7
 .end method
 
@@ -5838,10 +6481,10 @@
         }
     .end annotation
 
-    .line 907
+    .line 1052
     nop
 
-    .line 909
+    .line 1054
     const/4 v0, 0x0
 
     :try_start_0
@@ -5853,11 +6496,11 @@
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_1
 
-    .line 910
+    .line 1055
     :try_start_1
     invoke-virtual {v1}, Ljava/io/FileOutputStream;->flush()V
 
-    .line 911
+    .line 1056
     invoke-virtual {v1}, Ljava/io/FileOutputStream;->getFD()Ljava/io/FileDescriptor;
 
     move-result-object p0
@@ -5866,16 +6509,16 @@
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_0
 
-    .line 913
+    .line 1058
     invoke-static {v1}, Lio/kamihama/magianative/CNDownloaderFix;->closeQuietly(Ljava/io/OutputStream;)V
 
-    .line 914
+    .line 1059
     nop
 
-    .line 915
+    .line 1060
     return-void
 
-    .line 913
+    .line 1058
     :catchall_0
     move-exception p0
 
@@ -5889,21 +6532,21 @@
     :goto_0
     invoke-static {v0}, Lio/kamihama/magianative/CNDownloaderFix;->closeQuietly(Ljava/io/OutputStream;)V
 
-    .line 914
+    .line 1059
     throw p0
 .end method
 
 .method private static updateProgress(IJJ)V
     .locals 6
 
-    .line 992
+    .line 1137
     const-wide/16 v0, 0x0
 
     cmp-long v2, p3, v0
 
     if-lez v2, :cond_0
 
-    .line 993
+    .line 1138
     const-wide/16 v2, 0x64
 
     mul-long v4, p1, v2
@@ -5922,11 +6565,11 @@
 
     goto :goto_0
 
-    .line 995
+    .line 1140
     :cond_0
     const/4 p4, 0x0
 
-    .line 997
+    .line 1142
     :goto_0
     long-to-double p1, p1
 
@@ -5938,17 +6581,17 @@
 
     invoke-static {p0, p1}, Lio/kamihama/magianative/CNCNDownloadUI;->setFileDownloaded(IF)V
 
-    .line 998
+    .line 1143
     invoke-static {p0, p4}, Lio/kamihama/magianative/CNCNDownloadUI;->updateFileProgress(II)V
 
-    .line 999
+    .line 1144
     return-void
 .end method
 
 .method private static updateSize(IJ)V
     .locals 2
 
-    .line 987
+    .line 1132
     long-to-double p1, p1
 
     const-wide v0, 0x412e848000000000L    # 1000000.0
@@ -5959,7 +6602,7 @@
 
     invoke-static {p0, p1}, Lio/kamihama/magianative/CNCNDownloadUI;->setFileSize(IF)V
 
-    .line 988
+    .line 1133
     return-void
 .end method
 
@@ -5971,12 +6614,12 @@
         }
     .end annotation
 
-    .line 808
+    .line 953
     invoke-virtual {p0}, Ljava/io/File;->getParentFile()Ljava/io/File;
 
     move-result-object v0
 
-    .line 809
+    .line 954
     if-eqz v0, :cond_1
 
     invoke-virtual {v0}, Ljava/io/File;->isDirectory()Z
@@ -5999,7 +6642,7 @@
 
     goto :goto_0
 
-    .line 810
+    .line 955
     :cond_0
     new-instance p0, Ljava/io/IOException;
 
@@ -6025,7 +6668,7 @@
 
     throw p0
 
-    .line 812
+    .line 957
     :cond_1
     :goto_0
     new-instance v0, Ljava/io/File;
@@ -6054,10 +6697,10 @@
 
     invoke-direct {v0, v1}, Ljava/io/File;-><init>(Ljava/lang/String;)V
 
-    .line 813
+    .line 958
     nop
 
-    .line 815
+    .line 960
     const/4 v1, 0x0
 
     :try_start_0
@@ -6069,7 +6712,7 @@
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_1
 
-    .line 816
+    .line 961
     :try_start_1
     sget-object v3, Ljava/nio/charset/StandardCharsets;->UTF_8:Ljava/nio/charset/Charset;
 
@@ -6079,25 +6722,25 @@
 
     invoke-virtual {v2, p1}, Ljava/io/FileOutputStream;->write([B)V
 
-    .line 817
+    .line 962
     invoke-virtual {v2}, Ljava/io/FileOutputStream;->flush()V
 
-    .line 818
+    .line 963
     invoke-virtual {v2}, Ljava/io/FileOutputStream;->getFD()Ljava/io/FileDescriptor;
 
     move-result-object p1
 
     invoke-virtual {p1}, Ljava/io/FileDescriptor;->sync()V
 
-    .line 819
+    .line 964
     invoke-static {v2}, Lio/kamihama/magianative/CNDownloaderFix;->closeQuietly(Ljava/io/OutputStream;)V
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_0
 
-    .line 820
+    .line 965
     nop
 
-    .line 821
+    .line 966
     :try_start_2
     invoke-virtual {p0}, Ljava/io/File;->exists()Z
 
@@ -6113,7 +6756,7 @@
 
     goto :goto_1
 
-    .line 822
+    .line 967
     :cond_2
     new-instance p1, Ljava/io/IOException;
 
@@ -6139,7 +6782,7 @@
 
     throw p1
 
-    .line 824
+    .line 969
     :cond_3
     :goto_1
     invoke-virtual {v0, p0}, Ljava/io/File;->renameTo(Ljava/io/File;)Z
@@ -6150,16 +6793,16 @@
 
     if-eqz p1, :cond_4
 
-    .line 828
+    .line 973
     invoke-static {v1}, Lio/kamihama/magianative/CNDownloaderFix;->closeQuietly(Ljava/io/OutputStream;)V
 
-    .line 829
+    .line 974
     nop
 
-    .line 830
+    .line 975
     return-void
 
-    .line 825
+    .line 970
     :cond_4
     :try_start_3
     new-instance p1, Ljava/io/IOException;
@@ -6198,7 +6841,7 @@
     :try_end_3
     .catchall {:try_start_3 .. :try_end_3} :catchall_1
 
-    .line 828
+    .line 973
     :catchall_0
     move-exception p0
 
@@ -6212,7 +6855,7 @@
     :goto_2
     invoke-static {v1}, Lio/kamihama/magianative/CNDownloaderFix;->closeQuietly(Ljava/io/OutputStream;)V
 
-    .line 829
+    .line 974
     throw p0
 .end method
 
@@ -6224,7 +6867,7 @@
         }
     .end annotation
 
-    .line 770
+    .line 915
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
@@ -6269,7 +6912,7 @@
 
     iget-object p2, p3, Lio/kamihama/magianative/CNDownloaderFix$DownloadMetadata;->etag:Ljava/lang/String;
 
-    .line 772
+    .line 917
     invoke-static {p2}, Lio/kamihama/magianative/CNDownloaderFix;->sanitizeLine(Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object p2
@@ -6288,10 +6931,10 @@
 
     move-result-object p1
 
-    .line 770
+    .line 915
     invoke-static {p0, p1}, Lio/kamihama/magianative/CNDownloaderFix;->writeAtomic(Ljava/io/File;Ljava/lang/String;)V
 
-    .line 773
+    .line 918
     return-void
 .end method
 
@@ -6303,7 +6946,7 @@
         }
     .end annotation
 
-    .line 833
+    .line 978
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
@@ -6344,14 +6987,14 @@
 
     invoke-static {p0, p1}, Lio/kamihama/magianative/CNDownloaderFix;->writeAtomic(Ljava/io/File;Ljava/lang/String;)V
 
-    .line 834
+    .line 979
     return-void
 .end method
 
 .method private static zeroAllSpeeds()V
     .locals 5
 
-    .line 1028
+    .line 1173
     const/4 v0, 0x0
 
     const/4 v1, 0x0
@@ -6361,32 +7004,32 @@
 
     if-ge v1, v2, :cond_0
 
-    .line 1029
+    .line 1174
     sget-object v2, Lio/kamihama/magianative/CNDownloaderFix;->ACTIVE:Ljava/util/concurrent/atomic/AtomicIntegerArray;
 
     invoke-virtual {v2, v1, v0}, Ljava/util/concurrent/atomic/AtomicIntegerArray;->set(II)V
 
-    .line 1030
+    .line 1175
     sget-object v2, Lio/kamihama/magianative/CNDownloaderFix;->LAST_PROGRESS_NS:Ljava/util/concurrent/atomic/AtomicLongArray;
 
     const-wide/16 v3, 0x0
 
     invoke-virtual {v2, v1, v3, v4}, Ljava/util/concurrent/atomic/AtomicLongArray;->set(IJ)V
 
-    .line 1031
+    .line 1176
     const/4 v2, 0x0
 
     invoke-static {v1, v2}, Lio/kamihama/magianative/CNCNDownloadUI;->setDownloadSpeed(IF)V
 
-    .line 1028
+    .line 1173
     add-int/lit8 v1, v1, 0x1
 
     goto :goto_0
 
-    .line 1033
+    .line 1178
     :cond_0
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->throttledUpdate()V
 
-    .line 1034
+    .line 1179
     return-void
 .end method

@@ -21,7 +21,7 @@
 .method private constructor <init>()V
     .locals 0
 
-    .line 983
+    .line 1058
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     return-void
@@ -30,7 +30,7 @@
 .method synthetic constructor <init>(Lio/kamihama/magianative/CNCNDownloadUI$1;)V
     .locals 0
 
-    .line 983
+    .line 1058
     invoke-direct {p0}, Lio/kamihama/magianative/CNCNDownloadUI$LogChanged;-><init>()V
 
     return-void
@@ -41,10 +41,10 @@
 .method public run()V
     .locals 3
 
-    .line 985
+    .line 1060
     sget-object v0, Lio/kamihama/magianative/CNCNDownloadUI;->uiHandler:Landroid/os/Handler;
 
-    .line 986
+    .line 1061
     if-eqz v0, :cond_2
 
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$800()Landroid/widget/FrameLayout;
@@ -55,7 +55,7 @@
 
     goto :goto_0
 
-    .line 987
+    .line 1062
     :cond_0
     invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$800()Landroid/widget/FrameLayout;
 
@@ -69,7 +69,7 @@
 
     return-void
 
-    .line 988
+    .line 1063
     :cond_1
     new-instance v1, Lio/kamihama/magianative/CNCNDownloadUI$RenderLog;
 
@@ -79,10 +79,10 @@
 
     invoke-virtual {v0, v1}, Landroid/os/Handler;->post(Ljava/lang/Runnable;)Z
 
-    .line 989
+    .line 1064
     return-void
 
-    .line 986
+    .line 1061
     :cond_2
     :goto_0
     return-void

@@ -27,7 +27,7 @@
 .method constructor <init>(Landroid/widget/ImageView;Landroid/graphics/Bitmap;)V
     .locals 0
 
-    .line 363
+    .line 390
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     iput-object p1, p0, Lio/kamihama/magianative/CNCNDownloadUI$ApplyBitmap;->target:Landroid/widget/ImageView;
@@ -42,7 +42,7 @@
 .method public run()V
     .locals 2
 
-    .line 365
+    .line 392
     :try_start_0
     iget-object v0, p0, Lio/kamihama/magianative/CNCNDownloadUI$ApplyBitmap;->target:Landroid/widget/ImageView;
 
@@ -57,7 +57,7 @@
     :catchall_0
     move-exception v0
 
-    .line 366
+    .line 393
     :goto_0
     return-void
 .end method

@@ -34,7 +34,7 @@
 .method constructor <init>(I)V
     .locals 0
 
-    .line 293
+    .line 438
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     iput p1, p0, Lio/kamihama/magianative/CNDownloaderFix$ArchiveTask;->index:I
@@ -47,10 +47,10 @@
 .method public call()Ljava/lang/Boolean;
     .locals 1
 
-    .line 295
+    .line 440
     iget v0, p0, Lio/kamihama/magianative/CNDownloaderFix$ArchiveTask;->index:I
 
-    invoke-static {v0}, Lio/kamihama/magianative/CNDownloaderFix;->access$000(I)Z
+    invoke-static {v0}, Lio/kamihama/magianative/CNDownloaderFix;->access$400(I)Z
 
     move-result v0
 
@@ -69,7 +69,7 @@
         }
     .end annotation
 
-    .line 291
+    .line 436
     invoke-virtual {p0}, Lio/kamihama/magianative/CNDownloaderFix$ArchiveTask;->call()Ljava/lang/Boolean;
 
     move-result-object v0
