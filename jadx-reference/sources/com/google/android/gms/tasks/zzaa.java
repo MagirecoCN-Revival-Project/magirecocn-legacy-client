@@ -1,0 +1,29 @@
+package com.google.android.gms.tasks;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+/* compiled from: com.google.android.gms:play-services-tasks@@18.0.1 */
+/* loaded from: classes.dex */
+final class zzaa implements Continuation<Void, List> {
+    final /* synthetic */ Collection zza;
+
+    /* JADX INFO: Access modifiers changed from: package-private */
+    public zzaa(Collection collection) {
+        this.zza = collection;
+    }
+
+    /* JADX DEBUG: Method arguments types fixed to match base method, original types: [com.google.android.gms.tasks.Task] */
+    /* JADX DEBUG: Return type fixed from 'java.lang.Object' to match base method */
+    @Override // com.google.android.gms.tasks.Continuation
+    public final /* bridge */ /* synthetic */ List then(Task<Void> task) throws Exception {
+        ArrayList arrayList = new ArrayList();
+        Iterator it = this.zza.iterator();
+        while (it.hasNext()) {
+            arrayList.add(((Task) it.next()).getResult());
+        }
+        return arrayList;
+    }
+}
