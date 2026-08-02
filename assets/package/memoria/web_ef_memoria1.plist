@@ -4,39 +4,20 @@
 	<dict>
 		<key>frames</key>
 		<dict>
-			<key>magia_lvup_success.png</key>
+			<key>memoriaBG10.png</key>
 			<dict>
 				<key>width</key>
-				<integer>162</integer>
+				<integer>1024</integer>
 				<key>height</key>
-				<integer>78</integer>
+				<integer>768</integer>
 				<key>originalWidth</key>
-				<integer>162</integer>
+				<integer>1024</integer>
 				<key>originalHeight</key>
-				<integer>78</integer>
+				<integer>768</integer>
 				<key>x</key>
 				<integer>0</integer>
 				<key>y</key>
 				<integer>0</integer>
-				<key>offsetX</key>
-				<real>0</real>
-				<key>offsetY</key>
-				<real>0</real>
-			</dict>
-			<key>effect00.png</key>
-			<dict>
-				<key>width</key>
-				<integer>256</integer>
-				<key>height</key>
-				<integer>256</integer>
-				<key>originalWidth</key>
-				<integer>256</integer>
-				<key>originalHeight</key>
-				<integer>256</integer>
-				<key>x</key>
-				<integer>0</integer>
-				<key>y</key>
-				<integer>80</integer>
 				<key>offsetX</key>
 				<real>0</real>
 				<key>offsetY</key>
@@ -48,9 +29,9 @@
 			<key>format</key>
 			<integer>0</integer>
 			<key>textureFileName</key>
-			<string>web_ef_magia_lvup0.png</string>
+			<string>web_ef_memoria1.png</string>
 			<key>realTextureFileName</key>
-			<string>web_ef_magia_lvup0.png</string>
+			<string>web_ef_memoria1.png</string>
 			<key>size</key>
 			<string>{2048,2048}</string>
 		</dict>
