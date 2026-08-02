@@ -22,10 +22,10 @@
 .method constructor <init>(Landroid/content/Context;I)V
     .locals 1
 
-    .line 363
+    .line 370
     invoke-direct {p0, p1}, Landroid/view/View;-><init>(Landroid/content/Context;)V
 
-    .line 361
+    .line 368
     new-instance p1, Landroid/graphics/Paint;
 
     const/4 v0, 0x1
@@ -34,15 +34,15 @@
 
     iput-object p1, p0, Lio/kamihama/magianative/CNCNDownloadUI$DotView;->p:Landroid/graphics/Paint;
 
-    .line 364
+    .line 371
     invoke-virtual {p1, p2}, Landroid/graphics/Paint;->setColor(I)V
 
-    .line 365
+    .line 372
     sget-object p2, Landroid/graphics/Paint$Style;->FILL:Landroid/graphics/Paint$Style;
 
     invoke-virtual {p1, p2}, Landroid/graphics/Paint;->setStyle(Landroid/graphics/Paint$Style;)V
 
-    .line 366
+    .line 373
     return-void
 .end method
 
@@ -51,7 +51,7 @@
 .method protected onDraw(Landroid/graphics/Canvas;)V
     .locals 4
 
-    .line 368
+    .line 375
     invoke-virtual {p0}, Lio/kamihama/magianative/CNCNDownloadUI$DotView;->getWidth()I
 
     move-result v0
@@ -70,7 +70,7 @@
 
     div-float/2addr v0, v1
 
-    .line 369
+    .line 376
     invoke-virtual {p0}, Lio/kamihama/magianative/CNCNDownloadUI$DotView;->getWidth()I
 
     move-result v2
@@ -91,6 +91,6 @@
 
     invoke-virtual {p1, v2, v3, v0, v1}, Landroid/graphics/Canvas;->drawCircle(FFFLandroid/graphics/Paint;)V
 
-    .line 370
+    .line 377
     return-void
 .end method

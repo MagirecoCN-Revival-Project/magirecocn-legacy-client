@@ -1230,10 +1230,10 @@ Name: classes.dex
 SHA-256-Digest: b5TOhAq6W9coGdtoDWTkskYYTGCZ8U7N/DVWwXwJgk0=
 
 Name: classes2.dex
-SHA-256-Digest: iP1M9T3Z1iiEOQQD8UjZH5bUrUY3GXKNBrqUxYUB7Bc=
+SHA-256-Digest: 3KwqleVahNDODTHtz6xjUDaK4PuFJnmLIEWjqWCJoDw=
 
 Name: classes3.dex
-SHA-256-Digest: N2xHVlWaMwJiHxGPCSGMflx5o899iCQ06Cx4Lxryi+A=
+SHA-256-Digest: NT/oRZqC6IGr0+r01ZYfDUZW2mGqN0AHwL1wOJ/HcN4=
 
 Name: com/android/vending/billing/IInAppBillingService.aidl
 SHA-256-Digest: eUtjQP44Tft8etchc6x3NqVZSyto1G4Co6rY8dcMqVM=

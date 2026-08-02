@@ -21,7 +21,7 @@
 .method private constructor <init>()V
     .locals 0
 
-    .line 243
+    .line 466
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     return-void
@@ -30,7 +30,7 @@
 .method synthetic constructor <init>(Lio/kamihama/magianative/CNLog$1;)V
     .locals 0
 
-    .line 243
+    .line 466
     invoke-direct {p0}, Lio/kamihama/magianative/CNLog$LogcatReader;-><init>()V
 
     return-void
@@ -39,13 +39,13 @@
 .method private isOwnLine(Ljava/lang/String;)Z
     .locals 3
 
-    .line 270
+    .line 493
     const/4 v0, 0x0
 
     const/4 v1, 0x0
 
     :goto_0
-    invoke-static {}, Lio/kamihama/magianative/CNLog;->access$200()[Ljava/lang/String;
+    invoke-static {}, Lio/kamihama/magianative/CNLog;->access$500()[Ljava/lang/String;
 
     move-result-object v2
 
@@ -53,8 +53,8 @@
 
     if-ge v1, v2, :cond_1
 
-    .line 271
-    invoke-static {}, Lio/kamihama/magianative/CNLog;->access$200()[Ljava/lang/String;
+    .line 494
+    invoke-static {}, Lio/kamihama/magianative/CNLog;->access$500()[Ljava/lang/String;
 
     move-result-object v2
 
@@ -70,13 +70,13 @@
 
     return p1
 
-    .line 270
+    .line 493
     :cond_0
     add-int/lit8 v1, v1, 0x1
 
     goto :goto_0
 
-    .line 273
+    .line 496
     :cond_1
     return v0
 .end method
@@ -86,10 +86,10 @@
 .method public run()V
     .locals 7
 
-    .line 245
+    .line 468
     const-string v0, "\u65e5\u5fd7"
 
-    .line 247
+    .line 470
     const/4 v1, 0x0
 
     :try_start_0
@@ -131,30 +131,30 @@
 
     invoke-direct {v2, v3}, Ljava/lang/ProcessBuilder;-><init>([Ljava/lang/String;)V
 
-    .line 249
+    .line 472
     invoke-virtual {v2, v5}, Ljava/lang/ProcessBuilder;->redirectErrorStream(Z)Ljava/lang/ProcessBuilder;
 
-    .line 250
+    .line 473
     invoke-virtual {v2}, Ljava/lang/ProcessBuilder;->start()Ljava/lang/Process;
 
     move-result-object v2
 
-    .line 251
-    invoke-static {v2}, Lio/kamihama/magianative/CNLog;->access$102(Ljava/lang/Process;)Ljava/lang/Process;
+    .line 474
+    invoke-static {v2}, Lio/kamihama/magianative/CNLog;->access$402(Ljava/lang/Process;)Ljava/lang/Process;
 
-    .line 252
+    .line 475
     const-string v3, "INFO"
 
     const-string v4, "logcat \u56de\u6536\u5df2\u542f\u52a8"
 
     invoke-static {v0, v3, v4, v1}, Lio/kamihama/magianative/CNLog;->write(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)V
 
-    .line 253
+    .line 476
     new-instance v3, Ljava/io/BufferedReader;
 
     new-instance v4, Ljava/io/InputStreamReader;
 
-    .line 254
+    .line 477
     invoke-virtual {v2}, Ljava/lang/Process;->getInputStream()Ljava/io/InputStream;
 
     move-result-object v2
@@ -167,7 +167,7 @@
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_2
 
-    .line 256
+    .line 479
     :goto_0
     :try_start_1
     invoke-virtual {v3}, Ljava/io/BufferedReader;->readLine()Ljava/lang/String;
@@ -176,8 +176,8 @@
 
     if-eqz v2, :cond_2
 
-    .line 257
-    invoke-static {}, Lio/kamihama/magianative/CNLog;->access$100()Ljava/lang/Process;
+    .line 480
+    invoke-static {}, Lio/kamihama/magianative/CNLog;->access$400()Ljava/lang/Process;
 
     move-result-object v4
 
@@ -185,7 +185,7 @@
 
     goto :goto_1
 
-    .line 258
+    .line 481
     :cond_0
     invoke-direct {p0, v2}, Lio/kamihama/magianative/CNLog$LogcatReader;->isOwnLine(Ljava/lang/String;)Z
 
@@ -195,15 +195,19 @@
 
     goto :goto_0
 
-    .line 259
+    .line 482
     :cond_1
-    invoke-static {v2}, Lio/kamihama/magianative/CNLog;->writeRaw(Ljava/lang/String;)V
+    invoke-static {v2}, Lio/kamihama/magianative/CNLog;->classify(Ljava/lang/String;)I
+
+    move-result v4
+
+    invoke-static {v2, v4}, Lio/kamihama/magianative/CNLog;->writeRaw(Ljava/lang/String;I)V
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_1
 
     goto :goto_0
 
-    .line 264
+    .line 487
     :cond_2
     :goto_1
     :try_start_2
@@ -218,7 +222,7 @@
 
     goto :goto_4
 
-    .line 261
+    .line 484
     :catchall_1
     move-exception v2
 
@@ -229,7 +233,7 @@
 
     move-object v3, v1
 
-    .line 262
+    .line 485
     :goto_2
     :try_start_3
     const-string v4, "WARN"
@@ -261,7 +265,7 @@
     :catchall_3
     move-exception v0
 
-    .line 264
+    .line 487
     :goto_3
     if-eqz v3, :cond_3
 
@@ -270,7 +274,7 @@
     :try_end_4
     .catchall {:try_start_4 .. :try_end_4} :catchall_0
 
-    .line 266
+    .line 489
     :cond_3
     :goto_4
     return-void

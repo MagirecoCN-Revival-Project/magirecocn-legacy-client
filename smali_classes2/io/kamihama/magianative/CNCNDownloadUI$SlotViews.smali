@@ -30,10 +30,10 @@
 .method constructor <init>(Landroid/widget/TextView;Landroid/widget/TextView;Landroid/widget/TextView;Landroid/widget/ProgressBar;Landroid/view/View;)V
     .locals 0
 
-    .line 296
+    .line 303
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
-    .line 297
+    .line 304
     iput-object p1, p0, Lio/kamihama/magianative/CNCNDownloadUI$SlotViews;->nameView:Landroid/widget/TextView;
 
     iput-object p2, p0, Lio/kamihama/magianative/CNCNDownloadUI$SlotViews;->infoView:Landroid/widget/TextView;
@@ -44,6 +44,6 @@
 
     iput-object p5, p0, Lio/kamihama/magianative/CNCNDownloadUI$SlotViews;->divider:Landroid/view/View;
 
-    .line 298
+    .line 305
     return-void
 .end method

@@ -21,7 +21,7 @@
 .method public constructor <init>()V
     .locals 0
 
-    .line 1483
+    .line 1574
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     return-void
@@ -32,20 +32,20 @@
 .method public run()V
     .locals 1
 
-    .line 1487
+    .line 1578
     :try_start_0
-    invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$2000()V
+    invoke-static {}, Lio/kamihama/magianative/CNCNDownloadUI;->access$2100()V
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    .line 1489
+    .line 1580
     goto :goto_0
 
-    .line 1488
+    .line 1579
     :catchall_0
     move-exception v0
 
-    .line 1490
+    .line 1581
     :goto_0
     return-void
 .end method

@@ -22,9 +22,9 @@
 .method constructor <init>(Ljava/lang/String;)V
     .locals 0
 
-    .line 1254
+    .line 1331
     invoke-direct {p0, p1}, Ljava/io/IOException;-><init>(Ljava/lang/String;)V
 
-    .line 1255
+    .line 1332
     return-void
 .end method

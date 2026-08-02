@@ -50,9 +50,6 @@
     invoke-static {v2, v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
     :goto_0
-    # Java 侧安装器入口：与 native hook 互为备份，哨兵保证只执行一次
-    invoke-static {}, Lio/kamihama/magianative/CNDownloaderFix;->triggerInstaller()V
-
     invoke-super {p0}, Landroid/app/Application;->onCreate()V
 
     return-void

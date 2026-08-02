@@ -29,17 +29,17 @@
 .method constructor <init>(Landroid/app/Activity;Ljava/lang/String;Landroid/widget/ImageView;)V
     .locals 0
 
-    .line 401
+    .line 408
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
-    .line 402
+    .line 409
     iput-object p1, p0, Lio/kamihama/magianative/CNCNDownloadUI$AssetBitmapLoader;->act:Landroid/app/Activity;
 
     iput-object p2, p0, Lio/kamihama/magianative/CNCNDownloadUI$AssetBitmapLoader;->assetPath:Ljava/lang/String;
 
     iput-object p3, p0, Lio/kamihama/magianative/CNCNDownloadUI$AssetBitmapLoader;->target:Landroid/widget/ImageView;
 
-    .line 403
+    .line 410
     return-void
 .end method
 
@@ -48,7 +48,7 @@
 .method public run()V
     .locals 4
 
-    .line 407
+    .line 414
     :try_start_0
     iget-object v0, p0, Lio/kamihama/magianative/CNCNDownloadUI$AssetBitmapLoader;->act:Landroid/app/Activity;
 
@@ -64,7 +64,7 @@
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_3
 
-    .line 409
+    .line 416
     :try_start_1
     invoke-static {v0}, Landroid/graphics/BitmapFactory;->decodeStream(Ljava/io/InputStream;)Landroid/graphics/Bitmap;
 
@@ -72,7 +72,7 @@
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_1
 
-    .line 411
+    .line 418
     :try_start_2
     invoke-virtual {v0}, Ljava/io/InputStream;->close()V
     :try_end_2
@@ -83,16 +83,16 @@
     :catchall_0
     move-exception v0
 
-    .line 412
+    .line 419
     nop
 
-    .line 413
+    .line 420
     :goto_0
     if-nez v1, :cond_0
 
     return-void
 
-    .line 414
+    .line 421
     :cond_0
     :try_start_3
     iget-object v0, p0, Lio/kamihama/magianative/CNCNDownloadUI$AssetBitmapLoader;->act:Landroid/app/Activity;
@@ -109,7 +109,7 @@
 
     goto :goto_2
 
-    .line 411
+    .line 418
     :catchall_1
     move-exception v1
 
@@ -123,20 +123,20 @@
     :catchall_2
     move-exception v0
 
-    .line 412
+    .line 419
     :goto_1
     :try_start_5
     throw v1
     :try_end_5
     .catchall {:try_start_5 .. :try_end_5} :catchall_3
 
-    .line 415
+    .line 422
     :catchall_3
     move-exception v0
 
     :goto_2
     nop
 
-    .line 416
+    .line 423
     return-void
 .end method

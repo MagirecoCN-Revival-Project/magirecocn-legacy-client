@@ -21,7 +21,7 @@
 .method constructor <init>()V
     .locals 0
 
-    .line 685
+    .line 692
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     return-void
@@ -32,7 +32,7 @@
 .method public onTouch(Landroid/view/View;Landroid/view/MotionEvent;)Z
     .locals 0
 
-    .line 686
+    .line 693
     const/4 p1, 0x1
 
     return p1
