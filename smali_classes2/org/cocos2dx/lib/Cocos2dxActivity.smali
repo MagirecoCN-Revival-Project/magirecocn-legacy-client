@@ -851,14 +851,18 @@
     # 引擎库没加载时符号解析必然失败。
     # 它取代原先的 libuwasa.so（端点重定向）与 libcn_hook.so（下载流水线）。
     :try_start_1
-    # libMagiaLegacy 动态链接 libshadowhook.so，必须先把它装进来。
-    # 只靠依赖自动解析也能成，但显式加载能让「缺哪个库」在日志里一目了然
-    # ——上一版就是漏打包了它，报的是 dlopen failed: library "libshadowhook.so"
-    # not found，而错误只出现在 MagiaLegacy 的加载栈上，不够直观。
-    const-string v0, "shadowhook"
-
-    invoke-static {v0}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V
-
+    # ⚠ 只加载 MagiaLegacy，**不要**显式 loadLibrary("shadowhook")。
+    #
+    # libMagiaLegacy 对 libshadowhook.so 有 DT_NEEDED，动态链接器会在
+    # dlopen MagiaLegacy 时自动把它带进来——而按依赖加载**不会**调用
+    # 被依赖库的 JNI_OnLoad。
+    #
+    # 一旦改成显式 System.loadLibrary("shadowhook")，就会触发它自己的
+    # JNI_OnLoad；那个函数要给 com/bytedance/shadowhook/ShadowHook 注册
+    # native 方法，而我们的包里没有这个 Java 类（我们只用它的 C 接口），
+    # FindClass 失败 → 返回 JNI_ERR → UnsatisfiedLinkError:
+    #   JNI_ERR returned from JNI_OnLoad in ".../libshadowhook.so"
+    # 这个坑踩过一次，别再加回来。
     const-string v0, "MagiaLegacy"
 
     invoke-static {v0}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V
