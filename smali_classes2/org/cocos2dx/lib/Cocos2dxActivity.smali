@@ -846,6 +846,35 @@
     invoke-virtual {v0}, Ljava/lang/Exception;->printStackTrace()V
 
     :goto_0
+    # ---- 复兴计划补丁：紧接引擎库之后链式加载 libMagiaLegacy.so ----
+    # 必须在 madomagi_native 之后：本库在 JNI_OnLoad 里同步按符号名装 hook，
+    # 引擎库没加载时符号解析必然失败。
+    # 它取代原先的 libuwasa.so（端点重定向）与 libcn_hook.so（下载流水线）。
+    :try_start_1
+    const-string v0, "MagiaLegacy"
+
+    invoke-static {v0}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V
+
+    const-string v0, "MagiaDump"
+
+    const-string v1, "=== [JAVA] libMagiaLegacy.so loaded ==="
+
+    invoke-static {v0, v1}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+    :try_end_1
+    .catch Ljava/lang/Throwable; {:try_start_1 .. :try_end_1} :catch_1
+
+    goto :goto_1
+
+    :catch_1
+    move-exception v0
+
+    const-string v1, "MagiaDump"
+
+    const-string v2, "=== [JAVA] libMagiaLegacy.so load FAILED! ==="
+
+    invoke-static {v1, v2, v0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+
+    :goto_1
     return-void
 .end method
 

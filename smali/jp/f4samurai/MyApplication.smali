@@ -25,37 +25,15 @@
 
     invoke-static {v0, v1}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
-    const-string v0, "cn_hook"
+    # ---- 复兴计划补丁：不再在这里加载 libcn_hook.so ----
+    # cn_hook 是二改产物（拦引擎下载入口接我们的浮层）。它的职责已由
+    # libMagiaLegacy.so 接管，而后者必须在引擎库之后加载，故改到
+    # Cocos2dxActivity.onLoadNativeLibraries 里链式加载。
+    # 在这里加载会因为 madomagi_native 尚未就位而符号解析失败。
 
-    :try_start_0
-    invoke-static {v0}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V
-
-    const-string v1, "MagiaDump"
-
-    const-string v2, "=== [JAVA] libcn_hook.so standard load SUCCESS! ==="
-
-    invoke-static {v1, v2}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
-    :try_end_0
-    .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :catch_0
-
-    goto :goto_0
-
-    :catch_0
-    move-exception v1
-
-    const-string v2, "MagiaDump"
-
-    const-string v0, "=== [JAVA] libcn_hook.so standard load FAILED! ==="
-
-    invoke-static {v2, v0, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
-
-    :goto_0
     invoke-super {p0}, Landroid/app/Application;->onCreate()V
 
-    # ---- 复兴计划补丁：Java 侧安装器入口（native hook 之外的第二道保险）----
-    # native 侧只有 DownloadAssetJsonState::checkParseJson 和 MainScene::onError
-    # 会转调 startCNDownload；引擎走不到那一步，安装器就永远起不来。
-    # triggerInstaller() 自身不抛，且看到 cn_base_done.flag 会立刻返回。
+    # ---- 复兴计划补丁：Java 侧安装器入口（native 触发之外的第二道保险）----
     :try_start_1
     invoke-static {}, Lio/kamihama/magianative/CNDownloaderFix;->triggerInstaller()V
     :try_end_1
