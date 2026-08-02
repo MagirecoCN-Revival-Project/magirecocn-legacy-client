@@ -851,6 +851,14 @@
     # 引擎库没加载时符号解析必然失败。
     # 它取代原先的 libuwasa.so（端点重定向）与 libcn_hook.so（下载流水线）。
     :try_start_1
+    # libMagiaLegacy 动态链接 libshadowhook.so，必须先把它装进来。
+    # 只靠依赖自动解析也能成，但显式加载能让「缺哪个库」在日志里一目了然
+    # ——上一版就是漏打包了它，报的是 dlopen failed: library "libshadowhook.so"
+    # not found，而错误只出现在 MagiaLegacy 的加载栈上，不够直观。
+    const-string v0, "shadowhook"
+
+    invoke-static {v0}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V
+
     const-string v0, "MagiaLegacy"
 
     invoke-static {v0}, Ljava/lang/System;->loadLibrary(Ljava/lang/String;)V
