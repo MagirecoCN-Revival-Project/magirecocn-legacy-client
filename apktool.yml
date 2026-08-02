@@ -46,3 +46,8 @@ doNotCompress:
 - assets/dexopt/baseline.prof
 - assets/dexopt/baseline.profm
 - jpg
+# ogg 必须以 Stored 入包：AssetManager.openFd() 只能打开未压缩的 asset，压缩的会抛
+# "This file can not be opened as a file descriptor; it is probably compressed"，
+# 浮层 BGM 就静默失效。真机构建时 aapt 的默认不压缩列表本来就含 .ogg，是 apktool
+# 重打包没带上。反正 Vorbis 再 deflate 也压不动（实测 0%）。
+- ogg
