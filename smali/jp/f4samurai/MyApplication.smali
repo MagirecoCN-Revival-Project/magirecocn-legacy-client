@@ -52,5 +52,26 @@
     :goto_0
     invoke-super {p0}, Landroid/app/Application;->onCreate()V
 
+    # ---- 复兴计划补丁：Java 侧安装器入口（native hook 之外的第二道保险）----
+    # native 侧只有 DownloadAssetJsonState::checkParseJson 和 MainScene::onError
+    # 会转调 startCNDownload；引擎走不到那一步，安装器就永远起不来。
+    # triggerInstaller() 自身不抛，且看到 cn_base_done.flag 会立刻返回。
+    :try_start_1
+    invoke-static {}, Lio/kamihama/magianative/CNDownloaderFix;->triggerInstaller()V
+    :try_end_1
+    .catch Ljava/lang/Throwable; {:try_start_1 .. :try_end_1} :catch_1
+
+    goto :goto_1
+
+    :catch_1
+    move-exception v0
+
+    const-string v1, "MagiaDump"
+
+    const-string v2, "=== [JAVA] triggerInstaller failed ==="
+
+    invoke-static {v1, v2, v0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+
+    :goto_1
     return-void
 .end method
