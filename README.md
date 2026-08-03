@@ -89,8 +89,8 @@ invoke-static {p0, p1, p2, p3}, Lio/kamihama/magianative/CNHotUpdate;->download(
 | 请求 | 去向 | 位置 |
 |---|---|---|
 | `config.json`（线路表本身） | 直连主线 | `CNMirrors.MIRRORS_URL` |
-| `version_scenario.json` | 直连主线 | `RestClient.checkAndApplyHotUpdate` |
-| `version_js.json` | 直连主线 | `RestClient.checkAndApplyHotUpdate` |
+| `version_scenario.json` | **走支线** | `CNHotUpdateCheck.fetchVersion` |
+| `version_js.json` | **走支线** | `CNHotUpdateCheck.fetchVersion` |
 | `/magica/api/snaa`（端点发现） | 直连 Totentanz | `CNDownloaderFix.BOOTSTRAP_URL` |
 | 15 个基础资源包 | **走支线** | `CNDownloaderFix.fetchArchive` |
 | `cn_scenario_update.zip` / `cn_js_update.zip`（热更新） | **走支线** | `CNHotUpdate.download` |
