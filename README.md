@@ -24,7 +24,7 @@ smali_classes3/                 ← classes3.dex；全部由 patch/ 的 Java 编
 patch/src/main/java/            ← ★ 补丁源码，唯一事实来源
 jadx-reference/                 ← jadx 反编译产物（只读参考，不参与构建）
 tools/                          ← 断点续传 / 热更新的测试套件
-mirrors.json                    ← 线上线路列表的快照（真实配置，非样例）
+config.json                    ← 线上线路列表的快照（真实配置，非样例）
 ```
 
 ### 为什么 jadx 产物不参与构建
@@ -43,7 +43,7 @@ mirrors.json                    ← 线上线路列表的快照（真实配置�
 | `CNCNDownloadUI` | 资源下载浮层。背景图 + 毛玻璃底板 + 左列署名区 + 右列文件槽位/总进度；左上 LOG 胶囊、右上主题切换与 GitHub 胶囊 |
 | `CNDownloaderFix` | 资源安装器。15 个基础包的下载、解压校验、完成标记、重试 |
 | `CNChunkedDownload` | 多线程分片下载 + 断点续传 |
-| `CNMirrors` | 线路目录：从 `mirrors.json` 拉取线路表，失败/停滞/过慢时自动换线 |
+| `CNMirrors` | 线路目录：从 `config.json` 拉取线路表，失败/停滞/过慢时自动换线 |
 | `CNHotUpdate` | 热更新的文件下载，与首次安装共用同一套选线与分片逻辑 |
 | `CNLog` | 统一日志：logcat + 内存环形缓冲 + 文件，LOG 面板直接渲染同一份缓冲区 |
 
@@ -88,7 +88,7 @@ invoke-static {p0, p1, p2, p3}, Lio/kamihama/magianative/CNHotUpdate;->download(
 
 | 请求 | 去向 | 位置 |
 |---|---|---|
-| `mirrors.json`（线路表本身） | 直连主线 | `CNMirrors.MIRRORS_URL` |
+| `config.json`（线路表本身） | 直连主线 | `CNMirrors.MIRRORS_URL` |
 | `version_scenario.json` | 直连主线 | `RestClient.checkAndApplyHotUpdate` |
 | `version_js.json` | 直连主线 | `RestClient.checkAndApplyHotUpdate` |
 | `/magica/api/snaa`（端点发现） | 直连 Totentanz | `CNDownloaderFix.BOOTSTRAP_URL` |
@@ -130,7 +130,7 @@ invoke-static {p0, p1, p2, p3}, Lio/kamihama/magianative/CNHotUpdate;->download(
    **若原意就是 KB/s，请改代码而不是把线上值调大**，否则慢速用户会全量失败。
 
 > `assets-cdn1` 从构建环境访问是 100% 403（nginx 原样返回，与 UA / Referer 无关，
-> 连 `mirrors.json` 本身也是 403）。无法区分「对所有人都坏」还是「只挡机房 IP」。
+> 连 `config.json` 本身也是 403）。无法区分「对所有人都坏」还是「只挡机房 IP」。
 > 它是最高权重线路，所以每次安装的第一次尝试都会撞上它；好在
 > `switch_after_failures: 1` 会让它立刻进入 60 秒冷却，后续文件自动跳过，
 > 代价被限制在一次尝试 + 2 秒退避。
