@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate MagiaLegacy with ABI-safe text and typed font-path hooks."""
+"""Generate MagiaLegacy with inlined ABI-safe text and typed font hooks."""
 from __future__ import annotations
 
 import argparse
@@ -9,12 +9,12 @@ from pathlib import Path
 import sys
 
 START_TEXT_IMPL = "// ─── 引擎硬编码串翻译（cocos2d::Label 系列钩子）"
-END_TEXT_IMPL = "// NDK libc++ std::string 原地改写（font 段复用 i18n 段的 NdkStrView）"
-START_FONT_IMPL = END_TEXT_IMPL
 END_FONT_IMPL = "// ─── JNI_OnLoad"
 START_TEXT_HOOKS = "    // ── 引擎硬编码串翻译（cocos2d::Label 系列）──"
 START_FONT_HOOKS = "    // ── 引擎 UI 字体路径重定向（MTF4a5kp → TTZhiHeiGB3-W4）──"
 END_FONT_HOOKS = '    LOGI("[JNI] hooks 安装完成：成功 %d 个，失败 %d 个", hookOk, hookFail);'
+TEXT_INLINE_MARKER = "// BEGIN INLINED RuntimeTextI18n.inc"
+FONT_INLINE_MARKER = "// BEGIN INLINED RuntimeFontPathHook.inc"
 
 UNSAFE_TOKENS = (
     "static std::unordered_map<std::string, std::string> g_engineI18n;",
@@ -30,8 +30,8 @@ UNSAFE_TOKENS = (
     "using SetTtfCfgFn = void (*)(void*, const void*)",
 )
 REQUIRED_GENERATED = (
-    '#include "RuntimeTextI18n.inc"',
-    '#include "RuntimeFontPathHook.inc"',
+    TEXT_INLINE_MARKER,
+    FONT_INLINE_MARKER,
     "installRuntimeTextI18nHooks(H);",
     "installRuntimeFontPathHooks(H);",
     "#include <algorithm>",
@@ -92,6 +92,15 @@ def require_tokens(text: str, tokens: tuple[str, ...], label: str) -> None:
             raise GenerationError(f"{label} missing: {token}")
 
 
+def inline_block(marker: str, filename: str, content: str) -> str:
+    return (
+        f"{marker}\n"
+        f"// Source: {filename}; generated copy, do not edit here.\n"
+        + content.rstrip() + "\n"
+        f"// END INLINED {filename}"
+    )
+
+
 def generate(source: Path, output: Path, report: Path | None) -> dict:
     original = source.read_text("utf-8")
     text_include_path = source.parent / "RuntimeTextI18n.inc"
@@ -106,17 +115,18 @@ def generate(source: Path, output: Path, report: Path | None) -> dict:
     generated = ensure_include(generated, "#include <algorithm>", "#include <atomic>")
     generated = ensure_include(generated, "#include <utility>", "#include <vector>")
 
-    # 先替换整个“文本实现 + 旧字体实现”区域，避免旧 NdkStrView/原地内存改写残留。
-    generated = replace_between(
-        generated, START_TEXT_IMPL, END_FONT_IMPL,
-        '#include "RuntimeTextI18n.inc"\n#include "RuntimeFontPathHook.inc"',
+    implementations = (
+        inline_block(TEXT_INLINE_MARKER, "RuntimeTextI18n.inc", text_include)
+        + "\n\n"
+        + inline_block(FONT_INLINE_MARKER, "RuntimeFontPathHook.inc", font_include)
     )
-    # 文本 hook 区域以字体 hook 标题为结束标记。
+    generated = replace_between(
+        generated, START_TEXT_IMPL, END_FONT_IMPL, implementations,
+    )
     generated = replace_between(
         generated, START_TEXT_HOOKS, START_FONT_HOOKS,
         "    installRuntimeTextI18nHooks(H);",
     )
-    # 字体 hook 区域保留同一三个符号，但由 typed installer 提供。
     generated = replace_between(
         generated, START_FONT_HOOKS, END_FONT_HOOKS,
         "    installRuntimeFontPathHooks(H);",
@@ -126,6 +136,17 @@ def generate(source: Path, output: Path, report: Path | None) -> dict:
         if token in generated:
             raise GenerationError(f"unsafe legacy native code survived: {token}")
     require_tokens(generated, REQUIRED_GENERATED, "generated source")
+
+    text_definition = generated.find("static void installRuntimeTextI18nHooks")
+    text_call = generated.find("installRuntimeTextI18nHooks(H);")
+    font_definition = generated.find("static void installRuntimeFontPathHooks")
+    font_call = generated.find("installRuntimeFontPathHooks(H);")
+    if min(text_definition, text_call, font_definition, font_call) < 0:
+        raise GenerationError("typed hook definition/call position not found")
+    if text_definition >= text_call:
+        raise GenerationError("text hook installer definition appears after JNI call")
+    if font_definition >= font_call:
+        raise GenerationError("font hook installer definition appears after JNI call")
 
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(generated, "utf-8")
@@ -138,6 +159,9 @@ def generate(source: Path, output: Path, report: Path | None) -> dict:
         "textIncludeSha256": sha256(text_include),
         "fontIncludeSha256": sha256(font_include),
         "outputSha256": sha256(generated),
+        "implementationsInlined": True,
+        "textDefinitionBeforeCall": True,
+        "fontDefinitionBeforeCall": True,
         "abiSafeTextHooks": True,
         "immutableTranslationSnapshot": True,
         "color4bRgba": True,
