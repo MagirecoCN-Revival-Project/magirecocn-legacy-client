@@ -43,6 +43,32 @@ CONTAINMENT_REPLACEMENT = '''    private static void requireContained(File root,
         }
     }
 '''
+WRITE_MANIFEST_ANCHOR = '''    private static void writeManifest(File file, List<Entry> entries) throws IOException {
+        JSONArray array = new JSONArray();
+        for (Entry entry : entries) {
+            JSONObject object = new JSONObject();
+            object.put("path", entry.path);
+            object.put("existed", entry.existed);
+            array.put(object);
+        }
+        writeAtomic(file, array.toString());
+    }
+'''
+WRITE_MANIFEST_REPLACEMENT = '''    private static void writeManifest(File file, List<Entry> entries) throws IOException {
+        try {
+            JSONArray array = new JSONArray();
+            for (Entry entry : entries) {
+                JSONObject object = new JSONObject();
+                object.put("path", entry.path);
+                object.put("existed", entry.existed);
+                array.put(object);
+            }
+            writeAtomic(file, array.toString());
+        } catch (org.json.JSONException error) {
+            throw new IOException("无法生成热更新事务清单", error);
+        }
+    }
+'''
 
 
 class PrepareError(RuntimeError):
@@ -116,10 +142,15 @@ def main() -> int:
         tx_text, containment_count = replace_exact(
             tx_text, CONTAINMENT_ANCHOR, CONTAINMENT_REPLACEMENT,
             1, "transaction-root containment")
+        tx_text, manifest_exception_count = replace_exact(
+            tx_text, WRITE_MANIFEST_ANCHOR, WRITE_MANIFEST_REPLACEMENT,
+            1, "Android JSONException manifest boundary")
         if "writeState(txRoot, STATE_ROLLING_BACK);" in tx_text:
             raise PrepareError("ROLLING_BACK state rewrite survived")
         if "childCanonical.equals(rootCanonical)" not in tx_text:
             raise PrepareError("transaction root equality was not allowed")
+        if "catch (org.json.JSONException error)" not in tx_text:
+            raise PrepareError("Android JSONException boundary did not survive")
         tx_target.write_text(tx_text, "utf-8")
 
         report = {
@@ -130,8 +161,10 @@ def main() -> int:
             "transactionApplyReplacements": apply_count,
             "rollbackStateWritesRemoved": rollback_state_count,
             "rootContainmentFixes": containment_count,
+            "manifestJsonExceptionBoundaries": manifest_exception_count,
             "legacyLiveTreeExtractionRemaining": False,
             "rollbackStateGapRemaining": False,
+            "androidJsonCheckedExceptionHandled": True,
         }
         if args.report:
             args.report.parent.mkdir(parents=True, exist_ok=True)
