@@ -26,6 +26,7 @@ jobs:
             tools/prepare-cn-downloader-ui-text.py \
             tools/prepare-changed-downloader-ui-text.py \
             tools/prepare-hot-update-transaction.py \
+            tools/prepare-safe-external-links.py \
             tools/prepare-native-text-i18n.py \
             tools/audit-webview-runtime-overlay.py \
             tools/validate-js-update-package.py \
@@ -45,6 +46,9 @@ jobs:
           python tools/prepare-hot-update-transaction.py \
             --java-root .build/runtime-i18n-java \
             --report .build/hot-update-transaction-report.json
+          python tools/prepare-safe-external-links.py \
+            --java-root .build/runtime-i18n-java \
+            --report .build/safe-external-links-report.json
 
           test -s .build/runtime-i18n-java/io/kamihama/magianative/CNCNDownloadUIText.java
           grep -q 'MagiaCN 安装器' \
@@ -57,11 +61,16 @@ jobs:
 
           CHECK=.build/runtime-i18n-java/io/kamihama/magianative/CNHotUpdateCheck.java
           TX=.build/runtime-i18n-java/io/kamihama/magianative/CNHotUpdateTransaction.java
+          UI=.build/runtime-i18n-java/io/kamihama/magianative/CNCNDownloadUI.java
           grep -q 'CNHotUpdateTransaction.recover(filesRoot);' "$CHECK"
           grep -q 'CNHotUpdateTransaction.apply(tmp, new File(FILES_DIR));' "$CHECK"
           ! grep -q 'CNDownloaderFix.extractChecked(tmp, new File(FILES_DIR));' "$CHECK"
           grep -q 'childCanonical.equals(rootCanonical)' "$TX"
           ! grep -q 'writeState(txRoot, STATE_ROLLING_BACK);' "$TX"
+          test "$(grep -c 'CNSafeExternalLinks.open(act, url);' "$UI")" -eq 2
+          ! grep -q 'new Intent(Intent.ACTION_VIEW, Uri.parse(url))' "$UI"
+          grep -q '"https".equalsIgnoreCase(uri.getScheme())' \
+            .build/runtime-i18n-java/io/kamihama/magianative/CNSafeExternalLinks.java
 
       - name: Generate audited native source
         run: |
@@ -135,6 +144,7 @@ jobs:
           path: |
             .build/runtime-i18n-java-report.json
             .build/hot-update-transaction-report.json
+            .build/safe-external-links-report.json
             .build/native-generated/report.json
             .build/webview-overlay-audit.json
           if-no-files-found: warn
