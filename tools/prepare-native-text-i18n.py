@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate MagiaLegacy with ABI-safe text hooks and preserved font hooks."""
+"""Generate MagiaLegacy with ABI-safe text and typed font-path hooks."""
 from __future__ import annotations
 
 import argparse
@@ -8,23 +8,32 @@ import json
 from pathlib import Path
 import sys
 
-START_IMPL = "// ─── 引擎硬编码串翻译（cocos2d::Label 系列钩子）"
-END_IMPL = "// NDK libc++ std::string 原地改写（font 段复用 i18n 段的 NdkStrView）"
-START_HOOKS = "    // ── 引擎硬编码串翻译（cocos2d::Label 系列）──"
-END_HOOKS = "    // ── 引擎 UI 字体路径重定向（MTF4a5kp → TTZhiHeiGB3-W4）──"
+START_TEXT_IMPL = "// ─── 引擎硬编码串翻译（cocos2d::Label 系列钩子）"
+END_TEXT_IMPL = "// NDK libc++ std::string 原地改写（font 段复用 i18n 段的 NdkStrView）"
+START_FONT_IMPL = END_TEXT_IMPL
+END_FONT_IMPL = "// ─── JNI_OnLoad"
+START_TEXT_HOOKS = "    // ── 引擎硬编码串翻译（cocos2d::Label 系列）──"
+START_FONT_HOOKS = "    // ── 引擎 UI 字体路径重定向（MTF4a5kp → TTZhiHeiGB3-W4）──"
+END_FONT_HOOKS = '    LOGI("[JNI] hooks 安装完成：成功 %d 个，失败 %d 个", hookOk, hookFail);'
 
-UNSAFE_TEXT_TOKENS = (
+UNSAFE_TOKENS = (
     "static std::unordered_map<std::string, std::string> g_engineI18n;",
     "struct FakeNdkStr",
     "fakeNdkStr(",
     "using SetStringFn = void (*)(void*, const void*)",
     "struct CNColor4B { unsigned char r, g, b; };",
     "g_engineI18n.swap(fresh)",
+    "struct NdkStrView",
+    "fontPathOverwrite(",
+    "fontPathFix(",
+    "static std::string hold;",
+    "using SetTtfCfgFn = void (*)(void*, const void*)",
 )
 REQUIRED_GENERATED = (
     '#include "RuntimeTextI18n.inc"',
-    '#include "RuntimeFontCompat.inc"',
+    '#include "RuntimeFontPathHook.inc"',
     "installRuntimeTextI18nHooks(H);",
+    "installRuntimeFontPathHooks(H);",
     "#include <algorithm>",
     "#include <utility>",
 )
@@ -36,17 +45,18 @@ REQUIRED_TEXT_INCLUDE = (
     "using RuntimeSetStringFn = void (*)(void*, const std::string&);",
     "installRuntimeTextI18nHooks",
 )
-REQUIRED_FONT_COMPAT = (
-    "struct NdkStrView",
-    "static NdkStrView ndkStrRead",
-    "armeabi-v7a",
-)
-REQUIRED_FONT = (
-    'static const char kFrom[] = "fonts/MTF4a5kp.ttf";',
-    'static const char kTo[]   = "fonts/TTZhiHeiGB3-W4.ttf";',
-    '"font: createWithTTF(cfg)"',
-    '"font: createWithTTF(str)"',
-    '"font: setTTFConfigInternal"',
+REQUIRED_FONT_INCLUDE = (
+    'RUNTIME_FONT_FROM[] = "fonts/MTF4a5kp.ttf"',
+    'RUNTIME_FONT_TO[] = "fonts/TTZhiHeiGB3-W4.ttf"',
+    "struct RuntimeTtfConfig",
+    "using CreateWithTtfConfigFn = void* (*)(",
+    "using CreateWithTtfPathFn = void* (*)(",
+    "using SetTtfConfigInternalFn = bool (*)(",
+    "RuntimeTtfConfig local = config;",
+    "installRuntimeFontPathHooks",
+    '"font: createWithTTF(cfg) typed MTF4a5kp→TTZhiHeiGB3-W4"',
+    '"font: createWithTTF(str) typed MTF4a5kp→TTZhiHeiGB3-W4"',
+    '"font: setTTFConfigInternal typed MTF4a5kp→TTZhiHeiGB3-W4"',
 )
 
 
@@ -85,47 +95,56 @@ def require_tokens(text: str, tokens: tuple[str, ...], label: str) -> None:
 def generate(source: Path, output: Path, report: Path | None) -> dict:
     original = source.read_text("utf-8")
     text_include_path = source.parent / "RuntimeTextI18n.inc"
-    font_compat_path = source.parent / "RuntimeFontCompat.inc"
+    font_include_path = source.parent / "RuntimeFontPathHook.inc"
     text_include = text_include_path.read_text("utf-8")
-    font_compat = font_compat_path.read_text("utf-8")
+    font_include = font_include_path.read_text("utf-8")
 
     require_tokens(text_include, REQUIRED_TEXT_INCLUDE, "RuntimeTextI18n.inc")
-    require_tokens(font_compat, REQUIRED_FONT_COMPAT, "RuntimeFontCompat.inc")
+    require_tokens(font_include, REQUIRED_FONT_INCLUDE, "RuntimeFontPathHook.inc")
 
     generated = original
     generated = ensure_include(generated, "#include <algorithm>", "#include <atomic>")
     generated = ensure_include(generated, "#include <utility>", "#include <vector>")
+
+    # 先替换整个“文本实现 + 旧字体实现”区域，避免旧 NdkStrView/原地内存改写残留。
     generated = replace_between(
-        generated, START_IMPL, END_IMPL,
-        '#include "RuntimeTextI18n.inc"\n#include "RuntimeFontCompat.inc"',
+        generated, START_TEXT_IMPL, END_FONT_IMPL,
+        '#include "RuntimeTextI18n.inc"\n#include "RuntimeFontPathHook.inc"',
     )
+    # 文本 hook 区域以字体 hook 标题为结束标记。
     generated = replace_between(
-        generated, START_HOOKS, END_HOOKS,
+        generated, START_TEXT_HOOKS, START_FONT_HOOKS,
         "    installRuntimeTextI18nHooks(H);",
     )
+    # 字体 hook 区域保留同一三个符号，但由 typed installer 提供。
+    generated = replace_between(
+        generated, START_FONT_HOOKS, END_FONT_HOOKS,
+        "    installRuntimeFontPathHooks(H);",
+    )
 
-    for token in UNSAFE_TEXT_TOKENS:
+    for token in UNSAFE_TOKENS:
         if token in generated:
-            raise GenerationError(f"unsafe text-hook code survived: {token}")
+            raise GenerationError(f"unsafe legacy native code survived: {token}")
     require_tokens(generated, REQUIRED_GENERATED, "generated source")
-    require_tokens(generated, REQUIRED_FONT, "verified font-path hook")
 
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(generated, "utf-8")
     result = {
         "source": str(source),
         "textInclude": str(text_include_path),
-        "fontCompatInclude": str(font_compat_path),
+        "fontInclude": str(font_include_path),
         "output": str(output),
         "sourceSha256": sha256(original),
         "textIncludeSha256": sha256(text_include),
-        "fontCompatSha256": sha256(font_compat),
+        "fontIncludeSha256": sha256(font_include),
         "outputSha256": sha256(generated),
         "abiSafeTextHooks": True,
         "immutableTranslationSnapshot": True,
         "color4bRgba": True,
-        "verifiedGlobalFontPathHookPreserved": True,
-        "fontCompatibilityLayerStillArm64Specific": True,
+        "typedGlobalFontPathHook": True,
+        "fontRoutePreserved": "MTF4a5kp→TTZhiHeiGB3-W4",
+        "fontFilesReplaced": False,
+        "arm64AndArmv7CompilerAbi": True,
     }
     if report:
         report.parent.mkdir(parents=True, exist_ok=True)
