@@ -306,6 +306,17 @@ public class CNCNDownloadUI {
     }
 
     private static CreditsModel creditsModel() {
+        // 配置还在路上：先给占位，避免「先默认名单、几秒后突变云端名单」的跳变。
+        // 加载失败（configState=2）才回落内置默认。配置到位/失败时
+        // CNMirrors.refresh 会调 refreshCredits 补刷，占位不会卡住。
+        if (CNMirrors.configState == 0) {
+            CreditsModel m = new CreditsModel();
+            m.kinds = new int[]{KIND_SUB};
+            m.texts = new String[]{"署名加载中…"};
+            m.urls  = new String[]{""};
+            m.spans = new String[]{""};
+            return m;
+        }
         JSONObject cfg = CNMirrors.uiCredits();
         if (cfg != null) {
             try {
@@ -341,6 +352,7 @@ public class CNCNDownloadUI {
     }
 
     private static String footerText() {
+        if (CNMirrors.configState == 0) return "署名加载中…";
         JSONObject cfg = CNMirrors.uiCredits();
         if (cfg != null) {
             String s = cfg.optString("footer", "").trim();
@@ -358,6 +370,31 @@ public class CNCNDownloadUI {
         return URL_GITHUB;
     }
 
+    /** 底部署名是否无限滚动。ui_credits.footer_marquee=false 可远程关闭。 */
+    private static boolean footerMarquee() {
+        JSONObject cfg = CNMirrors.uiCredits();
+        if (cfg != null && cfg.has("footer_marquee")) {
+            return cfg.optBoolean("footer_marquee", true);
+        }
+        return true;
+    }
+
+    /** 按当前配置应用底部滚动/静态模式（建成时与 refreshCredits 补刷都会调）。 */
+    private static void applyFooterMode() {
+        if (vFooter == null) return;
+        if (footerMarquee()) {
+            vFooter.setEllipsize(android.text.TextUtils.TruncateAt.MARQUEE);
+            vFooter.setMarqueeRepeatLimit(-1);
+            vFooter.setHorizontallyScrolling(true);
+            vFooter.setSelected(true);
+        } else {
+            // 关掉滚动：清 selected 停止 marquee，恢复普通截断
+            vFooter.setSelected(false);
+            vFooter.setHorizontallyScrolling(false);
+            vFooter.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        }
+    }
+
     // ---- 视图引用 ----
     private static TextView     vPhase;
     private static TextView     vStatus;
@@ -371,6 +408,7 @@ public class CNCNDownloadUI {
     private static TextView     vLogPill;
     private static FrameLayout  logModal;
     private static ScrollView   vLogScroll;
+    private static TextView     vFooter;
     private static GradientDrawable themeChipBg;
     private static GradientDrawable logPillBg;
     private static TextView vBgmPill;
@@ -789,21 +827,21 @@ public class CNCNDownloadUI {
         root.addView(headRight, themeLp);
 
         // ── 第 4 层：底部常驻署名条 ──
-        TextView footer = new TextView(act);
-        footer.setText(footerText());
-        footer.setTextColor(COLOR_SUB);
-        footer.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f);
-        footer.setSingleLine(true);
-        footer.setEllipsize(android.text.TextUtils.TruncateAt.MARQUEE);
-        footer.setMarqueeRepeatLimit(-1);
-        footer.setSelected(true);
-        footer.setHorizontallyScrolling(true);
-        footer.setPadding(dp(act, 16), 0, dp(act, 16), dp(act, 8));
+        // marquee 可经 ui_credits.footer_marquee=false 远程关闭：
+        // 无限滚动会持续触发重绘，让底下的 WebView 不停重建 Vulkan 帧缓冲，
+        // 在部分 Adreno 驱动上会放大 vkDestroyFramebuffer 崩溃的触发面。
+        vFooter = new TextView(act);
+        vFooter.setText(footerText());
+        vFooter.setTextColor(COLOR_SUB);
+        vFooter.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f);
+        vFooter.setSingleLine(true);
+        applyFooterMode();
+        vFooter.setPadding(dp(act, 16), 0, dp(act, 16), dp(act, 8));
         FrameLayout.LayoutParams footerLp = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         footerLp.gravity = Gravity.BOTTOM | Gravity.START;
-        root.addView(footer, footerLp);
+        root.addView(vFooter, footerLp);
 
         // ── 第 5 层：日志模态面板（默认隐藏） ──
         logModal = new FrameLayout(act);
@@ -1075,6 +1113,29 @@ public class CNCNDownloadUI {
                 vContribList.addView(t, lp);
             }
         }
+    }
+
+    /**
+     * 云端配置（ui_credits）到位后重刷署名区与底部滚动署名。
+     *
+     * <p>浮层经常在 config.json 拉取完成之前就已经用内置默认值建成——
+     * CNMirrors.refresh 成功后会调本方法补刷一次。任意线程可调，内部转 UI 线程。
+     */
+    public static void refreshCredits(final Activity act) {
+        if (act == null || !isShowing) return;
+        act.runOnUiThread(new Runnable() {
+            @Override public void run() {
+                try {
+                    populateContributors(act);
+                    if (vFooter != null) {
+                        vFooter.setText(footerText());
+                        applyFooterMode();
+                    }
+                } catch (Throwable t) {
+                    CNLog.w("界面", "刷新署名失败: " + t);
+                }
+            }
+        });
     }
 
     /** 为 15 个文件各建一个进度槽位。 */
@@ -2260,6 +2321,7 @@ public class CNCNDownloadUI {
     public static void hide() {
         // 浮层要收了，音乐也得停——否则安装完了背景音还在响。
         // 放在 isShowing 判断之前：即使浮层没建起来，也要保证不会有残留的播放线程。
+        stopOverlayFlag();  // 先撤引擎闸门标记，引擎才能继续推进
         try { CNBgm.stop(); } catch (Throwable ignore) {}
         Handler handler;
         if (!isShowing || (handler = uiHandler) == null) {
@@ -2343,11 +2405,54 @@ public class CNCNDownloadUI {
             isShowing = (overlayView != null);
             if (!isShowing) {
                 CNLog.e("界面", "浮层创建失败（overlayView 为空），将允许后续重试");
+            } else {
+                startOverlayFlag();
             }
         } catch (Throwable e) {
             isShowing = (overlayView != null);
             CNLog.e("界面", "show() 失败: " + e, e);
         }
+    }
+
+    // ---- 浮层激活标记（native 引擎闸门用）----
+    //
+    // 浮层显示期间，native 侧会闸住引擎的主页跳转和 BGM
+    // （见 MagiaLegacy.cpp 的 overlayActive/maybeReleaseDeferredTop）。
+    // 这里 show 成功时创建标记文件，每 2 秒心跳 touch 续期；
+    // hide 时停止心跳并删除。进程被杀导致心跳中断时，标记 6 秒后自动失效，
+    // native 侧自动放行，引擎不会被闸死。
+    private static final String OVERLAY_FLAG =
+        "/data/data/io.kamihama.totentanz/files/madomagi/cn_overlay_active.flag";
+    private static Thread overlayHeartbeat;
+
+    private static void startOverlayFlag() {
+        try {
+            java.io.File f = new java.io.File(OVERLAY_FLAG);
+            java.io.File parent = f.getParentFile();
+            if (parent != null) parent.mkdirs();
+            f.createNewFile();
+        } catch (Throwable t) {
+            CNLog.w("界面", "引擎闸门标记创建失败（引擎将不被闸住）: " + t);
+        }
+        if (overlayHeartbeat != null && overlayHeartbeat.isAlive()) return;
+        overlayHeartbeat = new Thread(new Runnable() {
+            @Override public void run() {
+                java.io.File f = new java.io.File(OVERLAY_FLAG);
+                while (isShowing) {
+                    try { f.setLastModified(System.currentTimeMillis()); } catch (Throwable ignore) {}
+                    try { Thread.sleep(2000L); } catch (InterruptedException ie) { return; }
+                }
+            }
+        }, "cn-overlay-flag");
+        overlayHeartbeat.setDaemon(true);
+        overlayHeartbeat.start();
+    }
+
+    private static void stopOverlayFlag() {
+        Thread t = overlayHeartbeat;
+        overlayHeartbeat = null;
+        if (t != null) t.interrupt();
+        try { new java.io.File(OVERLAY_FLAG).delete(); } catch (Throwable ignore) {}
     }
 
     public static void throttledUpdate() {
