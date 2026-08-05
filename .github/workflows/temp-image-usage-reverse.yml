@@ -1,0 +1,57 @@
+name: Temporary image usage reverse engineering
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  analyze-image-usage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout repository with LFS and submodules
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          lfs: true
+          submodules: recursive
+      - name: Install analysis dependencies
+        run: python -m pip install --disable-pip-version-check pillow pyahocorasick
+      - name: Restore reverse engineering analyzer
+        shell: bash
+        run: |
+          cat .github/image_usage_analyzer_parts/part_*.b64 | base64 -d | gzip -d > /tmp/reverse_image_usage.py
+          echo 'a0cf60fede40e27b36dacdc5c90aea4b20e18f825ac4c62248171a9ad2518a38  /tmp/reverse_image_usage.py' | sha256sum -c -
+          python -m py_compile /tmp/reverse_image_usage.py
+      - name: Analyze image call graph and build L2D reuse package
+        shell: bash
+        run: |
+          python /tmp/reverse_image_usage.py --repo . --out /tmp/magirecocn-image-callgraph-l2d-reuse | tee /tmp/analysis-summary.log
+          cp /tmp/analysis-summary.log /tmp/magirecocn-image-callgraph-l2d-reuse/00_overview/workflow_console_summary.log
+          cd /tmp/magirecocn-image-callgraph-l2d-reuse
+          find . -type f -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile
+          root = Path('/tmp/magirecocn-image-callgraph-l2d-reuse')
+          zip_path = Path('/tmp/magirecocn-image-callgraph-l2d-reuse.zip')
+          with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as z:
+              for p in sorted(root.rglob('*')):
+                  if p.is_file():
+                      z.write(p, p.relative_to(root.parent))
+          with zipfile.ZipFile(zip_path) as z:
+              bad = z.testzip()
+              if bad:
+                  raise RuntimeError(f'ZIP integrity failure: {bad}')
+          print('package_bytes', zip_path.stat().st_size)
+          print('package_files', sum(1 for p in root.rglob('*') if p.is_file()))
+          PY
+      - name: Upload reverse engineering package
+        uses: actions/upload-artifact@v4
+        with:
+          name: magirecocn-image-callgraph-l2d-reuse
+          path: /tmp/magirecocn-image-callgraph-l2d-reuse.zip
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
