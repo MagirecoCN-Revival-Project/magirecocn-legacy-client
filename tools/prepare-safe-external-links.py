@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Replace both raw ACTION_VIEW blocks with the validated HTTPS opener."""
+"""Replace every remaining raw ACTION_VIEW block with the HTTPS allowlist opener."""
 from __future__ import annotations
 
 import argparse
@@ -12,6 +12,7 @@ ANCHOR = '''                Intent it = new Intent(Intent.ACTION_VIEW, Uri.parse
                 it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 act.startActivity(it);'''
 REPLACEMENT = '''                CNSafeExternalLinks.open(act, url);'''
+RAW_MARKER = "new Intent(Intent.ACTION_VIEW, Uri.parse(url))"
 
 
 class PrepareError(RuntimeError):
@@ -26,19 +27,30 @@ def main() -> int:
     target = args.java_root / RELATIVE
     try:
         text = target.read_text("utf-8")
+        before_validated = text.count("CNSafeExternalLinks.open(act, url);")
         count = text.count(ANCHOR)
-        if count != 2:
-            raise PrepareError(f"expected two raw ACTION_VIEW blocks, found {count}")
+        # Older audited source had two blocks; latest main has already removed/refactored
+        # one and leaves only the actual browser-opening entry that still needs hardening.
+        if count not in (1, 2):
+            raise PrepareError(
+                f"expected one or two remaining raw ACTION_VIEW blocks, found {count}")
         text = text.replace(ANCHOR, REPLACEMENT)
-        if "new Intent(Intent.ACTION_VIEW, Uri.parse(url))" in text:
+        if RAW_MARKER in text:
             raise PrepareError("raw ACTION_VIEW block survived")
-        if text.count("CNSafeExternalLinks.open(act, url);") != 2:
-            raise PrepareError("validated opener count is not two")
+        validated = text.count("CNSafeExternalLinks.open(act, url);")
+        if validated != before_validated + count:
+            raise PrepareError(
+                f"validated opener count mismatch: before={before_validated}, "
+                f"replaced={count}, after={validated}")
         target.write_text(text, "utf-8")
         report = {
+            "schema": 2,
             "target": str(target),
             "rawActionViewBlocksReplaced": count,
-            "validatedHttpsOpeners": 2,
+            "preexistingValidatedOpeners": before_validated,
+            "validatedHttpsOpeners": validated,
+            "rawActionViewBlocksRemaining": 0,
+            "latestMainPartialFixPreserved": count == 1,
         }
         if args.report:
             args.report.parent.mkdir(parents=True, exist_ok=True)
