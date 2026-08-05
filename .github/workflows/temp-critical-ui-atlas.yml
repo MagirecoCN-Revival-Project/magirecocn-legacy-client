@@ -1,0 +1,75 @@
+name: Temporary critical UI atlas split
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  split-critical-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          lfs: true
+      - run: python -m pip install --disable-pip-version-check pillow
+      - name: Split common and story UI atlases
+        shell: bash
+        run: |
+          python - <<'PY'
+          import csv, plistlib, re
+          from pathlib import Path
+          from PIL import Image
+
+          root = Path('.')
+          out = Path('/tmp/critical-ui-atlas-frames')
+          out.mkdir(parents=True, exist_ok=True)
+          manifest = []
+          pairs = [
+              ('assets/package/window/common_btn0.plist', 'assets/package/window/common_btn0.png', 'common_buttons'),
+              ('assets/package/story/story_ui_sprites00.plist', 'assets/package/story/story_ui_sprites00.png', 'story_adv_controls'),
+          ]
+
+          def rect(info):
+              if all(k in info for k in ('x','y','width','height')):
+                  return tuple(int(info[k]) for k in ('x','y','width','height'))
+              value = info.get('frame') or info.get('textureRect')
+              if isinstance(value, str):
+                  nums = [int(x) for x in re.findall(r'-?\d+', value)]
+                  if len(nums) >= 4:
+                      return tuple(nums[:4])
+              return None
+
+          for plist_path, image_path, category in pairs:
+              data = plistlib.loads((root / plist_path).read_bytes())
+              frames = data.get('frames', {})
+              with Image.open(root / image_path) as atlas:
+                  atlas = atlas.convert('RGBA')
+                  target = out / category
+                  target.mkdir(parents=True, exist_ok=True)
+                  for frame_name, info in frames.items():
+                      r = rect(info)
+                      if not r:
+                          continue
+                      x, y, w, h = r
+                      crop = atlas.crop((x, y, x+w, y+h))
+                      dst = target / frame_name
+                      dst.parent.mkdir(parents=True, exist_ok=True)
+                      crop.save(dst)
+                      manifest.append([category, plist_path, image_path, frame_name, x, y, w, h, dst.relative_to(out).as_posix()])
+          with (out / 'critical_ui_atlas_manifest.csv').open('w', encoding='utf-8-sig', newline='') as f:
+              w = csv.writer(f)
+              w.writerow(['category','plist','atlas','frame','x','y','width','height','output'])
+              w.writerows(manifest)
+          (out / 'README.md').write_text(
+              f'Split {len(manifest)} frames from common_btn0 and story_ui_sprites00.\n', encoding='utf-8')
+          print('split frames:', len(manifest))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: magirecocn-critical-ui-atlas-frames
+          path: /tmp/critical-ui-atlas-frames
+          if-no-files-found: error
+          compression-level: 6
+          retention-days: 7
