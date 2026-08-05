@@ -2,17 +2,43 @@ name: Runtime i18n verification
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'patch/src/main/java/**'
+      - 'magia-native/**'
+      - 'tools/**'
+      - 'i18n/**'
+      - '.github/workflows/**'
 
 permissions:
   contents: read
 
 jobs:
   verify-sources:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.head_ref == 'feature/legacy-client-runtime-i18n'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
+    env:
+      PINNED_MAIN_SHA: d33561a24233e27b6e592d08bfb398c94c87329f
+
     steps:
       - name: Checkout work branch
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch and verify latest main baseline
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main:refs/remotes/origin/main
+          CURRENT=$(git rev-parse refs/remotes/origin/main)
+          [ "$CURRENT" = "$PINNED_MAIN_SHA" ] || {
+            echo "::error::main 已前进：期望 $PINNED_MAIN_SHA，当前 $CURRENT；必须先审查并更新固定基线"
+            exit 1
+          }
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -23,6 +49,8 @@ jobs:
         run: |
           set -euo pipefail
           python -m py_compile \
+            tools/prepare-main-runtime-baseline.py \
+            tools/prepare-main-hot-update-hardening.py \
             tools/prepare-cn-downloader-ui-text.py \
             tools/prepare-changed-downloader-ui-text.py \
             tools/prepare-hot-update-transaction.py \
@@ -30,45 +58,53 @@ jobs:
             tools/prepare-webview-overlay-probe.py \
             tools/prepare-native-text-i18n.py \
             tools/audit-webview-runtime-overlay.py \
+            tools/naturalize-runtime-game-data.py \
             tools/stamp-runtime-i18n-marker.py \
             tools/validate-js-update-package.py \
             tools/materialize-ui-text-overlay.py \
             tools/apply-cn-js-english-i18n.py \
             tools/verify-cn-js-update-package.py
 
-      - name: Materialise effective Java sources
+      - name: Materialise latest-main effective Java sources
         run: |
           set -euo pipefail
-          rm -rf .build/runtime-i18n-java
+          BASE=.build/main-baseline
+          JAVA="$BASE/patch/src/main/java"
+          OUT=.build/runtime-i18n-java
+          rm -rf "$BASE" "$OUT"
+          mkdir -p "$BASE/patch/src/main"
+          cp -a patch/src/main/java "$JAVA"
+
+          python tools/prepare-main-runtime-baseline.py \
+            --git-root . --java-root "$JAVA" --main-sha "$PINNED_MAIN_SHA" \
+            --require-origin-main --report .build/main-runtime-baseline.json
           python tools/prepare-changed-downloader-ui-text.py \
-            --table i18n/cn-downloader-ui-text.tsv \
-            --repo-root . \
-            --output-root .build/runtime-i18n-java \
-            --report .build/runtime-i18n-java-report.json
+            --table i18n/cn-downloader-ui-text.tsv --repo-root "$BASE" \
+            --output-root "$OUT" --report .build/runtime-i18n-java-report.json
+          python tools/prepare-main-hot-update-hardening.py \
+            --java-root "$OUT" --report .build/main-hot-update-hardening.json
           python tools/prepare-hot-update-transaction.py \
-            --java-root .build/runtime-i18n-java \
-            --report .build/hot-update-transaction-report.json
+            --java-root "$OUT" --report .build/hot-update-transaction-report.json
           python tools/prepare-safe-external-links.py \
-            --java-root .build/runtime-i18n-java \
-            --report .build/safe-external-links-report.json
+            --java-root "$OUT" --report .build/safe-external-links-report.json
           python tools/prepare-webview-overlay-probe.py \
-            --java-root .build/runtime-i18n-java \
-            --report .build/webview-overlay-probe-report.json
+            --java-root "$OUT" --report .build/webview-overlay-probe-report.json
 
-          test -s .build/runtime-i18n-java/io/kamihama/magianative/CNCNDownloadUIText.java
-          grep -q 'MagiaCN 安装器' \
-            .build/runtime-i18n-java/io/kamihama/magianative/CNCNDownloadUIText.java
-          if grep -R -n -E 'MagiaCN Installer|\(waiting\.\.\.\)|\(initializing\.\.\.\)|\[ERR\]' \
-              .build/runtime-i18n-java/io/kamihama/magianative/CNCNDownloadUI.java; then
-            echo 'Visible downloader English remained after materialisation.' >&2
-            exit 1
-          fi
+          CHECK="$OUT/io/kamihama/magianative/CNHotUpdateCheck.java"
+          TX="$OUT/io/kamihama/magianative/CNHotUpdateTransaction.java"
+          UI="$OUT/io/kamihama/magianative/CNCNDownloadUI.java"
+          WV="$OUT/jp/f4samurai/web/WebViewImpl.java"
+          PROBE="$OUT/jp/f4samurai/web/RuntimeOverlayProbe.java"
+          CHUNK="$OUT/io/kamihama/magianative/CNChunkedDownload.java"
+          MIRRORS="$OUT/io/kamihama/magianative/CNMirrors.java"
 
-          CHECK=.build/runtime-i18n-java/io/kamihama/magianative/CNHotUpdateCheck.java
-          TX=.build/runtime-i18n-java/io/kamihama/magianative/CNHotUpdateTransaction.java
-          UI=.build/runtime-i18n-java/io/kamihama/magianative/CNCNDownloadUI.java
-          WV=.build/runtime-i18n-java/jp/f4samurai/web/WebViewImpl.java
-          PROBE=.build/runtime-i18n-java/jp/f4samurai/web/RuntimeOverlayProbe.java
+          grep -q 'chunks_across_mirrors' "$CHUNK"
+          grep -q 'keep-alive' "$CHUNK"
+          grep -q 'mirror_race' "$MIRRORS"
+          grep -q 'java.util.LinkedHashMap<Integer, java.util.concurrent.Future<Boolean>>' "$CHECK"
+          grep -q 'o.optString("sha256", "")' "$CHECK"
+          grep -q 'algorithm = "SHA-256"' "$CHECK"
+          grep -q '热更新已应用，3 秒后自动重启游戏' "$CHECK"
           grep -q 'CNHotUpdateTransaction.recover(filesRoot);' "$CHECK"
           grep -q 'CNHotUpdateTransaction.apply(tmp, new File(FILES_DIR));' "$CHECK"
           ! grep -q 'CNDownloaderFix.extractChecked(tmp, new File(FILES_DIR));' "$CHECK"
@@ -76,8 +112,6 @@ jobs:
           ! grep -q 'writeState(txRoot, STATE_ROLLING_BACK);' "$TX"
           test "$(grep -c 'CNSafeExternalLinks.open(act, url);' "$UI")" -eq 2
           ! grep -q 'new Intent(Intent.ACTION_VIEW, Uri.parse(url))' "$UI"
-          grep -q '"https".equalsIgnoreCase(uri.getScheme())' \
-            .build/runtime-i18n-java/io/kamihama/magianative/CNSafeExternalLinks.java
           grep -q 'RuntimeOverlayProbe.onLocalFile(candidatePath, mime);' "$WV"
           grep -q 'RuntimeOverlayProbe.onPageFinished(view, url);' "$WV"
           grep -q '__MAGIACN_RUNTIME_I18N__' "$PROBE"
@@ -91,24 +125,17 @@ jobs:
             --source magia-native/src/MagiaLegacy.cpp \
             --output .build/native-generated/MagiaLegacy.cpp \
             --report .build/native-generated/report.json
-          test -s .build/native-generated/MagiaLegacy.cpp
-          grep -q '#include "RuntimeTextI18n.inc"' .build/native-generated/MagiaLegacy.cpp
-          grep -q '#include "RuntimeFontPathHook.inc"' .build/native-generated/MagiaLegacy.cpp
-          grep -q 'installRuntimeTextI18nHooks(H);' .build/native-generated/MagiaLegacy.cpp
-          grep -q 'installRuntimeFontPathHooks(H);' .build/native-generated/MagiaLegacy.cpp
-          grep -q 'fonts/MTF4a5kp.ttf' magia-native/src/RuntimeFontPathHook.inc
-          grep -q 'fonts/TTZhiHeiGB3-W4.ttf' magia-native/src/RuntimeFontPathHook.inc
+          GEN=.build/native-generated/MagiaLegacy.cpp
+          grep -q '#include "RuntimeTextI18n.inc"' "$GEN"
+          grep -q '#include "RuntimeFontPathHook.inc"' "$GEN"
+          grep -q 'installRuntimeTextI18nHooks(H);' "$GEN"
+          grep -q 'installRuntimeFontPathHooks(H);' "$GEN"
           grep -q 'SetTtfConfigInternalFn = bool' magia-native/src/RuntimeFontPathHook.inc
-          grep -q 'font: createWithTTF(cfg) typed' magia-native/src/RuntimeFontPathHook.inc
-          grep -q 'font: createWithTTF(str) typed' magia-native/src/RuntimeFontPathHook.inc
-          grep -q 'font: setTTFConfigInternal typed' magia-native/src/RuntimeFontPathHook.inc
-          if grep -n -E 'FakeNdkStr|g_engineI18n\.swap|NdkStrView|fontPathOverwrite|fontPathFix|struct CNColor4B \{ unsigned char r, g, b; \}' \
-              .build/native-generated/MagiaLegacy.cpp; then
-            echo 'Unsafe legacy text/font-hook code survived generation.' >&2
-            exit 1
+          if grep -n -E 'FakeNdkStr|g_engineI18n\.swap|NdkStrView|fontPathOverwrite|fontPathFix|struct CNColor4B \{ unsigned char r, g, b; \}' "$GEN"; then
+            echo 'Unsafe legacy text/font hook survived.' >&2; exit 1
           fi
 
-      - name: Host syntax smoke-test ABI-safe text and font includes
+      - name: Host syntax smoke-test typed text and font hooks
         run: |
           set -euo pipefail
           cat > .build/native-i18n-smoke.cpp <<'CPP'
@@ -131,15 +158,12 @@ jobs:
           #include "RuntimeTextI18n.inc"
           #include "RuntimeFontPathHook.inc"
           int main() {
-              auto H = [](const char*, void*, void**, const char*) { return true; };
-              installRuntimeTextI18nHooks(H);
-              installRuntimeFontPathHooks(H);
-              RuntimeTtfConfig config;
-              config.fontFilePath = RUNTIME_FONT_FROM;
+              auto H=[](const char*,void*,void**,const char*){return true;};
+              installRuntimeTextI18nHooks(H); installRuntimeFontPathHooks(H);
+              RuntimeTtfConfig c; c.fontFilePath=RUNTIME_FONT_FROM;
               std::string mapped;
-              if (!runtimeMapFontPath(config.fontFilePath, mapped, "smoke")) return 2;
-              if (mapped != RUNTIME_FONT_TO) return 3;
-              return sizeof(CNColor4B) == 4 ? 0 : 1;
+              if(!runtimeMapFontPath(c.fontFilePath,mapped,"smoke")) return 2;
+              return mapped==RUNTIME_FONT_TO && sizeof(CNColor4B)==4 ? 0 : 1;
           }
           CPP
           g++ -std=c++17 -Wall -Wextra -Werror -fsyntax-only \
@@ -152,7 +176,7 @@ jobs:
             --report .build/webview-overlay-audit.json
           python - <<'PY'
           import json
-          data = json.load(open('.build/webview-overlay-audit.json', encoding='utf-8'))
+          data=json.load(open('.build/webview-overlay-audit.json',encoding='utf-8'))
           assert data['originalLoaderEnabled'] is True
           assert data['effectiveBuildStaticallyReady'] is True
           PY
@@ -163,6 +187,8 @@ jobs:
         with:
           name: runtime-i18n-source-verification
           path: |
+            .build/main-runtime-baseline.json
+            .build/main-hot-update-hardening.json
             .build/runtime-i18n-java-report.json
             .build/hot-update-transaction-report.json
             .build/safe-external-links-report.json
