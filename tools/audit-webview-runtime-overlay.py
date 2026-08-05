@@ -88,9 +88,12 @@ def audit(root: Path, runtime: Path | None) -> dict:
     if "setMixedContentMode(I)V" in w and "const/4 v0, 0x0" in w:
         findings.append(finding("MEDIUM", "WEBVIEW_MIXED_CONTENT_ALWAYS_ALLOW",
             "Production WebView allows mixed HTTP content."))
-    if "clearCache" not in h and "noticeAndRestart" not in h:
+    applied_block = ""
+    if "if (applied) {" in h and "} else {" in h:
+        applied_block = h.split("if (applied) {", 1)[1].split("} else {", 1)[0]
+    if "clearCache" not in h and "noticeAndRestart" not in applied_block:
         findings.append(finding("HIGH", "HOT_UPDATE_ACTIVATION_NOT_GUARANTEED",
-            "JS/HTML is overwritten without WebView cache/module reset or restart."))
+            "JS/HTML is overwritten without WebView cache/module reset or restart tied to the applied update."))
     if not any(x in h for x in ("MessageDigest", "SHA-256", "sha256", "MD5", "md5")):
         findings.append(finding("CRITICAL", "HOT_UPDATE_CODE_HAS_NO_CONTENT_DIGEST",
             "Executable JS/HTML archive is not cryptographically verified before extraction."))
