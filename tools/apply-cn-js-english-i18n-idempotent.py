@@ -10,7 +10,7 @@ proves that the target already exists in the same semantic surface:
 * HTML/EJS: exact visible text node/prefix;
 * raw rules: exact reviewed fragment.
 
-If neither source nor target exists, the rule remains active and the original
+If neither source nor target exists, the rule remains active and the strict
 patcher fails closed as before.
 """
 from __future__ import annotations
@@ -25,7 +25,7 @@ import sys
 import tempfile
 import zipfile
 
-BASE = Path(__file__).with_name("apply-cn-js-english-i18n.py")
+BASE = Path(__file__).with_name("apply-cn-js-english-i18n-strict.py")
 
 
 def load_base():
