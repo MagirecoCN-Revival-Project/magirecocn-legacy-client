@@ -1,0 +1,131 @@
+key	source_file	expected_count	source_text_json	zh_CN_json	surface	notes
+PHASE_PREPARING	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"准备中"	"准备中"	ui	
+DETAIL_INITIALISING	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"正在初始化下载器…\n台词与前端脚本（热更新内容）已排在最前，先下完即可用上最新汉化"	"正在初始化下载器…\n台词与前端脚本（热更新内容）已排在最前，先下完即可用上最新汉化"	ui	
+CREDIT_TITLE	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"魔法纪录Totentanz中文化"	"魔法纪录Totentanz中文化"	credits	
+CREDIT_CORE	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"【核心逆向开发】MadeInMagius【B站ID】"	"【核心逆向开发】MadeInMagius【B站ID】"	credits	
+CREDIT_CORE_NOTE	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"(独立完成汉化引擎以及下载系统和日服国服资源合并)"	"(独立完成汉化引擎以及下载系统和日服国服资源合并)"	credits	
+CREDIT_SITES_HEADING	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"其他个人网站"	"其他个人网站"	credits	
+CREDIT_MAGIREADER	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"magireader.pages.dev【魔法纪录剧情中日双语阅读网站】"	"magireader.pages.dev【魔法纪录剧情中日双语阅读网站】"	credits	
+CREDIT_LIVE2D	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"magiaexedralive2dviewer.pages.dev【MagiaExedra和魔法纪录Live2D网站】"	"magiaexedralive2dviewer.pages.dev【MagiaExedra和魔法纪录Live2D网站】"	credits	
+CREDIT_CALL_SEARCH	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"magireco-call-search-cn.pages.dev【魔法少女称呼关系搜索与身高对比网站】"	"magireco-call-search-cn.pages.dev【魔法少女称呼关系搜索与身高对比网站】"	credits	
+CREDIT_THANKS_HEADING	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"【协助与鸣谢】"	"【协助与鸣谢】"	credits	
+CREDIT_TRANSLATION	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"国服文件之外的翻译和校对：水银h2oag【阅读器网站为主，资源已同步至游戏】"	"国服文件之外的翻译和校对：水银h2oag【阅读器网站为主，资源已同步至游戏】"	credits	
+CREDIT_DELIVERY	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"下载加速及资源自动化推送：CyberNova"	"下载加速及资源自动化推送：CyberNova"	credits	
+CREDIT_ARCHIVE	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"国服数据留存：segfault"	"国服数据留存：segfault"	credits	
+CREDIT_SITE	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"项目官网：www.magireco.top【通往其他个人网站和提供联系方式】"	"项目官网：www.magireco.top【通往其他个人网站和提供联系方式】"	credits	
+CREDIT_VIDEO	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"bilibili视频教程：BV1faRiBBExk"	"bilibili视频教程：BV1faRiBBExk"	credits	
+FOOTER_CREDIT_1	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"核心开发: B站 @MadeInMagius【B站xhs tx同名】 | 国内加速+修复：@PhotonFlow "	"核心开发: B站 @MadeInMagius【B站xhs tx同名】 | 国内加速+修复：@PhotonFlow "	credits	
+FOOTER_CREDIT_2	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"| 如果需要联系请先b站私信，会提供群聊 | 该游戏支持后续剧情更新"	"| 如果需要联系请先b站私信，会提供群聊 | 该游戏支持后续剧情更新"	credits	
+LABEL_OVERALL_PROGRESS	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	2	"总进度"	"总进度"	ui	
+BUTTON_LOG	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"LOG"	"LOG"	brand	保留通用日志缩写
+THEME_LIGHT	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"☀  亮色"	"☀  亮色"	ui	
+THEME_DARK	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"☾  夜间"	"☾  夜间"	ui	
+BUTTON_GITHUB	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"</>  GitHub"	"</>  GitHub"	brand	品牌名不翻译
+LOG_TITLE	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"安装日志"	"安装日志"	ui	
+BUTTON_COPY_ALL	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"复制全部"	"复制全部"	ui	
+BUTTON_CLOSE	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"关闭"	"关闭"	ui	
+LOG_FILTER_STATUS	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"下载状态"	"下载状态"	ui	
+LOG_FILTER_LOGCAT	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"logcat"	"logcat"	technical	Android 技术名不翻译
+LOG_FILTER_NATIVE	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"原生日志"	"原生日志"	ui	
+LOG_INITIAL_WAIT	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"=== MagiaCN Installer ===\n(waiting...)"	"=== MagiaCN 安装器 ===\n（等待中…）"	diagnostic	
+LINK_CONFIRM_PREFIX	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"即将离开游戏打开："	"即将离开游戏打开："	ui	
+LINK_CONFIRM_SUFFIX	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"\n再点一次继续"	"\n再点一次继续"	ui	
+LINK_OPEN_FAILED	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	2	"无法打开链接："	"无法打开链接："	ui	
+RETRY_QUEUED	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"已加入重试队列"	"已加入重试队列"	ui	
+BUTTON_RETRY	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"重试"	"重试"	ui	
+LOG_COPY_SUCCESS_PREFIX	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"日志已复制到剪贴板（"	"日志已复制到剪贴板（"	ui	
+LOG_COPY_SUCCESS_SUFFIX	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	" 条）"	" 条）"	ui	
+LOG_COPY_FAILED	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"复制失败："	"复制失败："	ui	
+BGM_DISABLED	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"BGM 已关闭"	"BGM 已关闭"	brand	
+BGM_SELECTED_PREFIX	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"BGM "	"BGM "	brand	
+BGM_PILL_OFF	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"♪ 关"	"♪ 关"	ui	
+BGM_PILL_ON_PREFIX	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"♪ "	"♪ "	ui	
+PROLOGUE_PILL_ON	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"▶ 序章"	"▶ 序章"	ui	
+PROLOGUE_LABEL	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	2	"序章"	"序章"	ui	
+PROLOGUE_PROMPT_1	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"是否从头播放开场序章？\n\n"	"是否从头播放开场序章？\n\n"	ui	
+PROLOGUE_PROMPT_2	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"· 「是」：进游戏后从头播放序章（剧情与教学战斗），播完自动重启回到正常游戏。\n"	"· 「是」：进游戏后从头播放序章（剧情与教学战斗），播完自动重启回到正常游戏。\n"	ui	
+PROLOGUE_PROMPT_3	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"· 「否」：正常进入游戏。\n\n"	"· 「否」：正常进入游戏。\n\n"	ui	
+PROLOGUE_PROMPT_4	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"走的是游戏自己的序章场景，只改本机状态，不动账号。"	"走的是游戏自己的序章场景，只改本机状态，不动账号。"	ui	
+BUTTON_NO	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"否"	"否"	ui	
+BUTTON_YES	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"是"	"是"	ui	
+PROLOGUE_SET_PLAY	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"已设为进游戏后播放序章"	"已设为进游戏后播放序章"	ui	
+PROLOGUE_SET_NORMAL	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"已设为正常进入游戏"	"已设为正常进入游戏"	ui	
+RESTART_AFTER_INSTALL_SUFFIX	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"，安装完成后重启生效"	"，安装完成后重启生效"	ui	
+RESTART_3S_SUFFIX	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"，3 秒后自动重启游戏"	"，3 秒后自动重启游戏"	ui	
+RESTART_AFTER_HOTUPDATE_SUFFIX	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"，热更检查完成后重启"	"，热更检查完成后重启"	ui	
+RESTART_MANUAL_NOTICE	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"设置已保存，请手动重启游戏生效"	"设置已保存，请手动重启游戏生效"	ui	
+VERSION_DIALOG_TITLE	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"客户端更新"	"客户端更新"	ui	
+VERSION_MESSAGE_PREFIX	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"发现新版本客户端：v"	"发现新版本客户端：v"	ui	
+VERSION_CURRENT_PREFIX	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"（当前 v"	"（当前 v"	ui	
+VERSION_CURRENT_SUFFIX	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"）\n\n"	"）\n\n"	ui	
+VERSION_REQUIRED	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"客户端版本过旧，继续游戏可能无法正常运行，请下载并安装最新版本。\n\n"	"客户端版本过旧，继续游戏可能无法正常运行，请下载并安装最新版本。\n\n"	ui	
+VERSION_ACTION_UPDATE	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"· 「前往更新」：打开浏览器下载新包（覆盖安装即可，数据不丢）\n"	"· 「前往更新」：打开浏览器下载新包（覆盖安装即可，数据不丢）\n"	ui	
+VERSION_ACTION_QUIT	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"· 「退出游戏」：本次不玩，下次启动会再次提醒"	"· 「退出游戏」：本次不玩，下次启动会再次提醒"	ui	
+BUTTON_QUIT_GAME	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"退出游戏"	"退出游戏"	ui	
+BUTTON_GO_UPDATE	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"前往更新"	"前往更新"	ui	
+LOG_FILE_PREFIX	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"日志文件："	"日志文件："	diagnostic	
+LOG_DIR_PREFIX	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"日志目录："	"日志目录："	diagnostic	
+LOG_DIR_RETENTION	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"（保留最近若干次启动）\n"	"（保留最近若干次启动）\n"	diagnostic	
+LOG_LAUNCH_PREFIX	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"本次为第 "	"本次为第 "	diagnostic	
+LOG_LAUNCH_SUFFIX	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	" 次启动\n\n"	" 次启动\n\n"	diagnostic	
+LOG_RUNTIME_SEPARATOR	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"\n──────── 运行日志 ────────\n"	"\n──────── 运行日志 ────────\n"	diagnostic	
+LOG_EMPTY	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"（暂无日志；若已关闭 logcat 与原生日志，这里只会有本补丁自己的记录）\n"	"（暂无日志；若已关闭 logcat 与原生日志，这里只会有本补丁自己的记录）\n"	diagnostic	
+LOG_TRUNCATED_PREFIX	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"（仅显示最近 "	"（仅显示最近 "	diagnostic	
+LOG_TRUNCATED_MIDDLE	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	" 行，共 "	" 行，共 "	diagnostic	
+LOG_TRUNCATED_SUFFIX	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	" 行；「复制全部」可取完整日志）\n"	" 行；「复制全部」可取完整日志）\n"	diagnostic	
+SLOT_WAITING_WITH_SIZE	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"等待中 · "	"等待中 · "	ui	
+SLOT_WAITING	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"等待中"	"等待中"	ui	
+FILE_COUNT_SUFFIX	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	" 文件"	" 文件"	ui	
+LOG_INITIALISING	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"=== MagiaCN Installer ===\n(initializing...)"	"=== MagiaCN 安装器 ===\n（初始化中…）"	diagnostic	
+LOG_HEADER	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"=== MagiaCN Installer ===\n"	"=== MagiaCN 安装器 ===\n"	diagnostic	
+LOG_STATUS_OK	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"[OK] "	"[完成] "	diagnostic	
+LOG_STATUS_ACTIVE	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"[ > ] "	"[下载] "	diagnostic	
+LOG_STATUS_ERROR	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"[ERR] "	"[失败] "	diagnostic	
+LOG_STATUS_WAITING	patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java	1	"[  ] "	"[等待] "	diagnostic	
+VERSION_CHECK_PHASE	patch/src/main/java/io/kamihama/magianative/CNVersionCheck.java	1	"检查客户端版本"	"检查客户端版本"	ui	
+VERSION_CHECK_DETAIL	patch/src/main/java/io/kamihama/magianative/CNVersionCheck.java	1	"正在检查客户端版本…"	"正在检查客户端版本…"	ui	
+VERSION_UPDATE_PHASE	patch/src/main/java/io/kamihama/magianative/CNVersionCheck.java	1	"客户端更新"	"客户端更新"	ui	
+VERSION_FOUND_PREFIX	patch/src/main/java/io/kamihama/magianative/CNVersionCheck.java	1	"发现新版本 v"	"发现新版本 v"	ui	
+VERSION_FOUND_SUFFIX	patch/src/main/java/io/kamihama/magianative/CNVersionCheck.java	1	"，需要更新客户端"	"，需要更新客户端"	ui	
+HOT_PACKAGE_SCENARIO	patch/src/main/java/io/kamihama/magianative/CNHotUpdateCheck.java	1	"台词包"	"台词包"	ui	
+HOT_PACKAGE_FRONTEND	patch/src/main/java/io/kamihama/magianative/CNHotUpdateCheck.java	1	"前端脚本"	"前端脚本"	ui	
+HOT_CHECK_PHASE	patch/src/main/java/io/kamihama/magianative/CNHotUpdateCheck.java	3	"检查热更新"	"检查热更新"	ui	
+HOT_CHECK_DETAIL	patch/src/main/java/io/kamihama/magianative/CNHotUpdateCheck.java	1	"正在查询台词与前端脚本的版本…"	"正在查询台词与前端脚本的版本…"	ui	
+HOT_DONE_PHASE	patch/src/main/java/io/kamihama/magianative/CNHotUpdateCheck.java	1	"更新完成"	"更新完成"	ui	
+HOT_DONE_DETAIL	patch/src/main/java/io/kamihama/magianative/CNHotUpdateCheck.java	1	"热更新已应用，即将进入游戏"	"热更新已应用，即将进入游戏"	ui	
+HOT_CURRENT_PHASE	patch/src/main/java/io/kamihama/magianative/CNHotUpdateCheck.java	1	"已是最新"	"已是最新"	ui	
+HOT_CURRENT_DETAIL	patch/src/main/java/io/kamihama/magianative/CNHotUpdateCheck.java	1	"台词与前端脚本均为最新版本，即将进入游戏"	"台词与前端脚本均为最新版本，即将进入游戏"	ui	
+HOT_VERSION_FAILED_SUFFIX	patch/src/main/java/io/kamihama/magianative/CNHotUpdateCheck.java	1	"：版本查询失败，跳过本项"	"：版本查询失败，跳过本项"	ui	
+HOT_CURRENT_PREFIX	patch/src/main/java/io/kamihama/magianative/CNHotUpdateCheck.java	1	"：已是最新（v"	"：已是最新（v"	ui	
+HOT_CURRENT_SUFFIX	patch/src/main/java/io/kamihama/magianative/CNHotUpdateCheck.java	1	"）"	"）"	ui	
+HOT_DOWNLOAD_PHASE	patch/src/main/java/io/kamihama/magianative/CNHotUpdateCheck.java	2	"下载热更新"	"下载热更新"	ui	
+HOT_DOWNLOAD_VERSION_PREFIX	patch/src/main/java/io/kamihama/magianative/CNHotUpdateCheck.java	1	"：v"	"：v"	ui	
+HOT_DOWNLOAD_ARROW	patch/src/main/java/io/kamihama/magianative/CNHotUpdateCheck.java	1	" → v"	" → v"	ui	
+HOT_DOWNLOADING_SUFFIX	patch/src/main/java/io/kamihama/magianative/CNHotUpdateCheck.java	1	"，正在下载…"	"，正在下载…"	ui	
+HOT_DOWNLOAD_FAILED_SUFFIX	patch/src/main/java/io/kamihama/magianative/CNHotUpdateCheck.java	1	"：下载失败，已跳过"	"：下载失败，已跳过"	ui	
+HOT_APPLY_PHASE	patch/src/main/java/io/kamihama/magianative/CNHotUpdateCheck.java	3	"应用热更新"	"应用热更新"	ui	
+HOT_EXTRACTING_SUFFIX	patch/src/main/java/io/kamihama/magianative/CNHotUpdateCheck.java	1	"：正在解压…"	"：正在解压…"	ui	
+HOT_EXTRACT_FAILED_SUFFIX	patch/src/main/java/io/kamihama/magianative/CNHotUpdateCheck.java	1	"：解压失败，已跳过"	"：解压失败，已跳过"	ui	
+HOT_APPLIED_VERSION_PREFIX	patch/src/main/java/io/kamihama/magianative/CNHotUpdateCheck.java	1	"：已更新到 v"	"：已更新到 v"	ui	
+INSTALL_PREPARING_PHASE	patch/src/main/java/io/kamihama/magianative/CNDownloaderFix.java	2	"准备中"	"准备中"	ui	
+INSTALL_FETCH_MIRRORS	patch/src/main/java/io/kamihama/magianative/CNDownloaderFix.java	1	"正在获取下载线路…"	"正在获取下载线路…"	ui	
+INSTALL_DOWNLOAD_PHASE	patch/src/main/java/io/kamihama/magianative/CNDownloaderFix.java	2	"开始下载"	"开始下载"	ui	
+INSTALL_MIRROR_COUNT_PREFIX	patch/src/main/java/io/kamihama/magianative/CNDownloaderFix.java	1	"可用线路 "	"可用线路 "	ui	
+INSTALL_CHUNK_COUNT_MIDDLE	patch/src/main/java/io/kamihama/magianative/CNDownloaderFix.java	1	" 条，单文件分片 "	" 条，单文件分片 "	ui	
+INSTALL_THREAD_SUFFIX	patch/src/main/java/io/kamihama/magianative/CNDownloaderFix.java	1	" 线程"	" 线程"	ui	
+INSTALL_FAILED_PREFIX	patch/src/main/java/io/kamihama/magianative/CNDownloaderFix.java	1	"安装器异常："	"安装器异常："	ui	
+INSTALL_STATE_DIR_FAILED	patch/src/main/java/io/kamihama/magianative/CNDownloaderFix.java	1	"Cannot create installer state directory"	"无法创建安装器状态目录"	ui	
+INSTALL_FAILED_COUNT_PREFIX	patch/src/main/java/io/kamihama/magianative/CNDownloaderFix.java	1	"有 "	"有 "	ui	
+INSTALL_FAILED_COUNT_SUFFIX	patch/src/main/java/io/kamihama/magianative/CNDownloaderFix.java	1	" 个文件下载失败，点击文件右侧的「重试」继续"	" 个文件下载失败，点击文件右侧的「重试」继续"	ui	
+INSTALL_RETRY_PHASE	patch/src/main/java/io/kamihama/magianative/CNDownloaderFix.java	1	"重试中"	"重试中"	ui	
+INSTALL_RETRY_DETAIL	patch/src/main/java/io/kamihama/magianative/CNDownloaderFix.java	1	"正在重新下载失败的文件…"	"正在重新下载失败的文件…"	ui	
+INSTALL_COMPLETE_PHASE	patch/src/main/java/io/kamihama/magianative/CNDownloaderFix.java	1	"安装完成"	"安装完成"	ui	
+INSTALL_COMPLETE_DETAIL	patch/src/main/java/io/kamihama/magianative/CNDownloaderFix.java	1	"所有资源已验证并提交完成标记"	"所有资源已验证并提交完成标记"	ui	
+INSTALL_RESTART_NOTICE	patch/src/main/java/io/kamihama/magianative/CNDownloaderFix.java	1	"安装完成，3 秒后自动重启游戏"	"安装完成，3 秒后自动重启游戏"	ui	
+INSTALL_FINAL_FLAG_FAILED	patch/src/main/java/io/kamihama/magianative/CNDownloaderFix.java	1	"Final flag commit failed"	"写入安装完成标记失败"	ui	
+INSTALL_PROBE_DETAIL	patch/src/main/java/io/kamihama/magianative/CNDownloaderFix.java	1	"正在获取文件大小…"	"正在获取文件大小…"	ui	
+INSTALL_PROBE_RESULT_PREFIX	patch/src/main/java/io/kamihama/magianative/CNDownloaderFix.java	1	"已探明 "	"已探明 "	ui	
+INSTALL_PROBE_RESULT_SUFFIX	patch/src/main/java/io/kamihama/magianative/CNDownloaderFix.java	1	" 个文件，合计约 "	" 个文件，合计约 "	ui	
+INSTALL_PAUSED_PHASE	patch/src/main/java/io/kamihama/magianative/CNDownloaderFix.java	1	"安装暂停"	"安装暂停"	ui	
+PROLOGUE_FINISHED_RESTART	patch/src/main/java/io/kamihama/magianative/CNTutorialPrompt.java	1	"序章播放完毕，3 秒后自动重启游戏"	"序章播放完毕，3 秒后自动重启游戏"	ui	
+RESTART_FALLBACK_SUFFIX	patch/src/main/java/io/kamihama/magianative/CNRestart.java	1	"（若没有自动回来，请手动打开游戏）"	"（若没有自动回来，请手动打开游戏）"	ui	
