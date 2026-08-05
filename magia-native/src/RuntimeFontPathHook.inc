@@ -4,6 +4,7 @@
 // Label::setTTFConfigInternal，在运行时把 MTF4a5kp 的读取路径定向到
 // TTZhiHeiGB3-W4；不替换 APK 字体文件。不同点仅是由 NDK 编译器处理
 // std::string / TTFConfig / Size 和 bool 返回值 ABI，不再原地写调用者内存。
+// createWithTTF 入口同时查询文本翻译表，覆盖“构造后不再 setString”的标签。
 
 struct RuntimeTtfConfig {
     std::string fontFilePath;
@@ -53,16 +54,28 @@ static void* createWithTtfCfgNew(
         const std::string& text,
         int horizontalAlignment,
         int maxLineWidth) {
+    maybeReloadEngineI18n();
+    std::string translated;
+    const bool textHit = translateEngineText(
+        text, translated, "Label::createWithTTF(config)");
+
     std::string mapped;
-    if (!runtimeMapFontPath(
-            config.fontFilePath, mapped, "createWithTTF(config)")) {
+    const bool fontHit = runtimeMapFontPath(
+        config.fontFilePath, mapped, "createWithTTF(config)");
+    if (!fontHit && !textHit) {
         return createWithTtfCfgOld(
             config, text, horizontalAlignment, maxLineWidth);
     }
-    RuntimeTtfConfig local = config;
-    local.fontFilePath = mapped;
+
+    if (fontHit) {
+        RuntimeTtfConfig local = config;
+        local.fontFilePath = mapped;
+        return createWithTtfCfgOld(
+            local, textHit ? translated : text,
+            horizontalAlignment, maxLineWidth);
+    }
     return createWithTtfCfgOld(
-        local, text, horizontalAlignment, maxLineWidth);
+        config, translated, horizontalAlignment, maxLineWidth);
 }
 
 static void* createWithTtfStrNew(
@@ -72,15 +85,23 @@ static void* createWithTtfStrNew(
         const RuntimeFontSize& dimensions,
         int horizontalAlignment,
         int verticalAlignment) {
+    maybeReloadEngineI18n();
+    std::string translated;
+    const bool textHit = translateEngineText(
+        text, translated, "Label::createWithTTF(path)");
+
     std::string mapped;
-    if (!runtimeMapFontPath(
-            fontFile, mapped, "createWithTTF(path)")) {
+    const bool fontHit = runtimeMapFontPath(
+        fontFile, mapped, "createWithTTF(path)");
+    if (!fontHit && !textHit) {
         return createWithTtfStrOld(
             text, fontFile, fontSize, dimensions,
             horizontalAlignment, verticalAlignment);
     }
     return createWithTtfStrOld(
-        text, mapped, fontSize, dimensions,
+        textHit ? translated : text,
+        fontHit ? mapped : fontFile,
+        fontSize, dimensions,
         horizontalAlignment, verticalAlignment);
 }
 
