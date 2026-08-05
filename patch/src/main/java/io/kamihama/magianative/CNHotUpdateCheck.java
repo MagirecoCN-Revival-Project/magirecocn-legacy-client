@@ -7,98 +7,45 @@ import android.content.SharedPreferences;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.util.Locale;
 
 import org.json.JSONObject;
 
 /**
- * 热更新检查流程：启动时比对台词包 / 前端脚本包的版本，必要时下载并应用。
+ * 热更新检查：并行查询台词包和前端包清单，下载、完整性校验、应用并安全重启。
  *
- * <h3>为什么重写</h3>
- *
- * 原实现是 {@code RestClient.checkAndApplyHotUpdate()}（原包自带的 smali），
- * 由 {@code libcn_hook.so} 在 {@code JNI_OnLoad} 末尾起线程调用。切到
- * {@code libMagiaLegacy.so} 后照原样补回了那个 JNI 触发，真机实测的结果是
- * <b>浮层自始至终没有出现</b>，于是整条链路是否跑过、跑到哪一步，都无从判断。
- *
- * <p>原实现里能解释这一点的有三处：
- * <ul>
- *   <li>它只等 {@code getCurrentActivity() != null}。而这个方法读的是
- *       {@code ActivityThread.mActivities}，Activity 记录在 {@code onCreate}
- *       <b>之前</b>就已登记——拿到的 Activity 可能连 decorView 都还没有，
- *       此时 {@code show()} 建不出浮层。</li>
- *   <li>建失败之后没有任何重试；也没有看门狗，引擎切场景换掉 decorView
- *       内容时浮层会脱离视图树，而安装器路径是有看门狗保着的。</li>
- *   <li>版本相同（绝大多数启动）时它立刻 {@code hide()}，即使浮层建成了
- *       也只是一闪而过。</li>
- * </ul>
- *
- * <p>本类把这三点逐条修掉，并且<b>无论有没有更新都把结论显示出来</b>——
- * 「已是最新」也要看得见，否则没法区分「查过了没更新」和「压根没跑」。
- *
- * <h3>与原实现保持一致的约定</h3>
- * <ul>
- *   <li>版本号记在 SharedPreferences {@code MagiaCN} 的
- *       {@code scenario_version} / {@code js_version} 两个 int 键上；</li>
- *   <li>版本 JSON 与分发文件都走可用线路；</li>
- *   <li>分发文件交给 {@link CNHotUpdate#download}，与首次安装使用同一套
- *       选线、分片和失败换线逻辑；</li>
- *   <li>解压到 {@code <files>/}，解压完删临时包。</li>
- * </ul>
- *
- * <h3>成功后必须重启</h3>
- *
- * <p>热更新检查要等 Activity / decorView 可用后才开始，此时 WebView 可能已经
- * 创建，RequireJS 也可能已经缓存模块或 HTML 模板。即使新文件已经覆盖到
- * {@code files/magica/}，当前进程仍可能继续执行旧模块，甚至形成半新半旧状态。
- * 因此只要本轮确实应用了任一热更新包，就统一走现有的安全重启链；无更新时不重启。
+ * <p>前端覆盖发生时 Activity/WebView 已经存在，RequireJS 可能已经持有旧模块；
+ * 因此任一包成功提交后必须重启。版本清单同时作为下载包的完整性声明：优先
+ * SHA-256；当前服务端仍只有 MD5 时兼容校验并记录降级警告。长度或摘要不符时
+ * 失败关闭，不解压、不写本地版本号。
  */
 public final class CNHotUpdateCheck {
 
     private static final String TAG = "MagiaCNHotUpdate";
-
     private static final String FILES_DIR  = "/data/data/io.kamihama.totentanz/files/";
     private static final String FINAL_FLAG = FILES_DIR + "madomagi/magica/cn_base_done.flag";
-
-    /** 版本号存放的 SharedPreferences 文件名，与原实现一致，不能改。 */
     private static final String PREFS_NAME = "MagiaCN";
 
-    /** 等 Activity 可用的上限：150 × 100ms = 15 秒。 */
     private static final int  ACTIVITY_WAIT_TRIES = 150;
     private static final long ACTIVITY_WAIT_STEP_MS = 100L;
-
-    /** 没有更新时，把「已是最新」这个结论留在屏幕上的时间。 */
     private static final long IDLE_LINGER_MS = 1800L;
-
-    /** 看门狗周期：与安装器路径一致地把浮层按回视图树。 */
     private static final long WATCHDOG_PERIOD_MS = 1000L;
-
-    private static final int CONNECT_TIMEOUT_MS = 15000;
-    private static final int READ_TIMEOUT_MS    = 20000;
-    // 版本 json 只有几十字节，给长超时只会让坏线路拖慢整个检查；
-    // 连不上/5 秒读不完就该换下一条线路
     private static final int VER_CONNECT_TIMEOUT_MS = 5000;
     private static final int VER_READ_TIMEOUT_MS    = 8000;
 
-    /** 只跑一次。 */
     private static final java.util.concurrent.atomic.AtomicBoolean STARTED =
             new java.util.concurrent.atomic.AtomicBoolean(false);
-
-    /** 检查是否正在跑（含下载与解压）。教程胶囊据此决定要不要立刻重启。 */
     private static volatile boolean running = false;
-    /** 非 null 表示「本次检查跑完后按这个文案重启」。由教程胶囊设置。 */
     private static volatile String pendingRestartMsg = null;
 
-    /** 检查是否正在进行。跑到一半重启会打断下载或解压。 */
     static boolean isRunning() { return running; }
 
-    /**
-     * 请求「等本次检查跑完再重启」。教程胶囊在检查进行中被点时走这条路，
-     * 而不是当场重启。检查已经收工的话返回 false，调用方自己重启。
-     */
     static boolean requestRestartWhenDone(String toastText) {
         if (!running) return false;
         pendingRestartMsg = toastText;
@@ -107,14 +54,14 @@ public final class CNHotUpdateCheck {
 
     private CNHotUpdateCheck() {}
 
-    /** 一个热更包的全部参数。 */
     private static final class Pkg {
-        final String label;        // 日志与 UI 上的名字
-        final String versionUrl;   // 版本 json
-        final String versionKey;   // SharedPreferences 键
-        final String zipUrl;       // 分发地址（会被换成支线）
-        final String tmpName;      // 落地的临时文件名
-        final int    slot;         // 浮层进度槽位
+        final String label;
+        final String versionUrl;
+        final String versionKey;
+        final String zipUrl;
+        final String tmpName;
+        final int slot;
+
         Pkg(String label, String versionUrl, String versionKey,
             String zipUrl, String tmpName, int slot) {
             this.label = label;
@@ -126,8 +73,21 @@ public final class CNHotUpdateCheck {
         }
     }
 
-    // 槽位取自 CNCNDownloadUI.FILE_NAMES 的下标。两个热更包已被排到列表最前，
-    // 所以是 0 和 1——原实现里写的 14 / 11 是排序前的下标，照抄会画错行。
+    /** 服务端清单；size/摘要属于版本身份的一部分。 */
+    private static final class RemoteManifest {
+        final int version;
+        final long size;
+        final String sha256;
+        final String md5;
+
+        RemoteManifest(int version, long size, String sha256, String md5) {
+            this.version = version;
+            this.size = size;
+            this.sha256 = sha256;
+            this.md5 = md5;
+        }
+    }
+
     private static final Pkg[] PACKAGES = {
         new Pkg("台词包",
                 "https://r2.assets.magireco.top/version_scenario.json", "scenario_version",
@@ -139,47 +99,32 @@ public final class CNHotUpdateCheck {
                 "cn_js_update_hot.zip", 1),
     };
 
-    // ==================================================================
-    // 入口
-    // ==================================================================
-
-    /**
-     * 启动热更新检查。由 {@link CNDownloaderFix#triggerInstaller()} 在确认
-     * 安装完成标记已存在之后调用。
-     *
-     * <p>不抛异常，也不阻塞调用方：内部另起守护线程。重复调用只有第一次生效。
-     */
     public static void start() {
         try {
             if (!STARTED.compareAndSet(false, true)) {
                 CNLog.i(TAG, "热更检查已经在跑，忽略重复调用");
                 return;
             }
-            Thread t = new Thread("cnv-hotupdate") {
+            Thread thread = new Thread("cnv-hotupdate") {
                 @Override public void run() {
                     try {
                         runInner();
-                    } catch (Throwable th) {
-                        CNLog.e(TAG, "热更检查异常终止: " + th, th);
+                    } catch (Throwable error) {
+                        CNLog.e(TAG, "热更检查异常终止: " + error, error);
                         try { CNCNDownloadUI.hide(); } catch (Throwable ignore) {}
                     } finally {
-                        // 异常路径同样必须清掉，否则教程胶囊会永远认为检查仍在跑，
-                        // 把重启请求挂到一个已经死亡的线程上。
                         running = false;
                     }
                 }
             };
-            t.setDaemon(true);
-            t.start();
-        } catch (Throwable t) {
+            thread.setDaemon(true);
+            thread.start();
+        } catch (Throwable error) {
             running = false;
-            try { android.util.Log.e(TAG, "热更检查线程起不来", t); } catch (Throwable ignore) {}
+            try { android.util.Log.e(TAG, "热更检查线程起不来", error); }
+            catch (Throwable ignore) {}
         }
     }
-
-    // ==================================================================
-    // 主流程
-    // ==================================================================
 
     private static void runInner() {
         if (!new File(FINAL_FLAG).isFile()) {
@@ -188,7 +133,6 @@ public final class CNHotUpdateCheck {
         }
         CNLog.i(TAG, "热更检查开始");
 
-        // 预热线路表：别等第一次取版本时才现场拉 config.json
         new Thread(new Runnable() {
             @Override public void run() {
                 CNMirrors.refresh(false);
@@ -196,44 +140,48 @@ public final class CNHotUpdateCheck {
             }
         }, "cnv-mirrors-prewarm").start();
 
-        Activity act = awaitUsableActivity();
-        if (act == null) {
-            // 没有界面也要把检查跑完：更新照样能应用，只是玩家看不到进度。
+        Activity activity = awaitUsableActivity();
+        if (activity == null) {
             CNLog.w(TAG, "等不到可用的 Activity，本次热更检查将无浮层运行");
         } else {
-            showOverlay(act);
+            showOverlay(activity);
         }
 
-        java.util.concurrent.ScheduledExecutorService watchdog = startWatchdog(act);
+        java.util.concurrent.ScheduledExecutorService watchdog = startWatchdog(activity);
         boolean applied = false;
         running = true;
         try {
             CNCNDownloadUI.updateSimple("检查热更新", "正在查询台词与前端脚本的版本…", 0);
-            // 两个版本号并行查：串行时首条线路的慢/挂会在两个包上各吃一轮超时
             final java.util.concurrent.ExecutorService pool =
                     java.util.concurrent.Executors.newFixedThreadPool(2);
-            java.util.concurrent.Future<Integer> fScenario =
-                    pool.submit(new java.util.concurrent.Callable<Integer>() {
-                        @Override public Integer call() { return fetchVersionSafe(PACKAGES[0]); }});
-            java.util.concurrent.Future<Integer> fJs =
-                    pool.submit(new java.util.concurrent.Callable<Integer>() {
-                        @Override public Integer call() { return fetchVersionSafe(PACKAGES[1]); }});
-            int[] remotes = new int[]{-1, -1};
+            java.util.concurrent.Future<RemoteManifest> scenarioFuture =
+                    pool.submit(new java.util.concurrent.Callable<RemoteManifest>() {
+                        @Override public RemoteManifest call() {
+                            return fetchManifestSafe(PACKAGES[0]);
+                        }
+                    });
+            java.util.concurrent.Future<RemoteManifest> jsFuture =
+                    pool.submit(new java.util.concurrent.Callable<RemoteManifest>() {
+                        @Override public RemoteManifest call() {
+                            return fetchManifestSafe(PACKAGES[1]);
+                        }
+                    });
+            RemoteManifest[] manifests = new RemoteManifest[2];
             try {
-                remotes[0] = fScenario.get();
-                remotes[1] = fJs.get();
-            } catch (Throwable t) {
-                CNLog.w(TAG, "并行版本查询异常: " + t);
+                manifests[0] = scenarioFuture.get();
+                manifests[1] = jsFuture.get();
+            } catch (Throwable error) {
+                CNLog.w(TAG, "并行版本查询异常: " + error);
+            } finally {
+                pool.shutdownNow();
             }
-            pool.shutdown();
             for (int i = 0; i < PACKAGES.length; i++) {
-                if (applyIfNewer(PACKAGES[i], remotes[i])) applied = true;
+                if (applyIfNewer(PACKAGES[i], manifests[i])) applied = true;
             }
         } finally {
             stopWatchdog(watchdog);
         }
 
-        // 无论有没有更新都把结论留在屏幕上——否则和「压根没跑」看起来一模一样。
         if (applied) {
             CNLog.i(TAG, "热更检查完毕：已应用更新，将重启以启用全部新文件");
             CNCNDownloadUI.updateSimple("更新完成", "热更新已应用，即将重启游戏", 0);
@@ -243,290 +191,318 @@ public final class CNHotUpdateCheck {
         }
         sleep(IDLE_LINGER_MS);
 
-        // 先清 running，再收浮层。之后的新请求应由调用方自己处理，不能再挂到本线程。
         running = false;
         CNCNDownloadUI.hide();
-
         String requested = pendingRestartMsg;
         pendingRestartMsg = null;
 
         if (applied) {
-            // 覆盖发生在 Activity/WebView 已存在之后。清 WebView HTTP cache 也清不掉
-            // RequireJS 已实例化模块，因此统一重启比尝试局部 reload 更可靠。
-            if (requested != null) {
-                CNLog.i(TAG, "教程胶囊的重启请求已并入热更新重启");
-            }
+            if (requested != null) CNLog.i(TAG, "教程胶囊的重启请求已并入热更新重启");
             CNDownloaderFix.noticeAndRestart("热更新已应用，3 秒后自动重启游戏");
             return;
         }
-
         if (requested != null) {
             CNLog.i(TAG, "检查已收工，执行教程胶囊请求的重启");
             CNDownloaderFix.noticeAndRestart(requested);
         }
     }
 
-    /**
-     * 处理单个热更包：比对版本，必要时下载 + 解压 + 记录新版本号。
-     *
-     * @return true 表示确实应用了更新
-     */
-    private static boolean applyIfNewer(Pkg pkg) {
-        int remote;
+    private static RemoteManifest fetchManifestSafe(Pkg pkg) {
         try {
-            remote = fetchVersion(pkg.versionUrl);
-        } catch (Throwable t) {
-            remote = -1;
-        }
-        return applyIfNewer(pkg, remote);
-    }
-
-    /** 供并行预取版本号用：失败返回 -1 并提示，由 applyIfNewer(pkg, -1) 走跳过路径。 */
-    private static int fetchVersionSafe(Pkg pkg) {
-        try {
-            return fetchVersion(pkg.versionUrl);
-        } catch (Throwable t) {
-            CNLog.w(TAG, "[" + pkg.label + "] 版本查询失败，跳过：" + t);
+            return fetchManifest(pkg.versionUrl);
+        } catch (Throwable error) {
+            CNLog.w(TAG, "[" + pkg.label + "] 清单查询失败，跳过：" + error);
             CNCNDownloadUI.updateSimple("检查热更新",
                     pkg.label + "：版本查询失败，跳过本项", 0);
-            return -1;
+            return null;
         }
     }
 
-    /** 带预取版本号的 applyIfNewer：remote<=0 表示查询失败/无效，跳过本包。 */
-    private static boolean applyIfNewer(Pkg pkg, int remote) {
-        if (remote <= 0) {
-            if (remote == 0) {
-                CNLog.w(TAG, "[" + pkg.label + "] 服务端版本号无效（0），跳过");
-            }
-            return false;
-        }
+    private static boolean applyIfNewer(Pkg pkg, RemoteManifest manifest) {
+        if (manifest == null || manifest.version <= 0) return false;
+
         int local = readLocalVersion(pkg.versionKey);
-        CNLog.i(TAG, "[" + pkg.label + "] server=" + remote + " local=" + local);
-        if (remote <= local) {
+        CNLog.i(TAG, "[" + pkg.label + "] server=" + manifest.version
+                + " local=" + local + " size=" + manifest.size);
+        if (manifest.version <= local) {
             CNCNDownloadUI.updateSimple("检查热更新",
                     pkg.label + "：已是最新（v" + local + "）", 0);
             return false;
         }
 
-        CNLog.i(TAG, "[" + pkg.label + "] 需要更新 " + local + " → " + remote);
+        CNLog.i(TAG, "[" + pkg.label + "] 需要更新 " + local + " → " + manifest.version);
         CNCNDownloadUI.updateSimple("下载热更新",
-                pkg.label + "：v" + local + " → v" + remote + "，正在下载…", 0);
+                pkg.label + "：v" + local + " → v" + manifest.version + "，正在下载…", 0);
 
         File tmp = new File(FILES_DIR, pkg.tmpName);
-        // 上一次跑到一半留下的残骸会让 download() 直接判定「目标已存在」而跳过，
-        // 于是拿旧的半截包去解压。先删掉。
         if (tmp.exists() && !tmp.delete()) {
             CNLog.w(TAG, "[" + pkg.label + "] 删不掉旧的临时包 " + tmp + "，放弃本项");
             return false;
         }
-
         if (!CNHotUpdate.download(pkg.zipUrl, tmp.getAbsolutePath(), pkg.tmpName, pkg.slot)) {
             CNLog.e(TAG, "[" + pkg.label + "] 下载失败，本项不更新（版本号保持 " + local + "）");
             CNCNDownloadUI.updateSimple("下载热更新", pkg.label + "：下载失败，已跳过", 0);
             return false;
         }
 
+        CNCNDownloadUI.updateSimple("验证热更新", pkg.label + "：正在校验文件完整性…", 0);
+        try {
+            verifyArchive(tmp, manifest, pkg.label);
+        } catch (Throwable error) {
+            CNLog.e(TAG, "[" + pkg.label + "] 完整性校验失败，拒绝解压", error);
+            CNCNDownloadUI.updateSimple("验证热更新", pkg.label + "：文件校验失败，已拒绝应用", 0);
+            deleteQuietly(tmp);
+            return false;
+        }
+
         CNCNDownloadUI.updateSimple("应用热更新", pkg.label + "：正在解压…", 0);
         try {
             CNDownloaderFix.extractChecked(tmp, new File(FILES_DIR));
-        } catch (Throwable t) {
-            // 解压失败时**不能**写新版本号，否则下次启动会以为已经更新过。
-            CNLog.e(TAG, "[" + pkg.label + "] 解压失败，版本号保持 " + local, t);
+        } catch (Throwable error) {
+            CNLog.e(TAG, "[" + pkg.label + "] 解压失败，版本号保持 " + local, error);
             CNCNDownloadUI.updateSimple("应用热更新", pkg.label + "：解压失败，已跳过", 0);
             deleteQuietly(tmp);
             return false;
         }
         deleteQuietly(tmp);
-        saveLocalVersion(pkg.versionKey, remote);
-        CNLog.i(TAG, "[" + pkg.label + "] 更新完成，版本号记为 " + remote);
-        CNCNDownloadUI.updateSimple("应用热更新", pkg.label + "：已更新到 v" + remote, 0);
+        saveLocalVersion(pkg.versionKey, manifest.version);
+        CNLog.i(TAG, "[" + pkg.label + "] 更新完成，版本号记为 " + manifest.version);
+        CNCNDownloadUI.updateSimple("应用热更新",
+                pkg.label + "：已更新到 v" + manifest.version, 0);
         return true;
     }
 
-    // ==================================================================
-    // 浮层
-    // ==================================================================
+    /** 长度 + 摘要校验。SHA-256 优先；MD5 只为兼容当前服务端清单。 */
+    private static void verifyArchive(File archive, RemoteManifest manifest, String label)
+            throws Exception {
+        if (!archive.isFile()) throw new java.io.IOException("下载文件不存在");
+        if (manifest.size <= 0) throw new java.io.IOException("清单缺少有效 size");
+        if (archive.length() != manifest.size) {
+            throw new java.io.IOException("长度不符: " + archive.length()
+                    + " / " + manifest.size);
+        }
 
-    /**
-     * 等一个<b>真正能挂浮层</b>的 Activity。
-     *
-     * <p>只判断 {@code getCurrentActivity() != null} 是不够的：那个方法读的是
-     * {@code ActivityThread.mActivities}，记录在 {@code onCreate} 之前就登记了，
-     * 拿到的 Activity 可能还没有窗口。这里额外要求
-     * {@code getWindow().peekDecorView() != null} —— decorView 存在才谈得上
-     * 往上加 View。（用 peek 而不是 get：后者会强制创建 decorView，
-     * 在别人的 Activity 上这么干不合适。）
-     */
+        String algorithm;
+        String expected;
+        if (!manifest.sha256.isEmpty()) {
+            algorithm = "SHA-256";
+            expected = manifest.sha256;
+        } else if (!manifest.md5.isEmpty()) {
+            algorithm = "MD5";
+            expected = manifest.md5;
+            CNLog.w(TAG, "[" + label + "] 清单尚无 SHA-256，使用 MD5 兼容校验；"
+                    + "分发端应尽快增加 sha256 字段");
+        } else {
+            throw new java.io.IOException("清单没有 sha256 或 md5，拒绝可执行热更新");
+        }
+
+        MessageDigest digest = MessageDigest.getInstance(algorithm);
+        InputStream input = new BufferedInputStream(new FileInputStream(archive), 65536);
+        try {
+            byte[] buffer = new byte[65536];
+            int count;
+            while ((count = input.read(buffer)) >= 0) {
+                if (count > 0) digest.update(buffer, 0, count);
+            }
+        } finally {
+            try { input.close(); } catch (Throwable ignore) {}
+        }
+        String actual = hex(digest.digest());
+        if (!actual.equals(expected)) {
+            throw new java.io.IOException(algorithm + " 不符: " + actual + " / " + expected);
+        }
+        CNLog.i(TAG, "[" + label + "] " + algorithm + " 与长度校验通过");
+    }
+
+    private static String hex(byte[] value) {
+        char[] digits = "0123456789abcdef".toCharArray();
+        char[] output = new char[value.length * 2];
+        for (int i = 0; i < value.length; i++) {
+            int b = value[i] & 0xff;
+            output[i * 2] = digits[b >>> 4];
+            output[i * 2 + 1] = digits[b & 0xf];
+        }
+        return new String(output);
+    }
+
     private static Activity awaitUsableActivity() {
         Activity last = null;
         for (int i = 0; i < ACTIVITY_WAIT_TRIES; i++) {
-            Activity act = null;
-            try { act = RestClient.getCurrentActivity(); } catch (Throwable ignore) {}
-            if (act != null) {
-                last = act;
+            Activity activity = null;
+            try { activity = RestClient.getCurrentActivity(); } catch (Throwable ignore) {}
+            if (activity != null) {
+                last = activity;
                 try {
-                    if (act.getWindow() != null && act.getWindow().peekDecorView() != null) {
+                    if (activity.getWindow() != null
+                            && activity.getWindow().peekDecorView() != null) {
                         if (i > 0) CNLog.i(TAG, "等到可用 Activity，耗时约 " + (i * 100) + "ms");
-                        return act;
+                        return activity;
                     }
                 } catch (Throwable ignore) {}
             }
             sleep(ACTIVITY_WAIT_STEP_MS);
         }
-        if (last != null) {
-            CNLog.w(TAG, "等满 " + (ACTIVITY_WAIT_TRIES * ACTIVITY_WAIT_STEP_MS / 1000)
-                    + " 秒仍没等到 decorView，退而使用当前 Activity 试一把");
-        }
         return last;
     }
 
-    /** 建浮层，建不成就重试几轮——一次失败就放弃正是原实现看不见浮层的原因之一。 */
-    private static void showOverlay(Activity act) {
+    private static void showOverlay(Activity activity) {
         for (int i = 0; i < 3; i++) {
             try {
-                CNCNDownloadUI.show(act);
-                CNCNDownloadUI.ensureVisible(act);
-            } catch (Throwable t) {
-                CNLog.w(TAG, "show() 第 " + (i + 1) + " 次失败：" + t);
+                CNCNDownloadUI.show(activity);
+                CNCNDownloadUI.ensureVisible(activity);
+            } catch (Throwable error) {
+                CNLog.w(TAG, "show() 第 " + (i + 1) + " 次失败：" + error);
             }
-            if (CNCNDownloadUI.isShowing) {
-                CNLog.i(TAG, "浮层已显示");
-                return;
-            }
+            if (CNCNDownloadUI.isShowing) return;
             sleep(400L);
         }
         CNLog.e(TAG, "浮层始终建不起来，热更将无界面运行");
     }
 
-    private static java.util.concurrent.ScheduledExecutorService startWatchdog(final Activity act) {
-        if (act == null) return null;
+    private static java.util.concurrent.ScheduledExecutorService startWatchdog(
+            final Activity activity) {
+        if (activity == null) return null;
         try {
-            java.util.concurrent.ScheduledExecutorService ex =
+            java.util.concurrent.ScheduledExecutorService executor =
                     java.util.concurrent.Executors.newSingleThreadScheduledExecutor();
-            ex.scheduleWithFixedDelay(new Runnable() {
+            executor.scheduleWithFixedDelay(new Runnable() {
                 @Override public void run() {
-                    try { CNCNDownloadUI.ensureVisible(act); } catch (Throwable ignore) {}
+                    try { CNCNDownloadUI.ensureVisible(activity); }
+                    catch (Throwable ignore) {}
                 }
             }, WATCHDOG_PERIOD_MS, WATCHDOG_PERIOD_MS,
                java.util.concurrent.TimeUnit.MILLISECONDS);
-            return ex;
-        } catch (Throwable t) {
-            CNLog.w(TAG, "看门狗起不来：" + t);
+            return executor;
+        } catch (Throwable error) {
+            CNLog.w(TAG, "看门狗起不来：" + error);
             return null;
         }
     }
 
-    private static void stopWatchdog(java.util.concurrent.ScheduledExecutorService ex) {
-        if (ex == null) return;
-        try { ex.shutdownNow(); } catch (Throwable ignore) {}
+    private static void stopWatchdog(java.util.concurrent.ScheduledExecutorService executor) {
+        if (executor != null) {
+            try { executor.shutdownNow(); } catch (Throwable ignore) {}
+        }
     }
 
-    // ==================================================================
-    // 版本号
-    // ==================================================================
-
-    /**
-     * 取版本 json。走与资源文件相同的线路；从规范地址取文件名后逐条线路尝试，
-     * 失败记冷却。全部失败才抛出，调用方按“跳过本次热更”处理，不阻塞启动。
-     */
-    private static int fetchVersion(String url) throws Exception {
+    private static RemoteManifest fetchManifest(String url) throws Exception {
         String base = CNMirrors.DEFAULT_BASE;
         String name = url.startsWith(base) ? url.substring(base.length()) : url;
-        // 线路表可能还没拉过（热更检查不一定跟在安装器后面跑）
         if (!CNMirrors.isLoaded()) {
             CNMirrors.refresh(false);
             if (!CNMirrors.isLoaded()) CNMirrors.refresh(true);
         }
         Exception last = null;
-        for (CNMirrors.Mirror m : CNMirrors.healthy()) {
+        for (CNMirrors.Mirror mirror : CNMirrors.healthy()) {
             try {
-                return fetchVersionDirect(m.urlFor(name));
-            } catch (Exception t) {
-                CNLog.w(TAG, "版本 json 线路失败 mirror=" + m.name + ": " + t);
-                CNMirrors.reportFailure(m, "version json");
-                last = t;
+                return fetchManifestDirect(mirror.urlFor(name));
+            } catch (Exception error) {
+                CNLog.w(TAG, "版本 json 线路失败 mirror=" + mirror.name + ": " + error);
+                CNMirrors.reportFailure(mirror, "version json");
+                last = error;
             }
         }
         throw last != null ? last : new java.io.IOException("无可用线路");
     }
 
-    /** 从单条线路直取版本 json 并解析 version 字段。 */
-    private static int fetchVersionDirect(String url) throws Exception {
-        HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection(Proxy.NO_PROXY);
+    private static RemoteManifest fetchManifestDirect(String url) throws Exception {
+        HttpURLConnection connection =
+                (HttpURLConnection) new URL(url).openConnection(Proxy.NO_PROXY);
         try {
-            c.setConnectTimeout(VER_CONNECT_TIMEOUT_MS);
-            c.setReadTimeout(VER_READ_TIMEOUT_MS);
-            c.setInstanceFollowRedirects(true);
-            int code = c.getResponseCode();
+            connection.setConnectTimeout(VER_CONNECT_TIMEOUT_MS);
+            connection.setReadTimeout(VER_READ_TIMEOUT_MS);
+            connection.setInstanceFollowRedirects(true);
+            int code = connection.getResponseCode();
             if (code / 100 != 2) throw new java.io.IOException("HTTP " + code);
-            InputStream in = new BufferedInputStream(c.getInputStream(), 8192);
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            byte[] buf = new byte[8192];
-            int n;
-            // 版本 json 只有几十字节；设个上限免得对面返回一坨东西把内存吃了
-            while ((n = in.read(buf)) >= 0 && bos.size() < 65536) bos.write(buf, 0, n);
-            in.close();
-            return new JSONObject(bos.toString("UTF-8")).getInt("version");
+            InputStream input = new BufferedInputStream(connection.getInputStream(), 8192);
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            try {
+                byte[] buffer = new byte[8192];
+                int count;
+                while ((count = input.read(buffer)) >= 0 && output.size() < 65536) {
+                    if (count > 0) output.write(buffer, 0, count);
+                }
+            } finally {
+                try { input.close(); } catch (Throwable ignore) {}
+            }
+            JSONObject json = new JSONObject(output.toString("UTF-8"));
+            int version = json.getInt("version");
+            long size = json.optLong("size", -1L);
+            String sha256 = normalizeDigest(json.optString("sha256", ""), 64, "sha256");
+            String md5 = normalizeDigest(json.optString("md5", ""), 32, "md5");
+            if (size <= 0) throw new java.io.IOException("清单 size 无效");
+            if (sha256.isEmpty() && md5.isEmpty()) {
+                throw new java.io.IOException("清单缺少摘要");
+            }
+            return new RemoteManifest(version, size, sha256, md5);
         } finally {
-            try { c.disconnect(); } catch (Throwable ignore) {}
+            try { connection.disconnect(); } catch (Throwable ignore) {}
         }
     }
 
+    private static String normalizeDigest(String value, int length, String field)
+            throws java.io.IOException {
+        String normalized = value == null ? "" : value.trim().toLowerCase(Locale.US);
+        if (normalized.isEmpty()) return "";
+        if (normalized.length() != length || !normalized.matches("[0-9a-f]+")) {
+            throw new java.io.IOException("清单 " + field + " 格式无效");
+        }
+        return normalized;
+    }
+
     private static SharedPreferences prefs() {
-        Context ctx = appContext();
-        return ctx == null ? null : ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        Context context = appContext();
+        return context == null ? null
+                : context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 
     private static int readLocalVersion(String key) {
         try {
-            SharedPreferences p = prefs();
-            return p == null ? 0 : p.getInt(key, 0);
-        } catch (Throwable t) {
-            CNLog.w(TAG, "读本地版本号失败（" + key + "）：" + t);
+            SharedPreferences preferences = prefs();
+            return preferences == null ? 0 : preferences.getInt(key, 0);
+        } catch (Throwable error) {
+            CNLog.w(TAG, "读本地版本号失败（" + key + "）：" + error);
             return 0;
         }
     }
 
     private static void saveLocalVersion(String key, int value) {
         try {
-            SharedPreferences p = prefs();
-            if (p == null) {
+            SharedPreferences preferences = prefs();
+            if (preferences == null) {
                 CNLog.e(TAG, "拿不到 Context，版本号 " + key + "=" + value + " 没能落盘");
                 return;
             }
-            p.edit().putInt(key, value).commit();   // commit 而非 apply：紧接着可能就重启了
-        } catch (Throwable t) {
-            CNLog.e(TAG, "写本地版本号失败（" + key + "）", t);
+            if (!preferences.edit().putInt(key, value).commit()) {
+                CNLog.e(TAG, "版本号 commit 返回 false（" + key + "）");
+            }
+        } catch (Throwable error) {
+            CNLog.e(TAG, "写本地版本号失败（" + key + "）", error);
         }
     }
 
-    // ==================================================================
-    // 杂项
-    // ==================================================================
-
-    /**
-     * 取 Application Context。与原包同一手法（反射 {@code ActivityThread}），
-     * 因为补丁类没有别的途径拿到 Context——它们不由框架实例化。
-     */
     private static Context appContext() {
         try {
             Class<?> cls = Class.forName("android.app.ActivityThread");
             Object thread = cls.getMethod("currentActivityThread").invoke(null);
             return (Context) cls.getMethod("getApplication").invoke(thread);
-        } catch (Throwable t) {
+        } catch (Throwable error) {
             return null;
         }
     }
 
-    private static void deleteQuietly(File f) {
-        try { if (f != null && f.exists() && !f.delete()) {
-            CNLog.w(TAG, "删不掉临时文件 " + f);
-        } } catch (Throwable ignore) {}
+    private static void deleteQuietly(File file) {
+        try {
+            if (file != null && file.exists() && !file.delete()) {
+                CNLog.w(TAG, "删不掉临时文件 " + file);
+            }
+        } catch (Throwable ignore) {}
     }
 
-    private static void sleep(long ms) {
-        try { Thread.sleep(ms); }
-        catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+    private static void sleep(long millis) {
+        try { Thread.sleep(millis); }
+        catch (InterruptedException interrupted) {
+            Thread.currentThread().interrupt();
+        }
     }
 }
