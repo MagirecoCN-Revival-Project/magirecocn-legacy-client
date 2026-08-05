@@ -73,19 +73,23 @@ def generate(source: Path, runtime_include: Path, output: Path,
 
     generated = original
     include_additions = (
-        ("#include <atomic>\n",
+        ("#include <atomic>\n", "#include <algorithm>",
          "#include <algorithm>\n#include <atomic>\n"),
-        ("#include <unordered_map>\n",
+        ("#include <unordered_map>\n", "#include <unordered_set>",
          "#include <unordered_map>\n#include <unordered_set>\n"),
-        ("#include <vector>\n",
+        ("#include <vector>\n", "#include <utility>",
          "#include <utility>\n#include <vector>\n"),
     )
-    for anchor, replacement in include_additions:
-        extra = replacement.splitlines()[0]
-        if extra not in generated:
+    for anchor, required_include, replacement in include_additions:
+        if required_include not in generated:
             if generated.count(anchor) != 1:
                 raise GenerationError(f"include anchor drift: {anchor!r}")
             generated = generated.replace(anchor, replacement, 1)
+    for _, required_include, _ in include_additions:
+        if generated.count(required_include) != 1:
+            raise GenerationError(
+                f"generated include count is not one: {required_include}"
+            )
 
     generated = replace_between(
         generated, START_IMPL, END_IMPL,
