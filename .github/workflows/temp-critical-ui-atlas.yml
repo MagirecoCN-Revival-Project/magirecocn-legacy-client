@@ -56,7 +56,10 @@ jobs:
                       crop = atlas.crop((x, y, x+w, y+h))
                       dst = target / frame_name
                       dst.parent.mkdir(parents=True, exist_ok=True)
-                      crop.save(dst)
+                      if dst.suffix.lower() in ('.jpg', '.jpeg'):
+                          crop.convert('RGB').save(dst, quality=100, subsampling=0)
+                      else:
+                          crop.save(dst)
                       manifest.append([category, plist_path, image_path, frame_name, x, y, w, h, dst.relative_to(out).as_posix()])
           with (out / 'critical_ui_atlas_manifest.csv').open('w', encoding='utf-8-sig', newline='') as f:
               w = csv.writer(f)
