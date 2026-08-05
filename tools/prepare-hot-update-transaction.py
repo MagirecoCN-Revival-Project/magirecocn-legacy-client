@@ -9,11 +9,18 @@ import sys
 
 CHECK_RELATIVE = Path("io/kamihama/magianative/CNHotUpdateCheck.java")
 TX_RELATIVE = Path("io/kamihama/magianative/CNHotUpdateTransaction.java")
-START_ANCHOR = '        CNLog.i(TAG, "热更检查开始");\n'
-START_REPLACEMENT = '''        CNLog.i(TAG, "热更检查开始");
+RECOVERY_ANCHOR = '''        } else {
+            showOverlay(activity);
+        }
 
-        // 上次进程若死在事务提交中，先完整回滚再查询新版本。恢复失败时必须
-        // 停止本轮更新，不能继续覆盖一个状态未知的活动前端树。
+        java.util.concurrent.ScheduledExecutorService watchdog = startWatchdog(activity);
+'''
+RECOVERY_REPLACEMENT = '''        } else {
+            showOverlay(activity);
+        }
+
+        // 上次进程若死在事务提交中，先完整回滚再查询新版本。此时浮层已经
+        // 创建，恢复失败的阻断原因能够直接显示给玩家。
         File filesRoot = new File(FILES_DIR);
         try {
             CNHotUpdateTransaction.recover(filesRoot);
@@ -23,6 +30,8 @@ START_REPLACEMENT = '''        CNLog.i(TAG, "热更检查开始");
                     "上次更新未完整提交且自动回滚失败，请保留日志并重启后重试", 0);
             return;
         }
+
+        java.util.concurrent.ScheduledExecutorService watchdog = startWatchdog(activity);
 '''
 APPLY_ANCHOR = '            CNDownloaderFix.extractChecked(tmp, new File(FILES_DIR));'
 APPLY_REPLACEMENT = '            CNHotUpdateTransaction.apply(tmp, new File(FILES_DIR));'
@@ -68,9 +77,9 @@ def main() -> int:
     tx_target = args.java_root / TX_RELATIVE
     try:
         check_text = check_target.read_text("utf-8")
-        check_text, start_count = replace_exact(
-            check_text, START_ANCHOR, START_REPLACEMENT, 1,
-            "recovery insertion")
+        check_text, recovery_count = replace_exact(
+            check_text, RECOVERY_ANCHOR, RECOVERY_REPLACEMENT, 1,
+            "visible recovery insertion")
         check_text, apply_count = replace_exact(
             check_text, APPLY_ANCHOR, APPLY_REPLACEMENT, 1,
             "transactional apply")
@@ -101,7 +110,7 @@ def main() -> int:
         report = {
             "checkTarget": str(check_target),
             "transactionTarget": str(tx_target),
-            "recoveryInsertions": start_count,
+            "visibleRecoveryInsertions": recovery_count,
             "transactionApplyReplacements": apply_count,
             "rollbackStateWritesRemoved": rollback_state_count,
             "rootContainmentFixes": containment_count,
