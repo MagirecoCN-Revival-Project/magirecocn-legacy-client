@@ -1,0 +1,116 @@
+# CN 特有外部资源下载浮层与启动检查界面文本清单
+# 格式：id<TAB>zhCN<TAB>source<TAB>context
+# 动态内容使用 {name} 占位；换行写作 \n。此文件用于人工校对与后续集中修改，不包含纯内部日志。
+id	zhCN	source	context
+overlay.phase.initial	准备中	CNCNDownloadUI.java	浮层初始阶段标题
+overlay.detail.initial	正在初始化下载器…\n台词与前端脚本（热更新内容）已排在最前，先下完即可用上最新汉化	CNCNDownloadUI.java	浮层初始说明
+overlay.total_progress	总进度	CNCNDownloadUI.java	总进度标题
+overlay.file_summary	{done} / 15 文件	CNCNDownloadUI.java	已完成文件汇总
+overlay.waiting	等待中	CNCNDownloadUI.java	未开始下载的文件状态
+overlay.waiting_with_size	等待中 · {size}	CNCNDownloadUI.java	已探明体积但尚未开始
+overlay.completed_with_size	✓ {size}	CNCNDownloadUI.java	文件完成状态
+overlay.retry	重试	CNCNDownloadUI.java	失败文件按钮
+overlay.retry_queued	已加入重试队列	CNCNDownloadUI.java	点击重试后的提示
+overlay.log_pill	LOG	CNCNDownloadUI.java	左上角日志入口
+overlay.bgm_off	♪ 关	CNCNDownloadUI.java	BGM 胶囊关闭态
+overlay.bgm_on	♪ {track}	CNCNDownloadUI.java	BGM 胶囊播放态
+overlay.bgm_disabled_toast	BGM 已关闭	CNCNDownloadUI.java	关闭 BGM 提示
+overlay.bgm_selected_toast	BGM {track}	CNCNDownloadUI.java	选择 BGM 提示
+overlay.tutorial	序章	CNCNDownloadUI.java	序章胶囊普通态
+overlay.tutorial_armed	▶ 序章	CNCNDownloadUI.java	序章胶囊已启用态
+overlay.theme_light	☀  亮色	CNCNDownloadUI.java	夜间模式下的切换按钮
+overlay.theme_dark	☾  夜间	CNCNDownloadUI.java	亮色模式下的切换按钮
+overlay.github	</>  GitHub	CNCNDownloadUI.java	右上角项目链接
+overlay.log_title	安装日志	CNCNDownloadUI.java	日志模态框标题
+overlay.copy_all	复制全部	CNCNDownloadUI.java	日志复制按钮
+overlay.close	关闭	CNCNDownloadUI.java	日志关闭按钮
+overlay.log_filter_status	下载状态	CNCNDownloadUI.java	日志来源筛选
+overlay.log_filter_logcat	logcat	CNCNDownloadUI.java	日志来源筛选
+overlay.log_filter_native	原生日志	CNCNDownloadUI.java	日志来源筛选
+overlay.log_file	日志文件：{path}	CNCNDownloadUI.java	复制完整日志时的元数据
+overlay.log_dir	日志目录：{path}（保留最近若干次启动）	CNCNDownloadUI.java	复制完整日志时的元数据
+overlay.log_launch_seq	本次为第 {sequence} 次启动	CNCNDownloadUI.java	复制完整日志时的元数据
+overlay.log_runtime_separator	──────── 运行日志 ────────	CNCNDownloadUI.java	状态块与运行日志分隔线
+overlay.log_empty	（暂无日志；若已关闭 logcat 与原生日志，这里只会有本补丁自己的记录）	CNCNDownloadUI.java	日志为空提示
+overlay.log_truncated	（仅显示最近 {limit} 行，共 {total} 行；「复制全部」可取完整日志）	CNCNDownloadUI.java	日志面板截断提示
+overlay.copy_success	日志已复制到剪贴板（{count} 条）	CNCNDownloadUI.java	复制日志成功提示
+overlay.copy_failed	复制失败：{error}	CNCNDownloadUI.java	复制日志失败提示
+overlay.external_link_confirm	即将离开游戏打开：{url}\n再点一次继续	CNCNDownloadUI.java	外链二次确认
+overlay.external_link_failed	无法打开链接：{url}	CNCNDownloadUI.java	外链或更新地址打开失败
+tutorial.dialog.title	序章	CNCNDownloadUI.java	序章询问框标题
+tutorial.dialog.message	是否从头播放开场序章？\n\n· 「是」：进游戏后从头播放序章（剧情与教学战斗），播完自动重启回到正常游戏。\n· 「否」：正常进入游戏。\n\n走的是游戏自己的序章场景，只改本机状态，不动账号。	CNCNDownloadUI.java	序章询问框正文
+tutorial.dialog.yes	是	CNCNDownloadUI.java	序章询问肯定按钮
+tutorial.dialog.no	否	CNCNDownloadUI.java	序章询问否定按钮
+tutorial.choice.play	已设为进游戏后播放序章	CNCNDownloadUI.java	序章设置结果
+tutorial.choice.normal	已设为正常进入游戏	CNCNDownloadUI.java	序章设置结果
+tutorial.install_pending	{result}，安装完成后重启生效	CNCNDownloadUI.java	安装仍在进行时的提示
+tutorial.hotupdate_pending	{result}，热更检查完成后重启	CNCNDownloadUI.java	热更检查仍在进行时的提示
+tutorial.restart_pending	{result}，3 秒后自动重启游戏	CNCNDownloadUI.java	序章设置后的重启提示
+tutorial.manual_restart	设置已保存，请手动重启游戏生效	CNCNDownloadUI.java	自动重启线程失败时的提示
+version.dialog.title	客户端更新	CNCNDownloadUI.java	强制更新框标题
+version.dialog.message	发现新版本客户端：v{cloud}（当前 v{local}）\n\n客户端版本过旧，继续游戏可能无法正常运行，请下载并安装最新版本。\n\n· 「前往更新」：打开浏览器下载新包（覆盖安装即可，数据不丢）\n· 「退出游戏」：本次不玩，下次启动会再次提醒	CNCNDownloadUI.java	强制更新框正文
+version.dialog.update	前往更新	CNCNDownloadUI.java	强制更新主按钮
+version.dialog.quit	退出游戏	CNCNDownloadUI.java	强制更新次按钮
+version.phase.check	检查客户端版本	CNVersionCheck.java	版本检查阶段
+version.detail.check	正在检查客户端版本…	CNVersionCheck.java	版本检查状态
+version.phase.update	客户端更新	CNVersionCheck.java	发现新版本后的阶段
+version.detail.update	发现新版本 v{version}，需要更新客户端	CNVersionCheck.java	发现新版本后的状态
+installer.phase.preparing	准备中	CNDownloaderFix.java	安装器准备阶段
+installer.detail.fetch_mirrors	正在获取下载线路…	CNDownloaderFix.java	线路目录加载状态
+installer.phase.download	开始下载	CNDownloaderFix.java	开始下载阶段
+installer.detail.mirrors	可用线路 {count} 条，单文件分片 {threads} 线程	CNDownloaderFix.java	线路与分片摘要
+installer.detail.probe_sizes	正在获取文件大小…	CNDownloaderFix.java	文件体积探测状态
+installer.detail.probe_done	已探明 {known}/15 个文件，合计约 {size} MB	CNDownloaderFix.java	文件体积探测结果
+installer.phase.retry	重试中	CNDownloaderFix.java	失败文件重试阶段
+installer.detail.retry	正在重新下载失败的文件…	CNDownloaderFix.java	失败文件重试状态
+installer.failure.files	有 {count} 个文件下载失败，点击文件右侧的「重试」继续	CNDownloaderFix.java	安装器失败状态
+installer.failure.exception	安装器异常：{error}	CNDownloaderFix.java	未预期异常状态
+installer.phase.complete	安装完成	CNDownloaderFix.java	安装完成阶段
+installer.detail.complete	所有资源已验证并提交完成标记	CNDownloaderFix.java	安装完成状态
+installer.restart	安装完成，3 秒后自动重启游戏	CNDownloaderFix.java	安装完成重启提示
+hotupdate.package.scenario	台词包	CNHotUpdateCheck.java	热更新包名称
+hotupdate.package.frontend	前端脚本	CNHotUpdateCheck.java	热更新包名称
+hotupdate.phase.check	检查热更新	CNHotUpdateCheck.java	热更新检查阶段
+hotupdate.detail.check	正在查询台词与前端脚本的版本…	CNHotUpdateCheck.java	热更新检查状态
+hotupdate.detail.query_failed	{package}：版本查询失败，跳过本项	CNHotUpdateCheck.java	单项版本查询失败
+hotupdate.detail.latest	{package}：已是最新（v{version}）	CNHotUpdateCheck.java	单项已是最新
+hotupdate.phase.download	下载热更新	CNHotUpdateCheck.java	热更新下载阶段
+hotupdate.detail.download	{package}：v{local} → v{remote}，正在下载…	CNHotUpdateCheck.java	热更新下载状态
+hotupdate.detail.download_failed	{package}：下载失败，已跳过	CNHotUpdateCheck.java	热更新下载失败
+hotupdate.phase.apply	应用热更新	CNHotUpdateCheck.java	热更新解压与应用阶段
+hotupdate.detail.extract	{package}：正在解压…	CNHotUpdateCheck.java	热更新解压状态
+hotupdate.detail.extract_failed	{package}：解压失败，已跳过	CNHotUpdateCheck.java	热更新解压失败
+hotupdate.detail.applied	{package}：已更新到 v{version}	CNHotUpdateCheck.java	单项更新完成
+hotupdate.phase.complete	更新完成	CNHotUpdateCheck.java	存在更新时的总结阶段
+hotupdate.detail.complete	热更新已应用，即将进入游戏	CNHotUpdateCheck.java	存在更新时的总结状态
+hotupdate.phase.latest	已是最新	CNHotUpdateCheck.java	无需更新时的总结阶段
+hotupdate.detail.latest_all	台词与前端脚本均为最新版本，即将进入游戏	CNHotUpdateCheck.java	无需更新时的总结状态
+credit.title	魔法纪录Totentanz中文化	CNCNDownloadUI.java	内置署名标题
+credit.core	【核心逆向开发】MadeInMagius【B站ID】	CNCNDownloadUI.java	内置署名
+credit.core_note	(独立完成汉化引擎以及下载系统和日服国服资源合并)	CNCNDownloadUI.java	内置署名说明
+credit.websites	其他个人网站	CNCNDownloadUI.java	内置署名分组
+credit.magireader	magireader.pages.dev【魔法纪录剧情中日双语阅读网站】	CNCNDownloadUI.java	内置网站
+credit.live2d	magiaexedralive2dviewer.pages.dev【MagiaExedra和魔法纪录Live2D网站】	CNCNDownloadUI.java	内置网站
+credit.call_search	magireco-call-search-cn.pages.dev【魔法少女称呼关系搜索与身高对比网站】	CNCNDownloadUI.java	内置网站
+credit.thanks	【协助与鸣谢】	CNCNDownloadUI.java	内置署名分组
+credit.translation	国服文件之外的翻译和校对：水银h2oag【阅读器网站为主，资源已同步至游戏】	CNCNDownloadUI.java	内置署名
+credit.automation	下载加速及资源自动化推送：CyberNova	CNCNDownloadUI.java	内置署名
+credit.archive	国服数据留存：segfault	CNCNDownloadUI.java	内置署名
+credit.website	项目官网：www.magireco.top【通往其他个人网站和提供联系方式】	CNCNDownloadUI.java	内置网站
+credit.video	bilibili视频教程：BV1faRiBBExk	CNCNDownloadUI.java	内置网站
+credit.footer	核心开发: B站 @MadeInMagius【B站xhs tx同名】 | 国内加速+修复：@PhotonFlow | 如果需要联系请先b站私信，会提供群聊 | 该游戏支持后续剧情更新	CNCNDownloadUI.java	底部滚动署名
+file.cn_scenario_update	cn_scenario_update.zip	CNCNDownloadUI.java	下载槽位显示名
+file.cn_js_update	cn_js_update.zip	CNCNDownloadUI.java	下载槽位显示名
+file.cn_base_00_db	cn_base_00_db.zip	CNCNDownloadUI.java	下载槽位显示名
+file.cn_base_01_json	cn_base_01_json.zip	CNCNDownloadUI.java	下载槽位显示名
+file.cn_base_02	cn_base_02.zip	CNCNDownloadUI.java	下载槽位显示名
+file.cn_base_03	cn_base_03.zip	CNCNDownloadUI.java	下载槽位显示名
+file.cn_base_04	cn_base_04.zip	CNCNDownloadUI.java	下载槽位显示名
+file.cn_base_05	cn_base_05.zip	CNCNDownloadUI.java	下载槽位显示名
+file.cn_base_06	cn_base_06.zip	CNCNDownloadUI.java	下载槽位显示名
+file.cn_magica_resource	cn_magica_resource.zip	CNCNDownloadUI.java	下载槽位显示名
+file.cn_scenario_img	cn_scenario_img.zip	CNCNDownloadUI.java	下载槽位显示名
+file.cn_voice_01	cn_voice_01.zip	CNCNDownloadUI.java	下载槽位显示名
+file.cn_voice_02_done	cn_voice_02_done.zip	CNCNDownloadUI.java	下载槽位显示名
+file.movie	movie.zip	CNCNDownloadUI.java	下载槽位显示名
+file.movie2	movie2.zip	CNCNDownloadUI.java	下载槽位显示名
