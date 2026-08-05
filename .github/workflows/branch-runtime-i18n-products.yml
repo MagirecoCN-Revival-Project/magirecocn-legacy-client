@@ -1,0 +1,225 @@
+name: Runtime i18n branch products
+
+on:
+  push:
+    branches:
+      - feature/legacy-client-runtime-i18n
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  PINNED_MAIN_SHA: d33561a24233e27b6e592d08bfb398c94c87329f
+  JP_SOURCE_COMMIT: 58ef03a1395f11072c7f5368e0cb06c37e41cbda
+
+concurrency:
+  group: runtime-i18n-branch-products
+  cancel-in-progress: true
+
+jobs:
+  runtime-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Download runtime and pinned Japanese sources
+        run: |
+          set -euo pipefail
+          ROOT=.build/runtime-product
+          JP="$ROOT/jp-source"
+          mkdir -p "$ROOT" "$JP"
+          python3 -m py_compile \
+            tools/apply-cn-js-english-i18n.py \
+            tools/naturalize-runtime-game-data.py \
+            tools/stamp-runtime-i18n-marker.py \
+            tools/verify-cn-js-update-package.py \
+            tools/audit-webview-runtime-overlay.py
+          curl --fail --location --silent --show-error --retry 3 --retry-all-errors \
+            --connect-timeout 20 --max-time 300 \
+            -o "$ROOT/input.zip" \
+            'https://github.com/HiiragiNemu/magireco-cn-patch/releases/download/latest/cn_js_update.zip'
+          for file in cardMagiaMap.json doppelCardMagiaMap.json pieceSkillMap.json emotionSkillMap.json; do
+            curl --fail --location --silent --show-error --retry 3 --retry-all-errors \
+              --connect-timeout 20 --max-time 180 \
+              -o "$JP/$file" \
+              "https://raw.githubusercontent.com/Puella-Care/en-data/${JP_SOURCE_COMMIT}/${file}"
+            python3 -m json.tool "$JP/$file" >/dev/null
+          done
+      - name: Build deterministic v7.1 package
+        run: |
+          set -euo pipefail
+          ROOT=.build/runtime-product
+          build_one() {
+            local n="$1"
+            python3 tools/apply-cn-js-english-i18n.py \
+              "$ROOT/input.zip" "$ROOT/translated-$n.zip" \
+              --report "$ROOT/translation-$n.json"
+            python3 tools/naturalize-runtime-game-data.py \
+              "$ROOT/translated-$n.zip" "$ROOT/natural-$n.zip" \
+              --jp-source-dir "$ROOT/jp-source" \
+              --minimum-source-translations 50 \
+              --report "$ROOT/natural-$n.json"
+            python3 tools/stamp-runtime-i18n-marker.py \
+              "$ROOT/natural-$n.zip" "$ROOT/final-$n.zip" \
+              --package-id runtime-i18n-v7.1-branch \
+              --report "$ROOT/marker-$n.json"
+          }
+          build_one 1
+          build_one 2
+          cmp "$ROOT/final-1.zip" "$ROOT/final-2.zip"
+          mv "$ROOT/final-1.zip" "$ROOT/cn_js_update_v7_1_full_cn_natural_runtime.zip"
+          python3 tools/verify-cn-js-update-package.py \
+            --runtime "$ROOT/cn_js_update_v7_1_full_cn_natural_runtime.zip" \
+            --report "$ROOT/package-compatibility.json" > "$ROOT/verification.json"
+          python3 tools/audit-webview-runtime-overlay.py \
+            --runtime "$ROOT/cn_js_update_v7_1_full_cn_natural_runtime.zip" \
+            --report "$ROOT/webview-audit.json"
+          sha256sum "$ROOT/cn_js_update_v7_1_full_cn_natural_runtime.zip" \
+            | tee "$ROOT/SHA256SUMS.txt"
+      - name: Upload runtime product
+        uses: actions/upload-artifact@v4
+        with:
+          name: cn-js-update-v7-1-natural-runtime
+          path: |
+            .build/runtime-product/cn_js_update_v7_1_full_cn_natural_runtime.zip
+            .build/runtime-product/SHA256SUMS.txt
+            .build/runtime-product/translation-1.json
+            .build/runtime-product/natural-1.json
+            .build/runtime-product/marker-1.json
+            .build/runtime-product/package-compatibility.json
+            .build/runtime-product/webview-audit.json
+            .build/runtime-product/verification.json
+          retention-days: 30
+          compression-level: 0
+
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fetch and verify read-only latest main
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main:refs/remotes/origin/main
+          CURRENT=$(git rev-parse refs/remotes/origin/main)
+          [ "$CURRENT" = "$PINNED_MAIN_SHA" ] || {
+            echo "::error::main advanced: expected $PINNED_MAIN_SHA, got $CURRENT"
+            exit 1
+          }
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Prepare Android tools and dependencies
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/tools .cache/deps
+          curl -fL --retry 3 -o .cache/tools/apktool.jar \
+            'https://github.com/iBotPeaches/Apktool/releases/download/v2.9.3/apktool_2.9.3.jar'
+          curl -fL --retry 3 -o .cache/tools/baksmali.jar \
+            'https://github.com/baksmali/smali/releases/download/3.0.9/baksmali-3.0.9-fat-release.jar'
+          BT_DIR="$(ls -d "${ANDROID_HOME}"/build-tools/*/ | sort -V | tail -1)"
+          NDK_ROOT="${ANDROID_NDK_HOME:-}"
+          if [ -z "$NDK_ROOT" ] || [ ! -d "$NDK_ROOT" ]; then
+            NDK_ROOT="$(ls -1d "${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}/ndk"/* | sort -V | tail -1)"
+          fi
+          curl -fL --retry 3 -o .cache/deps/platform.zip \
+            'https://dl.google.com/android/repository/platform-33_r02.zip'
+          unzip -q -j .cache/deps/platform.zip '*/android.jar' -d .cache/deps
+          curl -fL --retry 3 -o .cache/deps/okhttp-3.12.13.jar \
+            'https://repo1.maven.org/maven2/com/squareup/okhttp3/okhttp/3.12.13/okhttp-3.12.13.jar'
+          curl -fL --retry 3 -o .cache/deps/okio-1.17.5.jar \
+            'https://repo1.maven.org/maven2/com/squareup/okio/okio/1.17.5/okio-1.17.5.jar'
+          echo "BUILD_TOOLS=${BT_DIR%/}" >> "$GITHUB_ENV"
+          echo "NDK=$NDK_ROOT" >> "$GITHUB_ENV"
+          echo "APKTOOL_JAR=$PWD/.cache/tools/apktool.jar" >> "$GITHUB_ENV"
+          echo "BAKSMALI_JAR=$PWD/.cache/tools/baksmali.jar" >> "$GITHUB_ENV"
+          echo "DEPS_DIR=$PWD/.cache/deps" >> "$GITHUB_ENV"
+      - name: Convert overlay BGM
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/audio/vgms .cache/audio/ff
+          curl -fL --retry 3 -o .cache/audio/vgms.tar.gz \
+            'https://github.com/vgmstream/vgmstream-releases/releases/download/nightly/vgmstream-linux-cli.tar.gz'
+          tar xzf .cache/audio/vgms.tar.gz -C .cache/audio/vgms
+          VGMS="$(find .cache/audio/vgms -name vgmstream-cli -type f | head -1)"
+          chmod +x "$VGMS"
+          curl -fL --retry 3 -o .cache/audio/ff.tar.xz \
+            'https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz'
+          tar xJf .cache/audio/ff.tar.xz -C .cache/audio/ff
+          FF="$(find .cache/audio/ff -name ffmpeg -type f | head -1)"
+          chmod +x "$FF"
+          python3 tools/convert-bgm.py --vgmstream "$VGMS" --ffmpeg "$FF"
+      - name: Prepare AOSP testkey
+        run: |
+          set -euo pipefail
+          mkdir -p .build/key
+          for f in testkey.pk8 testkey.x509.pem; do
+            curl -fL --retry 3 \
+              -o ".build/key/${f}.b64" \
+              "https://android.googlesource.com/platform/build/+/refs/tags/android-13.0.0_r83/target/product/security/${f}?format=TEXT"
+            base64 -d ".build/key/${f}.b64" > ".build/key/${f}"
+          done
+          grep -q 'BEGIN CERTIFICATE' .build/key/testkey.x509.pem
+          echo "SIGN_KEY=$PWD/.build/key/testkey.pk8" >> "$GITHUB_ENV"
+          echo "SIGN_CERT=$PWD/.build/key/testkey.x509.pem" >> "$GITHUB_ENV"
+      - name: Inject build version and build APK
+        env:
+          REQUIRE_ORIGIN_MAIN: '1'
+        run: |
+          set -euo pipefail
+          VER="1.0.${GITHUB_RUN_NUMBER}"
+          sed -i -E "s/CLIENT_VERSION = \"[^\"]+\"/CLIENT_VERSION = \"${VER}\"/" \
+            magia-native/src/MagiaLegacy.cpp
+          chmod +x tools/build-local.sh tools/build-apk-core.sh
+          tools/build-local.sh "$PWD/.build/runtime-apk"
+          APK=.build/runtime-apk/magireco-legacy.apk
+          "$BUILD_TOOLS/apksigner" verify --print-certs "$APK"
+          FP=$("$BUILD_TOOLS/apksigner" verify --print-certs "$APK" \
+            | grep -m1 'SHA-256 digest' | awk '{print tolower($NF)}')
+          [ "$FP" = 'a40da80a59d170caa950cf15c18c454d47a39b26989d8b640ecd745ba71bf5dc' ]
+          sha256sum "$APK" | tee .build/runtime-apk/SHA256SUMS.txt
+      - name: Upload APK product
+        uses: actions/upload-artifact@v4
+        with:
+          name: magirecocn-legacy-client-runtime-i18n
+          path: |
+            .build/runtime-apk/magireco-legacy.apk
+            .build/runtime-apk/SHA256SUMS.txt
+            .build/runtime-apk/main-runtime-baseline.json
+            .build/runtime-apk/main-hot-update-hardening.json
+            .build/runtime-apk/hot-update-transaction-materialisation.json
+            .build/runtime-apk/safe-external-links-materialisation.json
+            .build/runtime-apk/webview-overlay-probe-materialisation.json
+          retention-days: 30
+          compression-level: 0
+
+  report:
+    if: always()
+    needs: [runtime-package, apk]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment run id and job results on validation PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = [
+              '### Runtime i18n branch products',
+              `- run_id: ${context.runId}`,
+              `- commit: ${context.sha}`,
+              `- runtime-package: ${{ needs.runtime-package.result }}`,
+              `- apk: ${{ needs.apk.result }}`,
+              '- Release/main/deployment: 未执行',
+            ].join('\n');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: 1,
+              body,
+            });
