@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate MagiaLegacy with inlined ABI-safe text and typed font hooks."""
+"""Generate MagiaLegacy with inlined ABI-safe text and authoritative CN font hooks."""
 from __future__ import annotations
 
 import argparse
@@ -46,17 +46,22 @@ REQUIRED_TEXT_INCLUDE = (
     "installRuntimeTextI18nHooks",
 )
 REQUIRED_FONT_INCLUDE = (
-    'RUNTIME_FONT_FROM[] = "fonts/MTF4a5kp.ttf"',
-    'RUNTIME_FONT_TO[] = "fonts/TTZhiHeiGB3-W4.ttf"',
+    'RUNTIME_UI_FONT_FROM[] = "fonts/MTF4a5kp.ttf"',
+    'RUNTIME_UI_FONT_TO[] = "fonts/TTZhiHeiGB3-W4.ttf"',
+    'RUNTIME_STORY_FONT_FROM[] = "fonts/mbm_20160902.ttf"',
+    'RUNTIME_STORY_FONT_TO[] = "fonts/TTDaYuanGB3.ttf"',
     "struct RuntimeTtfConfig",
     "using CreateWithTtfConfigFn = void* (*)(",
     "using CreateWithTtfPathFn = void* (*)(",
     "using SetTtfConfigInternalFn = bool (*)(",
+    "using FullPathForFilenameFn = std::string (*)(",
     "RuntimeTtfConfig local = config;",
+    "fullPathForFilenameNew",
     "installRuntimeFontPathHooks",
-    '"font: createWithTTF(cfg) typed MTF4a5kp→TTZhiHeiGB3-W4"',
-    '"font: createWithTTF(str) typed MTF4a5kp→TTZhiHeiGB3-W4"',
-    '"font: setTTFConfigInternal typed MTF4a5kp→TTZhiHeiGB3-W4"',
+    '"font: createWithTTF(cfg) typed CN UI/story routes"',
+    '"font: createWithTTF(str) typed CN UI/story routes"',
+    '"font: setTTFConfigInternal typed CN UI/story routes"',
+    '"font: FileUtils fullPath typed WebView fontDataGet route"',
 )
 
 
@@ -166,7 +171,11 @@ def generate(source: Path, output: Path, report: Path | None) -> dict:
         "immutableTranslationSnapshot": True,
         "color4bRgba": True,
         "typedGlobalFontPathHook": True,
-        "fontRoutePreserved": "MTF4a5kp→TTZhiHeiGB3-W4",
+        "fontRoutes": {
+            "cocosUi": "MTF4a5kp→TTZhiHeiGB3-W4",
+            "cocosStory": "mbm_20160902→TTDaYuanGB3",
+            "webView": "FileUtils fullPath→TTZhiHei→fontDataGet(motoya/mbm)",
+        },
         "fontFilesReplaced": False,
         "arm64AndArmv7CompilerAbi": True,
     }
