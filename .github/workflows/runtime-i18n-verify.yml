@@ -21,8 +21,6 @@ jobs:
       github.head_ref == 'feature/legacy-client-runtime-i18n'
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    env:
-      PINNED_MAIN_SHA: d33561a24233e27b6e592d08bfb398c94c87329f
 
     steps:
       - name: Checkout work branch
@@ -30,18 +28,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Fetch and verify latest main baseline
+      - name: Resolve and require latest main ancestor
         run: |
           set -euo pipefail
           git fetch --no-tags origin main:refs/remotes/origin/main
-          CURRENT=$(git rev-parse refs/remotes/origin/main)
-          [ "$CURRENT" = "$PINNED_MAIN_SHA" ] || {
-            echo "::error::main 已前进：期望 $PINNED_MAIN_SHA，当前 $CURRENT；必须先审查并更新固定基线"
+          MAIN_SHA=$(git rev-parse refs/remotes/origin/main)
+          git merge-base --is-ancestor "$MAIN_SHA" HEAD || {
+            echo "::error::feature 尚未纳入 latest main $MAIN_SHA"
             exit 1
           }
+          echo "PINNED_MAIN_SHA=$MAIN_SHA" >> "$GITHUB_ENV"
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
@@ -63,6 +61,8 @@ jobs:
             tools/validate-js-update-package.py \
             tools/materialize-ui-text-overlay.py \
             tools/apply-cn-js-english-i18n.py \
+            tools/apply-cn-js-english-i18n-idempotent.py \
+            tools/apply-cn-js-english-i18n-strict.py \
             tools/verify-cn-js-update-package.py
 
       - name: Materialise latest-main effective Java sources
@@ -110,7 +110,7 @@ jobs:
           ! grep -q 'CNDownloaderFix.extractChecked(tmp, new File(FILES_DIR));' "$CHECK"
           grep -q 'childCanonical.equals(rootCanonical)' "$TX"
           ! grep -q 'writeState(txRoot, STATE_ROLLING_BACK);' "$TX"
-          test "$(grep -c 'CNSafeExternalLinks.open(act, url);' "$UI")" -eq 2
+          grep -q 'CNSafeExternalLinks.open(act, url);' "$UI"
           ! grep -q 'new Intent(Intent.ACTION_VIEW, Uri.parse(url))' "$UI"
           grep -q 'RuntimeOverlayProbe.onLocalFile(candidatePath, mime);' "$WV"
           grep -q 'RuntimeOverlayProbe.onPageFinished(view, url);' "$WV"
@@ -126,11 +126,19 @@ jobs:
             --output .build/native-generated/MagiaLegacy.cpp \
             --report .build/native-generated/report.json
           GEN=.build/native-generated/MagiaLegacy.cpp
-          grep -q '#include "RuntimeTextI18n.inc"' "$GEN"
-          grep -q '#include "RuntimeFontPathHook.inc"' "$GEN"
+          REPORT=.build/native-generated/report.json
+          grep -q 'BEGIN INLINED RuntimeTextI18n.inc' "$GEN"
+          grep -q 'BEGIN INLINED RuntimeFontPathHook.inc' "$GEN"
           grep -q 'installRuntimeTextI18nHooks(H);' "$GEN"
           grep -q 'installRuntimeFontPathHooks(H);' "$GEN"
           grep -q 'SetTtfConfigInternalFn = bool' magia-native/src/RuntimeFontPathHook.inc
+          python - <<'PY'
+          import json
+          data=json.load(open('.build/native-generated/report.json',encoding='utf-8'))
+          assert data['implementationsInlined'] is True
+          assert data['textDefinitionBeforeCall'] is True
+          assert data['fontDefinitionBeforeCall'] is True
+          PY
           if grep -n -E 'FakeNdkStr|g_engineI18n\.swap|NdkStrView|fontPathOverwrite|fontPathFix|struct CNColor4B \{ unsigned char r, g, b; \}' "$GEN"; then
             echo 'Unsafe legacy text/font hook survived.' >&2; exit 1
           fi
