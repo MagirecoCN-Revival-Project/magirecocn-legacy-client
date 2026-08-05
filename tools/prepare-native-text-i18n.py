@@ -25,6 +25,8 @@ REQUIRED_GENERATED = (
     '#include "RuntimeTextI18n.inc"',
     '#include "RuntimeFontCompat.inc"',
     "installRuntimeTextI18nHooks(H);",
+    "#include <algorithm>",
+    "#include <utility>",
 )
 REQUIRED_TEXT_INCLUDE = (
     "std::atomic_store_explicit",
@@ -62,6 +64,14 @@ def replace_between(text: str, start: str, end: str, replacement: str) -> str:
     return text[:begin] + replacement + "\n\n" + text[finish:]
 
 
+def ensure_include(text: str, include: str, anchor: str) -> str:
+    if include in text:
+        return text
+    if text.count(anchor) != 1:
+        raise GenerationError(f"cannot insert {include}: anchor drift {anchor!r}")
+    return text.replace(anchor, include + "\n" + anchor, 1)
+
+
 def sha256(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
@@ -83,13 +93,8 @@ def generate(source: Path, output: Path, report: Path | None) -> dict:
     require_tokens(font_compat, REQUIRED_FONT_COMPAT, "RuntimeFontCompat.inc")
 
     generated = original
-    if "#include <algorithm>" not in generated:
-        anchor = "#include <atomic>\n"
-        if generated.count(anchor) != 1:
-            raise GenerationError("cannot insert <algorithm>: atomic include drift")
-        generated = generated.replace(
-            anchor, "#include <algorithm>\n#include <atomic>\n", 1)
-
+    generated = ensure_include(generated, "#include <algorithm>", "#include <atomic>")
+    generated = ensure_include(generated, "#include <utility>", "#include <vector>")
     generated = replace_between(
         generated, START_IMPL, END_IMPL,
         '#include "RuntimeTextI18n.inc"\n#include "RuntimeFontCompat.inc"',
