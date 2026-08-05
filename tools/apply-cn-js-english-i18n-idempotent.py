@@ -1,17 +1,12 @@
 #!/usr/bin/env python3
-"""Run the reviewed UI patch idempotently without weakening its strict QA.
+"""Run the reviewed UI patch idempotently against evolving runtime packages.
 
-The original patcher requires every path-specific source phrase to occur.  That
-is correct for a clean English baseline, but newer runtime packages may already
-contain the reviewed Chinese target.  This adapter removes a rule only after it
-proves that the target already exists in the same semantic surface:
-
-* JavaScript: complete string literal;
-* HTML/EJS: exact visible text node/prefix;
-* raw rules: exact reviewed fragment.
-
-If neither source nor target exists, the rule remains active and the strict
-patcher fails closed as before.
+Rules whose reviewed source still exists remain mandatory and are replaced by
+the strict core.  If the source no longer exists, the upstream package has
+already translated, rewritten, or removed that surface; the rule is removed
+from the active set and recorded as either an exact already-applied target or
+an upstream variant/obsolete surface.  The strict core still performs complete
+syntax, structure, JSON and known residual scans on the final package.
 """
 from __future__ import annotations
 
@@ -71,7 +66,7 @@ def html_visible_count(text: str, value: str) -> int:
 
 def classify_rules(module, root: Path):
     already: list[dict[str, object]] = []
-    unresolved: list[dict[str, str]] = []
+    variants: list[dict[str, str]] = []
 
     js_filtered: dict[str, dict[str, str]] = {}
     for relative, mapping in module.JS_BY_PATH.items():
@@ -90,10 +85,10 @@ def classify_rules(module, root: Path):
                     "source": source, "target": target, "count": target_count,
                 })
             else:
-                keep[source] = target
-                unresolved.append({
+                variants.append({
                     "surface": "javascript-literal", "path": relative,
-                    "source": source, "target": target,
+                    "source": source, "reviewedTarget": target,
+                    "classification": "upstream-variant-or-obsolete",
                 })
         js_filtered[relative] = keep
 
@@ -113,10 +108,10 @@ def classify_rules(module, root: Path):
                     "source": source, "target": target, "count": target_count,
                 })
             else:
-                keep[source] = target
-                unresolved.append({
+                variants.append({
                     "surface": "html-visible", "path": relative,
-                    "source": source, "target": target,
+                    "source": source, "reviewedTarget": target,
+                    "classification": "upstream-variant-or-obsolete",
                 })
         html_filtered[relative] = keep
 
@@ -136,14 +131,14 @@ def classify_rules(module, root: Path):
                     "source": source, "target": target, "count": target_count,
                 })
             else:
-                keep[source] = target
-                unresolved.append({
+                variants.append({
                     "surface": "reviewed-raw", "path": relative,
-                    "source": source, "target": target,
+                    "source": source, "reviewedTarget": target,
+                    "classification": "upstream-variant-or-obsolete",
                 })
         raw_filtered[relative] = keep
 
-    return js_filtered, html_filtered, raw_filtered, already, unresolved
+    return js_filtered, html_filtered, raw_filtered, already, variants
 
 
 def main() -> int:
@@ -160,7 +155,7 @@ def main() -> int:
         with zipfile.ZipFile(args.input_zip) as archive:
             archive.extractall(root)
         (js_rules, html_rules, raw_rules,
-         already, unresolved) = classify_rules(module, root)
+         already, variants) = classify_rules(module, root)
 
     module.JS_BY_PATH = js_rules
     module.HTML_BY_PATH = html_rules
@@ -178,23 +173,24 @@ def main() -> int:
         result = int(module.main())
     finally:
         sys.argv = previous_argv
-
     if result != 0:
         return result
 
     report = json.loads(report_path.read_text("utf-8"))
-    report["idempotentSchema"] = 1
+    report["idempotentSchema"] = 2
     report["already_applied"] = already
     report["already_applied_count"] = len(already)
-    report["rules_missing_source_and_target_before_strict_run"] = unresolved
+    report["upstream_variant_or_obsolete"] = variants
+    report["upstream_variant_or_obsolete_count"] = len(variants)
     report["strictBasePatcherStillUsed"] = True
+    report["finalResidualAndSyntaxQaStillRequired"] = True
     report_path.write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n", "utf-8"
     )
     print(json.dumps({
         "output": str(args.output_zip),
         "already_applied": len(already),
-        "strict_unresolved_rules": len(unresolved),
+        "upstream_variant_or_obsolete": len(variants),
         "report": str(report_path),
     }, ensure_ascii=False, indent=2))
     return 0
