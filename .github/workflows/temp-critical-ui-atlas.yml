@@ -1,78 +1,138 @@
-name: Temporary critical UI atlas split
+name: Temporary comprehensive plist atlas split
 on:
   pull_request:
     branches: [main]
 permissions:
   contents: read
 jobs:
-  split-critical-ui:
+  split-all-atlases:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
           lfs: true
       - run: python -m pip install --disable-pip-version-check pillow
-      - name: Split common and story UI atlases
+      - name: Split every supported plist atlas
         shell: bash
         run: |
           python - <<'PY'
-          import csv, plistlib, re
+          import csv, plistlib, re, traceback
           from pathlib import Path
           from PIL import Image
 
           root = Path('.')
-          out = Path('/tmp/critical-ui-atlas-frames')
-          out.mkdir(parents=True, exist_ok=True)
+          out = Path('/tmp/all-plist-atlas-frames')
+          frames_out = out / 'frames'
+          frames_out.mkdir(parents=True, exist_ok=True)
           manifest = []
-          pairs = [
-              ('assets/package/window/common_btn0.plist', 'assets/package/window/common_btn0.png', 'common_buttons'),
-              ('assets/package/story/story_ui_sprites00.plist', 'assets/package/story/story_ui_sprites00.png', 'story_adv_controls'),
-          ]
+          errors = []
+          skipped = []
 
-          def rect(info):
-              if all(k in info for k in ('x','y','width','height')):
-                  return tuple(int(info[k]) for k in ('x','y','width','height'))
-              value = info.get('frame') or info.get('textureRect')
-              if isinstance(value, str):
-                  nums = [int(x) for x in re.findall(r'-?\d+', value)]
-                  if len(nums) >= 4:
-                      return tuple(nums[:4])
+          def parse_rect(info):
+              if isinstance(info, dict) and all(k in info for k in ('x','y','width','height')):
+                  return tuple(int(float(info[k])) for k in ('x','y','width','height'))
+              if isinstance(info, dict):
+                  value = info.get('frame') or info.get('textureRect')
+                  if isinstance(value, str):
+                      nums = [int(x) for x in re.findall(r'-?\d+', value)]
+                      if len(nums) >= 4:
+                          return tuple(nums[:4])
+                  if isinstance(value, (list, tuple)) and len(value) >= 4:
+                      return tuple(int(float(x)) for x in value[:4])
               return None
 
-          for plist_path, image_path, category in pairs:
-              data = plistlib.loads((root / plist_path).read_bytes())
-              frames = data.get('frames', {})
-              with Image.open(root / image_path) as atlas:
-                  atlas = atlas.convert('RGBA')
-                  target = out / category
-                  target.mkdir(parents=True, exist_ok=True)
+          def texture_for(plist_path, data):
+              meta = data.get('metadata', {}) if isinstance(data, dict) else {}
+              names = []
+              if isinstance(meta, dict):
+                  for key in ('textureFileName','realTextureFileName','textureFilename','image','texture'):
+                      v = meta.get(key)
+                      if isinstance(v, str) and v:
+                          names.append(v)
+              names += [plist_path.with_suffix('.png').name, plist_path.with_suffix('.jpg').name]
+              for n in names:
+                  p = plist_path.parent / Path(n).name
+                  if p.is_file():
+                      return p
+              candidates = sorted(plist_path.parent.glob(plist_path.stem + '*.png'))
+              if len(candidates) == 1:
+                  return candidates[0]
+              return None
+
+          for plist_path in sorted(root.rglob('*.plist')):
+              try:
+                  data = plistlib.loads(plist_path.read_bytes())
+              except Exception as e:
+                  skipped.append([plist_path.as_posix(), 'plist parse failed', str(e)])
+                  continue
+              frames = data.get('frames') if isinstance(data, dict) else None
+              if not isinstance(frames, dict) or not frames:
+                  continue
+              texture = texture_for(plist_path, data)
+              if not texture:
+                  skipped.append([plist_path.as_posix(), 'texture not found', ''])
+                  continue
+              try:
+                  atlas = Image.open(texture).convert('RGBA')
+              except Exception as e:
+                  errors.append([plist_path.as_posix(), texture.as_posix(), '', str(e)])
+                  continue
+              atlas_count = 0
+              try:
                   for frame_name, info in frames.items():
-                      r = rect(info)
+                      r = parse_rect(info)
                       if not r:
                           continue
                       x, y, w, h = r
+                      if w <= 0 or h <= 0:
+                          continue
                       crop = atlas.crop((x, y, x+w, y+h))
-                      dst = target / frame_name
+                      rotated = bool(info.get('rotated', False)) if isinstance(info, dict) else False
+                      if rotated:
+                          crop = crop.transpose(Image.Transpose.ROTATE_90)
+                      safe_name = Path(str(frame_name)).name
+                      rel_dir = plist_path.with_suffix('')
+                      dst = frames_out / rel_dir / safe_name
                       dst.parent.mkdir(parents=True, exist_ok=True)
                       if dst.suffix.lower() in ('.jpg', '.jpeg'):
                           crop.convert('RGB').save(dst, quality=100, subsampling=0)
                       else:
+                          if not dst.suffix:
+                              dst = dst.with_suffix('.png')
                           crop.save(dst)
-                      manifest.append([category, plist_path, image_path, frame_name, x, y, w, h, dst.relative_to(out).as_posix()])
-          with (out / 'critical_ui_atlas_manifest.csv').open('w', encoding='utf-8-sig', newline='') as f:
+                      manifest.append([
+                          plist_path.as_posix(), texture.as_posix(), str(frame_name),
+                          x, y, w, h, int(rotated), crop.width, crop.height,
+                          dst.relative_to(out).as_posix()
+                      ])
+                      atlas_count += 1
+              except Exception as e:
+                  errors.append([plist_path.as_posix(), texture.as_posix(), '', traceback.format_exc()])
+              finally:
+                  atlas.close()
+              if atlas_count == 0:
+                  skipped.append([plist_path.as_posix(), 'no supported frame rectangles', texture.as_posix()])
+
+          with (out / 'all_atlas_manifest.csv').open('w', encoding='utf-8-sig', newline='') as f:
               w = csv.writer(f)
-              w.writerow(['category','plist','atlas','frame','x','y','width','height','output'])
+              w.writerow(['plist','texture','frame','x','y','width','height','rotated','output_width','output_height','output'])
               w.writerows(manifest)
+          with (out / 'skipped_plists.csv').open('w', encoding='utf-8-sig', newline='') as f:
+              w = csv.writer(f); w.writerow(['plist','reason','detail']); w.writerows(skipped)
+          with (out / 'errors.csv').open('w', encoding='utf-8-sig', newline='') as f:
+              w = csv.writer(f); w.writerow(['plist','texture','frame','error']); w.writerows(errors)
+          atlases = len({r[0] for r in manifest})
           (out / 'README.md').write_text(
-              f'Split {len(manifest)} frames from common_btn0 and story_ui_sprites00.\n', encoding='utf-8')
-          print('split frames:', len(manifest))
+              f'Split {len(manifest)} frames from {atlases} plist atlases. '
+              f'Skipped records: {len(skipped)}; errors: {len(errors)}.\n', encoding='utf-8')
+          print('frames', len(manifest), 'atlases', atlases, 'skipped', len(skipped), 'errors', len(errors))
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: magirecocn-critical-ui-atlas-frames
-          path: /tmp/critical-ui-atlas-frames
+          name: magirecocn-all-plist-atlas-frames
+          path: /tmp/all-plist-atlas-frames
           if-no-files-found: error
           compression-level: 6
           retention-days: 7
