@@ -1,0 +1,20 @@
+{
+  "physical": {
+    "rows": 424,
+    "missing": 0,
+    "hash_mismatch": 0,
+    "size_mismatch": 0,
+    "decode_failures": 0
+  },
+  "logical_frames": {
+    "rows": 1008,
+    "missing": 0,
+    "hash_mismatch": 0,
+    "size_mismatch": 0,
+    "decode_failures": 0
+  },
+  "csv_json_count_equal": true,
+  "summary_count_equal": true,
+  "layers_separate": true,
+  "ok": true
+}

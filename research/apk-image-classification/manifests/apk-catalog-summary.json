@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "generated_utc": "2026-08-04T16:03:38.725144+00:00",
+  "apk_absolute": "D:\\magia\\MyProducts\\MagiaRe\\Magia_CN_Project\\dist\\MagiaCN-r128-downloader-fix1.apk",
+  "apk_bytes": 99199438,
+  "apk_sha256": "BD3AAE6D80F87044A9C6780AC0226746AA53D568CF81A6203C7F08D60C7B67F5",
+  "physical_payloads": {
+    "instances": 424,
+    "apk_direct": 347,
+    "plist_embedded": 77,
+    "encoded_sha256": {
+      "instances": 424,
+      "unique": 370
+    },
+    "pixel_sha256": {
+      "instances": 424,
+      "unique": 369
+    },
+    "phash64": {
+      "instances": 424,
+      "unique": 307
+    }
+  },
+  "logical_atlas_frames": {
+    "instances": 1008,
+    "encoded_sha256": {
+      "instances": 1008,
+      "unique": 967
+    },
+    "pixel_sha256": {
+      "instances": 1008,
+      "unique": 967
+    },
+    "phash64": {
+      "instances": 1008,
+      "unique": 899
+    }
+  },
+  "invariant": "physical payload instances and logical atlas frames are separate layers"
+}
