@@ -18,6 +18,8 @@ FILES = {
     "hot": Path("patch/src/main/java/io/kamihama/magianative/CNHotUpdateCheck.java"),
     "transaction": Path("patch/src/main/java/io/kamihama/magianative/CNHotUpdateTransaction.java"),
     "transaction_prepare": Path("tools/prepare-hot-update-transaction.py"),
+    "safe_links": Path("patch/src/main/java/io/kamihama/magianative/CNSafeExternalLinks.java"),
+    "safe_links_prepare": Path("tools/prepare-safe-external-links.py"),
     "build_wrapper": Path("tools/build-local.sh"),
     "build_core": Path("tools/build-apk-core.sh"),
     "apk_workflow": Path(".github/workflows/build-apk-runtime-i18n.yml"),
@@ -25,7 +27,6 @@ FILES = {
     "native_text": Path("magia-native/src/RuntimeTextI18n.inc"),
     "native_font": Path("magia-native/src/RuntimeFontCompat.inc"),
     "native_prepare": Path("tools/prepare-native-text-i18n.py"),
-    "ui": Path("patch/src/main/java/io/kamihama/magianative/CNCNDownloadUI.java"),
 }
 TEMPLATE_REF = re.compile(r"text!template/([^'\"\\?\s,\)]+\.html)")
 
@@ -99,6 +100,8 @@ def audit(root: Path, runtime: Path | None) -> dict:
     hot = source["hot"]
     transaction = source["transaction"]
     tx_prepare = source["transaction_prepare"]
+    safe_links = source["safe_links"]
+    safe_links_prepare = source["safe_links_prepare"]
     wrapper = source["build_wrapper"]
     core = source["build_core"]
     workflow = source["apk_workflow"]
@@ -106,7 +109,6 @@ def audit(root: Path, runtime: Path | None) -> dict:
     native_text = source["native_text"]
     native_font = source["native_font"]
     native_prepare = source["native_prepare"]
-    ui = source["ui"]
 
     original_loader = {
         "interceptsMagica": 'const-string v0, "/magica/"' in interceptor,
@@ -169,6 +171,23 @@ def audit(root: Path, runtime: Path | None) -> dict:
             and "childCanonical.equals(rootCanonical)" in tx_prepare,
     }
 
+    external_links = {
+        "httpsOnly": '"https".equalsIgnoreCase(uri.getScheme())' in safe_links,
+        "userinfoRejected": "uri.getUserInfo() != null" in safe_links,
+        "nonStandardPortRejected": "port != -1 && port != 443" in safe_links,
+        "domainAllowlist": "allowedHost" in safe_links
+            and "magireco.top" in safe_links
+            and "github.com" in safe_links
+            and "b23.tv" in safe_links,
+        "browsableIntent": "Intent.CATEGORY_BROWSABLE" in safe_links,
+        "twoRawBlocksReplaced":
+            "expected two raw ACTION_VIEW blocks" in safe_links_prepare
+            and "CNSafeExternalLinks.open(act, url);" in safe_links_prepare,
+        "materialisedByBuild": "prepare-safe-external-links.py" in wrapper,
+        "rawActionViewRejectedByBuild":
+            "未限制的 ACTION_VIEW 调用仍存在" in wrapper,
+    }
+
     native_effective = {
         "generatedByCMake":
             "prepare-native-text-i18n.py" in cmake
@@ -199,6 +218,7 @@ def audit(root: Path, runtime: Path | None) -> dict:
     effective_build_ready = (
         all(effective_webview.values())
         and all(hot_update.values())
+        and all(external_links.values())
         and all(native_effective.values())
     )
     package_valid = True
@@ -223,21 +243,17 @@ def audit(root: Path, runtime: Path | None) -> dict:
             "HIGH", "ARMV7_FONT_PATH_LAYOUT_NOT_DEVICE_VERIFIED",
             "文本 hook 已双 ABI 安全，但保留的成功字体路径 hook 仍使用 arm64 libc++ 视图；armv7 必须单独构建和真机验证。"
         ))
-    if "new Intent(Intent.ACTION_VIEW, Uri.parse(url))" in ui:
-        findings.append(finding(
-            "MEDIUM", "REMOTE_ACTION_VIEW_URL_NOT_RESTRICTED",
-            "云端署名/更新地址仍可直接触发任意 URI scheme，应限制为 HTTPS 和允许域名。"
-        ))
     findings.append(finding(
         "TEST", "ACTIONS_AND_DEVICE_VALIDATION_PENDING",
         "有效构建链已建立，但尚未实际运行双 ABI Actions，也未完成 v6 热更新、WebView 同源约束和 mixed-content 的真机回归。"
     ))
 
     return {
-        "schema": 2,
+        "schema": 3,
         "originalGameLoader": original_loader,
         "effectiveWebViewBuild": effective_webview,
         "effectiveHotUpdateBuild": hot_update,
+        "effectiveExternalLinkBuild": external_links,
         "effectiveNativeTextBuild": native_effective,
         "runtimePackage": package,
         "originalLoaderEnabled": loader_enabled,
@@ -253,8 +269,8 @@ def audit(root: Path, runtime: Path | None) -> dict:
             "effectiveBuild": (
                 "The branch build replaces the original WebView class with hardened Java, "
                 "verifies archive length/digest, transactionally commits files, restarts "
-                "after application, and compiles ABI-safe native text hooks while preserving "
-                "the verified global font-path hook."
+                "after application, validates external links, and compiles ABI-safe native "
+                "text hooks while preserving the verified global font-path hook."
             ),
         },
     }
