@@ -23,7 +23,8 @@ jobs:
         run: |
           cat .github/image_usage_analyzer_parts/part_*.b64 | base64 -d | gzip -d > /tmp/reverse_image_usage.py
           patch /tmp/reverse_image_usage.py < .github/image_usage_analyzer_v2.patch
-          echo '434c6d22e19a5ae033efe39102630236343fa40c699cbfa4353b0a82284c88f8  /tmp/reverse_image_usage.py' | sha256sum -c -
+          patch /tmp/reverse_image_usage.py < .github/image_usage_analyzer_v3.patch
+          echo '9194202017ba86c4f3bf19daf1cf8c942289917d8ec4e0a1a783f03bfa1401b3  /tmp/reverse_image_usage.py' | sha256sum -c -
           python -m py_compile /tmp/reverse_image_usage.py
       - name: Analyze image call graph and build L2D reuse package
         shell: bash
