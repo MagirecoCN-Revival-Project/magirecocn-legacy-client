@@ -27,8 +27,10 @@ jobs:
             tools/prepare-changed-downloader-ui-text.py \
             tools/prepare-hot-update-transaction.py \
             tools/prepare-safe-external-links.py \
+            tools/prepare-webview-overlay-probe.py \
             tools/prepare-native-text-i18n.py \
             tools/audit-webview-runtime-overlay.py \
+            tools/stamp-runtime-i18n-marker.py \
             tools/validate-js-update-package.py \
             tools/materialize-ui-text-overlay.py \
             tools/apply-cn-js-english-i18n.py \
@@ -49,6 +51,9 @@ jobs:
           python tools/prepare-safe-external-links.py \
             --java-root .build/runtime-i18n-java \
             --report .build/safe-external-links-report.json
+          python tools/prepare-webview-overlay-probe.py \
+            --java-root .build/runtime-i18n-java \
+            --report .build/webview-overlay-probe-report.json
 
           test -s .build/runtime-i18n-java/io/kamihama/magianative/CNCNDownloadUIText.java
           grep -q 'MagiaCN 安装器' \
@@ -62,6 +67,8 @@ jobs:
           CHECK=.build/runtime-i18n-java/io/kamihama/magianative/CNHotUpdateCheck.java
           TX=.build/runtime-i18n-java/io/kamihama/magianative/CNHotUpdateTransaction.java
           UI=.build/runtime-i18n-java/io/kamihama/magianative/CNCNDownloadUI.java
+          WV=.build/runtime-i18n-java/jp/f4samurai/web/WebViewImpl.java
+          PROBE=.build/runtime-i18n-java/jp/f4samurai/web/RuntimeOverlayProbe.java
           grep -q 'CNHotUpdateTransaction.recover(filesRoot);' "$CHECK"
           grep -q 'CNHotUpdateTransaction.apply(tmp, new File(FILES_DIR));' "$CHECK"
           ! grep -q 'CNDownloaderFix.extractChecked(tmp, new File(FILES_DIR));' "$CHECK"
@@ -71,6 +78,10 @@ jobs:
           ! grep -q 'new Intent(Intent.ACTION_VIEW, Uri.parse(url))' "$UI"
           grep -q '"https".equalsIgnoreCase(uri.getScheme())' \
             .build/runtime-i18n-java/io/kamihama/magianative/CNSafeExternalLinks.java
+          grep -q 'RuntimeOverlayProbe.onLocalFile(candidatePath, mime);' "$WV"
+          grep -q 'RuntimeOverlayProbe.onPageFinished(view, url);' "$WV"
+          grep -q '__MAGIACN_RUNTIME_I18N__' "$PROBE"
+          grep -q 'MagiaHook-Status' "$PROBE"
 
       - name: Generate audited native source
         run: |
@@ -155,6 +166,7 @@ jobs:
             .build/runtime-i18n-java-report.json
             .build/hot-update-transaction-report.json
             .build/safe-external-links-report.json
+            .build/webview-overlay-probe-report.json
             .build/native-generated/report.json
             .build/webview-overlay-audit.json
           if-no-files-found: warn
