@@ -5,14 +5,17 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import re
 import sys
 
 RELATIVE = Path("io/kamihama/magianative/CNCNDownloadUI.java")
-ANCHOR = '''                Intent it = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                act.startActivity(it);'''
-REPLACEMENT = '''                CNSafeExternalLinks.open(act, url);'''
 RAW_MARKER = "new Intent(Intent.ACTION_VIEW, Uri.parse(url))"
+BLOCK = re.compile(
+    r"(?P<indent>^[ \t]+)Intent it = new Intent\(Intent\.ACTION_VIEW, Uri\.parse\(url\)\);\n"
+    r"(?P=indent)it\.addFlags\(Intent\.FLAG_ACTIVITY_NEW_TASK\);\n"
+    r"(?P=indent)act\.startActivity\(it\);",
+    re.MULTILINE,
+)
 
 
 class PrepareError(RuntimeError):
@@ -28,14 +31,16 @@ def main() -> int:
     try:
         text = target.read_text("utf-8")
         before_validated = text.count("CNSafeExternalLinks.open(act, url);")
-        count = text.count(ANCHOR)
-        # Older audited source had two blocks; latest main has already removed/refactored
-        # one and leaves only the actual browser-opening entry that still needs hardening.
+        matches = list(BLOCK.finditer(text))
+        count = len(matches)
         if count not in (1, 2):
             raise PrepareError(
                 f"expected one or two remaining raw ACTION_VIEW blocks, found {count}")
-        text = text.replace(ANCHOR, REPLACEMENT)
-        if RAW_MARKER in text:
+        text = BLOCK.sub(
+            lambda match: match.group("indent") + "CNSafeExternalLinks.open(act, url);",
+            text,
+        )
+        if RAW_MARKER in text or BLOCK.search(text):
             raise PrepareError("raw ACTION_VIEW block survived")
         validated = text.count("CNSafeExternalLinks.open(act, url);")
         if validated != before_validated + count:
@@ -44,12 +49,15 @@ def main() -> int:
                 f"replaced={count}, after={validated}")
         target.write_text(text, "utf-8")
         report = {
-            "schema": 2,
+            "schema": 3,
             "target": str(target),
             "rawActionViewBlocksReplaced": count,
             "preexistingValidatedOpeners": before_validated,
             "validatedHttpsOpeners": validated,
             "rawActionViewBlocksRemaining": 0,
+            "indentationVariantsHandled": len({
+                len(match.group("indent")) for match in matches
+            }),
             "latestMainPartialFixPreserved": count == 1,
         }
         if args.report:
