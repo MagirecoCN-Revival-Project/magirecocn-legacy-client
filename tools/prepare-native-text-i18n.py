@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the compiled MagiaLegacy source with ABI-safe text hooks.
-
-The committed MagiaLegacy.cpp remains the audited baseline and retains the
-device-verified global font-path hook.  This generator replaces only the unsafe
-text translation implementation/installer, then asserts that all three font
-hooks and both font paths survive byte-for-byte in the generated source.
-"""
+"""Generate MagiaLegacy with ABI-safe text hooks and preserved font hooks."""
 from __future__ import annotations
 
 import argparse
@@ -27,13 +21,23 @@ UNSAFE_TEXT_TOKENS = (
     "struct CNColor4B { unsigned char r, g, b; };",
     "g_engineI18n.swap(fresh)",
 )
-REQUIRED_SAFE = (
+REQUIRED_GENERATED = (
     '#include "RuntimeTextI18n.inc"',
     '#include "RuntimeFontCompat.inc"',
     "installRuntimeTextI18nHooks(H);",
+)
+REQUIRED_TEXT_INCLUDE = (
     "std::atomic_store_explicit",
+    "std::atomic_load_explicit",
     "struct CNColor4B { unsigned char r, g, b, a; };",
     "using LoadingSetTextFn = void (*)(void*, std::string);",
+    "using RuntimeSetStringFn = void (*)(void*, const std::string&);",
+    "installRuntimeTextI18nHooks",
+)
+REQUIRED_FONT_COMPAT = (
+    "struct NdkStrView",
+    "static NdkStrView ndkStrRead",
+    "armeabi-v7a",
 )
 REQUIRED_FONT = (
     'static const char kFrom[] = "fonts/MTF4a5kp.ttf";',
@@ -62,10 +66,23 @@ def sha256(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
+def require_tokens(text: str, tokens: tuple[str, ...], label: str) -> None:
+    for token in tokens:
+        if token not in text:
+            raise GenerationError(f"{label} missing: {token}")
+
+
 def generate(source: Path, output: Path, report: Path | None) -> dict:
     original = source.read_text("utf-8")
-    generated = original
+    text_include_path = source.parent / "RuntimeTextI18n.inc"
+    font_compat_path = source.parent / "RuntimeFontCompat.inc"
+    text_include = text_include_path.read_text("utf-8")
+    font_compat = font_compat_path.read_text("utf-8")
 
+    require_tokens(text_include, REQUIRED_TEXT_INCLUDE, "RuntimeTextI18n.inc")
+    require_tokens(font_compat, REQUIRED_FONT_COMPAT, "RuntimeFontCompat.inc")
+
+    generated = original
     if "#include <algorithm>" not in generated:
         anchor = "#include <atomic>\n"
         if generated.count(anchor) != 1:
@@ -74,34 +91,30 @@ def generate(source: Path, output: Path, report: Path | None) -> dict:
             anchor, "#include <algorithm>\n#include <atomic>\n", 1)
 
     generated = replace_between(
-        generated,
-        START_IMPL,
-        END_IMPL,
+        generated, START_IMPL, END_IMPL,
         '#include "RuntimeTextI18n.inc"\n#include "RuntimeFontCompat.inc"',
     )
     generated = replace_between(
-        generated,
-        START_HOOKS,
-        END_HOOKS,
+        generated, START_HOOKS, END_HOOKS,
         "    installRuntimeTextI18nHooks(H);",
     )
 
     for token in UNSAFE_TEXT_TOKENS:
         if token in generated:
             raise GenerationError(f"unsafe text-hook code survived: {token}")
-    for token in REQUIRED_SAFE:
-        if token not in generated:
-            raise GenerationError(f"safe text-hook requirement missing: {token}")
-    for token in REQUIRED_FONT:
-        if token not in generated:
-            raise GenerationError(f"verified font-path hook was lost: {token}")
+    require_tokens(generated, REQUIRED_GENERATED, "generated source")
+    require_tokens(generated, REQUIRED_FONT, "verified font-path hook")
 
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(generated, "utf-8")
     result = {
         "source": str(source),
+        "textInclude": str(text_include_path),
+        "fontCompatInclude": str(font_compat_path),
         "output": str(output),
         "sourceSha256": sha256(original),
+        "textIncludeSha256": sha256(text_include),
+        "fontCompatSha256": sha256(font_compat),
         "outputSha256": sha256(generated),
         "abiSafeTextHooks": True,
         "immutableTranslationSnapshot": True,
