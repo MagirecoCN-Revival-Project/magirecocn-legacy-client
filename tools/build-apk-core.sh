@@ -96,13 +96,14 @@ mapfile -t SRC < <(find patch/src/main/java -name '*.java' | sort)
 javac -nowarn -source 8 -target 8 -encoding UTF-8 \
       -cp "$CP:$OUT/stubs.jar" -d "$OUT/classes" "${SRC[@]}"
 
-# classes.dex：重建游戏原有 WebViewImpl 及其内部类。
+# classes.dex：重建游戏原有 WebViewImpl 及其内部类，并把启动期探针放在同一 dex。
 # classes2.dex：下载浮层。classes3.dex：其余 Java 补丁。
 mapfile -t DEX_MAIN < <(find "$OUT/classes/jp/f4samurai/web" \
-    -name 'WebViewImpl*.class' | sort)
+    \( -name 'WebViewImpl*.class' -o -name 'RuntimeOverlayProbe*.class' \) | sort)
 mapfile -t DEX_UI < <(find "$OUT/classes" -name 'CNCNDownloadUI*.class' | sort)
 mapfile -t DEX_3 < <(find "$OUT/classes" -name '*.class' \
-    ! -name 'WebViewImpl*.class' ! -name 'CNCNDownloadUI*.class' | sort)
+    ! -name 'WebViewImpl*.class' ! -name 'RuntimeOverlayProbe*.class' \
+    ! -name 'CNCNDownloadUI*.class' | sort)
 TOTAL=$(find "$OUT/classes" -name '*.class' | wc -l)
 echo "  classes 组 ${#DEX_MAIN[@]}，classes2 组 ${#DEX_UI[@]}，classes3 组 ${#DEX_3[@]}，共 $TOTAL"
 if [ "${#DEX_MAIN[@]}" -eq 0 ] || [ "${#DEX_UI[@]}" -eq 0 ] \
@@ -122,8 +123,11 @@ java -jar "$BAKSMALI_JAR" d "$OUT/dexui/classes.dex" -o "$OUT/smaliui"
 java -jar "$BAKSMALI_JAR" d "$OUT/dex3/classes.dex" -o "$OUT/smali3"
 
 say "用 Java 编译产物覆盖对应 smali"
-rm -f smali/jp/f4samurai/web/WebViewImpl*.smali
+rm -f smali/jp/f4samurai/web/WebViewImpl*.smali \
+      smali/jp/f4samurai/web/RuntimeOverlayProbe*.smali
 cp "$OUT"/smalimain/jp/f4samurai/web/WebViewImpl*.smali \
+   smali/jp/f4samurai/web/
+cp "$OUT"/smalimain/jp/f4samurai/web/RuntimeOverlayProbe*.smali \
    smali/jp/f4samurai/web/
 
 rm -f smali_classes2/io/kamihama/magianative/CNCNDownloadUI*.smali
@@ -136,12 +140,15 @@ cp -r "$OUT"/smali3/. smali_classes3/
 # 构建前确认替换发生在 classes.dex 输入树，而不是重复塞进 classes3。
 grep -R -q 'MagiaHook-Reject' smali/jp/f4samurai/web/WebViewImpl*.smali \
     || { echo "✘ 加固 WebViewImpl 未进入 smali/"; exit 1; }
+grep -R -q 'MagiaHook-Status' smali/jp/f4samurai/web/RuntimeOverlayProbe*.smali \
+    || { echo "✘ 运行时覆盖探针未进入 smali/"; exit 1; }
 if grep -R -q '/data/data/io.kamihama.totentanz/files/magica/' \
         smali/jp/f4samurai/web/WebViewImpl*.smali; then
     echo "✘ WebViewImpl 仍含旧硬编码私有路径"; exit 1
 fi
-if find smali_classes3 -name 'WebViewImpl*.smali' | grep -q .; then
-    echo "✘ WebViewImpl 被重复放进 classes3"; exit 1
+if find smali_classes3 \( -name 'WebViewImpl*.smali' -o -name 'RuntimeOverlayProbe*.smali' \) \
+        | grep -q .; then
+    echo "✘ WebViewImpl/RuntimeOverlayProbe 被重复放进 classes3"; exit 1
 fi
 
 say "apktool b"
