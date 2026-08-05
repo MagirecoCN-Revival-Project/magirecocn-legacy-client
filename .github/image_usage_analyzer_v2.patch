@@ -1,0 +1,192 @@
+--- /mnt/data/reverse_image_usage_v1.py	2026-08-05 16:30:51.516665163 +0000
++++ /mnt/data/reverse_image_usage.py	2026-08-05 16:30:02.219421950 +0000
+@@ -148,6 +148,8 @@
+     family: str = ''
+     reuse_guidance: str = ''
+     reference_count: int = 0
++    total_evidence_count: int = 0
++    definition_count: int = 0
+     code_reference_count: int = 0
+     config_reference_count: int = 0
+     binary_reference_count: int = 0
+@@ -409,7 +411,15 @@
+     low = line.lower()
+     out: dict[str, tuple[str, ...]] = {}
+     if auto is not None:
+-        for _end, (alias, ids) in auto.iter(low):
++        for end_pos, (alias, ids) in auto.iter(low):
++            start_pos = end_pos - len(alias) + 1
++            # Generic extension-less tokens must match token boundaries. This prevents
++            # "light" from matching "highlight" and short stems from exploding counts.
++            if '/' not in alias and '.' not in alias:
++                before = low[start_pos - 1] if start_pos > 0 else ''
++                after = low[end_pos + 1] if end_pos + 1 < len(low) else ''
++                if (before and (before.isalnum() or before == '_')) or (after and (after.isalnum() or after == '_')):
++                    continue
+             out[alias] = ids
+     else:
+         for token in ANY_IMAGE_TOKEN_RE.findall(line):
+@@ -440,9 +450,16 @@
+ def extract_pattern_literals(line: str) -> list[str]:
+     results = []
+     for m in re.finditer(r"['\"]([^'\"\n]{3,220})['\"]", line):
+-        s = m.group(1)
+-        if ('/' in s or '\\' in s or '_' in s) and any(x in s for x in ('.png', '.jpg', '.jpeg', '.webp', '%', '{', '*')):
+-            results.append(s)
++        value = m.group(1)
++        low = norm_path(value).lower()
++        # Exclude MIME types such as */* and image/*; they previously matched every asset path.
++        if re.fullmatch(r'[a-z0-9*.+-]+/[a-z0-9*.+-]+', low):
++            continue
++        has_image_ext = bool(re.search(r'\.(?:png|jpe?g|webp|gif|bmp|tiff?|avif|ico)(?:$|[?&#])', low))
++        has_resource_root = any(root in low for root in ('assets/', 'package/', 'resource/', 'image_native/', 'res/drawable', 'res/mipmap'))
++        has_placeholder = any(x in value for x in ('%', '{', '}', '*'))
++        if has_placeholder and (has_image_ext or has_resource_root):
++            results.append(value)
+     return results
+ 
+ 
+@@ -541,11 +558,17 @@
+     out.mkdir(parents=True)
+     start = time.time()
+ 
++    head_commit = subprocess.run(['git', '-C', str(repo), 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout.strip()
++    parent_line = subprocess.run(['git', '-C', str(repo), 'rev-list', '--parents', '-n', '1', 'HEAD'], capture_output=True, text=True).stdout.strip().split()
++    base_commit = parent_line[1] if len(parent_line) > 2 else head_commit
++    source_commit = parent_line[2] if len(parent_line) > 2 else head_commit
+     metadata = {
+-        'analysis_version': '1.0.0',
++        'analysis_version': '1.1.0',
+         'generated_utc': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+         'repository_root': str(repo),
+-        'git_commit': subprocess.run(['git', '-C', str(repo), 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout.strip(),
++        'git_commit': base_commit,
++        'analysis_checkout_commit': head_commit,
++        'analysis_source_commit': source_commit,
+         'git_branch': subprocess.run(['git', '-C', str(repo), 'rev-parse', '--abbrev-ref', 'HEAD'], capture_output=True, text=True).stdout.strip(),
+     }
+ 
+@@ -672,12 +695,19 @@
+     alias_to_ids: dict[str, set[str]] = defaultdict(set)
+     for a in assets:
+         candidates = {
+-            a.source_path, a.canonical_path, a.basename, a.stem,
++            a.source_path, a.canonical_path, a.basename,
+             norm_path(a.source_path).removeprefix('assets/'),
+             norm_path(a.source_path).removeprefix('res/'),
+         }
++        # Extension-less names are useful for runtime-generated references, but generic
++        # words such as bg/light/white create severe false positives. Keep only distinctive stems.
++        if len(a.stem) >= 8 or (len(a.stem) >= 6 and (re.search(r'[_\d]', a.stem) is not None)):
++            candidates.add(a.stem)
+         if a.frame_name:
+-            candidates |= {a.frame_name, Path(a.frame_name).name, Path(a.frame_name).stem}
++            candidates |= {a.frame_name, Path(a.frame_name).name}
++            frame_stem = Path(a.frame_name).stem
++            if len(frame_stem) >= 8 or (len(frame_stem) >= 6 and (re.search(r'[_\d]', frame_stem) is not None)):
++                candidates.add(frame_stem)
+         if a.atlas_texture:
+             candidates |= {a.atlas_texture, Path(a.atlas_texture).name}
+         for alias in candidates:
+@@ -725,6 +755,11 @@
+                     a = asset_by_id[aid]
+                     cls, func = contexts[lineno - 1]
+                     ref_type = 'direct_path' if '/' in alias else ('atlas_frame_name' if a.kind == 'atlas_frame' else 'basename_or_stem')
++                    rel_low = rel.lower()
++                    if '/meta-inf/' in '/' + rel_low or rel_low.startswith('original/meta-inf/'):
++                        ref_type = 'package_manifest_entry'
++                    elif rel_low.endswith('/r.java') or re.search(r'/r\$[^/]+\.smali$', rel_low) or rel_low.endswith('/public.xml'):
++                        ref_type = 'android_resource_definition'
+                     row = {
+                         'asset_id': aid, 'asset_path': a.canonical_path, 'asset_name': a.basename,
+                         'reference_file': rel, 'line': lineno, 'language': lang, 'class': cls, 'function': func,
+@@ -741,8 +776,11 @@
+                 matches = [a.asset_id for a in assets if rgx.match(norm_path(a.source_path)) or rgx.match(a.basename) or (a.frame_name and rgx.match(norm_path(a.frame_name)))]
+                 if matches:
+                     cls, func = contexts[lineno - 1]
+-                    pattern_rows.append({'reference_file': rel, 'line': lineno, 'language': lang, 'class': cls, 'function': func, 'pattern': literal, 'matched_asset_count': len(matches), 'matched_asset_ids': matches[:500], 'snippet': line.strip()[:1000], 'confidence': 'medium'})
++                    broad = len(matches) > max(250, len(assets) // 5)
++                    pattern_rows.append({'reference_file': rel, 'line': lineno, 'language': lang, 'class': cls, 'function': func, 'pattern': literal, 'matched_asset_count': len(matches), 'matched_asset_ids': matches[:500], 'snippet': line.strip()[:1000], 'confidence': 'low' if broad else 'medium', 'broad_pattern_excluded_from_asset_edges': broad})
+                     referenced_source_files.add(rel)
++                    if broad:
++                        continue
+                     for aid in matches:
+                         row = {
+                             'asset_id': aid, 'asset_path': asset_by_id[aid].canonical_path, 'asset_name': asset_by_id[aid].basename,
+@@ -756,9 +794,11 @@
+     # Scan binary files and archive members for filename strings.
+     for p in sorted(x for x in all_files if x.suffix.lower() in BINARY_SCAN_EXTS):
+         rel = safe_rel(p, repo)
+-        # Scan raw binary strings.
++        # Scan raw binary strings. Archive central-directory filenames are packaging
++        # inventory rather than code calls, so APK/JAR/ZIP/AAR raw bytes are excluded here.
+         try:
+-            for offset, s in binary_strings(p):
++            raw_iter = [] if p.suffix.lower() in ARCHIVE_EXTS else binary_strings(p)
++            for offset, s in raw_iter:
+                 if not any(ext in s.lower() for ext in IMAGE_EXTS) and not any(token in s.lower() for token in ('common_btn', 'story_', 'battle_', 'loading_', 'title_')):
+                     continue
+                 for alias, ids in collect_matches(s, auto, alias_to_ids):
+@@ -816,11 +856,15 @@
+     # Aggregate reference counts and refine feature from evidence.
+     for a in assets:
+         rs = refs_by_asset.get(a.asset_id, [])
+-        a.reference_count = len(rs)
+-        a.code_reference_count = sum(1 for r in rs if Path(r['reference_file']).suffix.lower() in CODE_EXTS)
+-        a.config_reference_count = sum(1 for r in rs if Path(r['reference_file']).suffix.lower() in CONFIG_EXTS or r['reference_type'] == 'atlas_frame_definition')
+-        a.binary_reference_count = sum(1 for r in rs if 'binary' in r['reference_type'] or 'archive' in r['reference_type'])
+-        evidence = ' '.join([a.source_path] + [r['reference_file'] + ' ' + (r.get('symbol') or '') + ' ' + r.get('snippet','')[:200] for r in rs[:100]])
++        non_usage_types = {'atlas_frame_definition', 'package_manifest_entry', 'android_resource_definition'}
++        usage_rs = [r for r in rs if r['reference_type'] not in non_usage_types]
++        a.total_evidence_count = len(rs)
++        a.definition_count = len(rs) - len(usage_rs)
++        a.reference_count = len(usage_rs)
++        a.code_reference_count = sum(1 for r in usage_rs if Path(r['reference_file']).suffix.lower() in CODE_EXTS)
++        a.config_reference_count = sum(1 for r in usage_rs if Path(r['reference_file']).suffix.lower() in CONFIG_EXTS)
++        a.binary_reference_count = sum(1 for r in usage_rs if 'binary' in r['reference_type'] or 'archive' in r['reference_type'])
++        evidence = ' '.join([a.source_path] + [r['reference_file'] + ' ' + (r.get('symbol') or '') + ' ' + r.get('snippet','')[:200] for r in usage_rs[:100]])
+         inferred = infer_feature(evidence)
+         if inferred != 'unclassified':
+             a.feature = inferred
+@@ -851,8 +895,8 @@
+         symbols = Counter(r.get('symbol') for a in group for r in refs_by_asset.get(a.asset_id, []) if r.get('symbol'))
+         components = Counter(a.component_kind for a in group)
+         feature_rows.append({
+-            'feature': feature, 'asset_count': len(group), 'referenced_assets': sum(a.reference_count > 0 for a in group),
+-            'unreferenced_assets': sum(a.reference_count == 0 for a in group),
++            'feature': feature, 'asset_count': len(group), 'usage_referenced_assets': sum(a.reference_count > 0 for a in group),
++            'no_usage_reference_assets': sum(a.reference_count == 0 for a in group),
+             'top_components': components.most_common(12), 'top_reference_files': ref_files.most_common(20),
+             'top_symbols': symbols.most_common(20),
+             'web_reimplementation_notes': {
+@@ -959,8 +1003,8 @@
+         'atlas_frames': sum(a.kind == 'atlas_frame' for a in assets),
+         'total_assets': len(assets),
+         'total_references': len(references),
+-        'referenced_assets': sum(a.reference_count > 0 for a in assets),
+-        'unreferenced_assets': len(unreferenced),
++        'usage_referenced_assets': sum(a.reference_count > 0 for a in assets),
++        'no_usage_reference_assets': len(unreferenced),
+         'dynamic_patterns': len(pattern_rows),
+         'related_source_files': len(referenced_source_files),
+         'analysis_errors': len(errors),
+@@ -979,8 +1023,8 @@
+ - 图集拆帧：{summary['atlas_frames']}
+ - 总素材：{summary['total_assets']}
+ - 静态调用/定义关系：{summary['total_references']}
+-- 找到至少一条证据的素材：{summary['referenced_assets']}
+-- 未找到显式静态引用的素材：{summary['unreferenced_assets']}
++- 找到至少一条实际使用证据的素材：{summary['usage_referenced_assets']}
++- 仅有定义/打包记录、未找到实际使用证据的素材：{summary['no_usage_reference_assets']}
+ - 动态路径模式：{summary['dynamic_patterns']}
+ - 已复制的相关源码/配置：{summary['related_source_files']}
+ 
+@@ -1015,7 +1059,7 @@
+     (canonical_root / 'README_INTEGRATION_CN.md').write_text(report, encoding='utf-8')
+ 
+     # Useful plain lists.
+-    write_csv(out / '01_asset_catalog' / 'unreferenced_assets.csv', [asdict(a) for a in unreferenced])
++    write_csv(out / '01_asset_catalog' / 'no_usage_reference_assets.csv', [asdict(a) for a in unreferenced])
+     write_csv(out / '01_asset_catalog' / 'top_referenced_assets.csv', [asdict(a) for a in top_assets])
+     (out / '00_overview' / 'FILES.txt').write_text('\n'.join(safe_rel(p, out) for p in sorted(out.rglob('*')) if p.is_file()) + '\n', encoding='utf-8')
+ 
