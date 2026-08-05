@@ -1,0 +1,141 @@
+--- /mnt/data/reverse_image_usage_v2.py	2026-08-05 16:38:51.400536895 +0000
++++ /mnt/data/reverse_image_usage.py	2026-08-05 16:39:21.622441843 +0000
+@@ -559,11 +559,12 @@
+     start = time.time()
+ 
+     head_commit = subprocess.run(['git', '-C', str(repo), 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout.strip()
++    origin_main = subprocess.run(['git', '-C', str(repo), 'rev-parse', 'origin/main'], capture_output=True, text=True).stdout.strip()
+     parent_line = subprocess.run(['git', '-C', str(repo), 'rev-list', '--parents', '-n', '1', 'HEAD'], capture_output=True, text=True).stdout.strip().split()
+-    base_commit = parent_line[1] if len(parent_line) > 2 else head_commit
+-    source_commit = parent_line[2] if len(parent_line) > 2 else head_commit
++    base_commit = origin_main or (parent_line[1] if len(parent_line) > 1 else head_commit)
++    source_commit = parent_line[-1] if len(parent_line) > 1 else head_commit
+     metadata = {
+-        'analysis_version': '1.1.0',
++        'analysis_version': '1.2.0',
+         'generated_utc': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+         'repository_root': str(repo),
+         'git_commit': base_commit,
+@@ -708,14 +709,41 @@
+             frame_stem = Path(a.frame_name).stem
+             if len(frame_stem) >= 8 or (len(frame_stem) >= 6 and (re.search(r'[_\d]', frame_stem) is not None)):
+                 candidates.add(frame_stem)
+-        if a.atlas_texture:
+-            candidates |= {a.atlas_texture, Path(a.atlas_texture).name}
++        # Do not map an atlas texture name to every frame inside the atlas. The direct
++        # image asset already owns that texture path; otherwise one texture load would be
++        # incorrectly expanded into hundreds of per-frame usage edges.
+         for alias in candidates:
+             alias = norm_path(alias).lower().strip()
+             if len(alias) >= 4:
+                 alias_to_ids[alias].add(a.asset_id)
+     auto = make_automaton(alias_to_ids)
+ 
++    def reference_context_score(reference_file: str, asset: Asset) -> int:
++        ref_parts = list(PurePosixPath(norm_path(reference_file)).parent.parts)
++        anchor = asset.atlas_plist if asset.kind == 'atlas_frame' and asset.atlas_plist else asset.source_path
++        asset_parts = list(PurePosixPath(norm_path(anchor)).parent.parts)
++        score = 0
++        for left, right in zip(ref_parts, asset_parts):
++            if left.lower() != right.lower():
++                break
++            score += 1
++        if ref_parts == asset_parts:
++            score += 10
++        return score
++
++    def narrow_ids_for_reference(reference_file: str, ids: tuple[str, ...]) -> tuple[str, ...]:
++        if len(ids) <= 1:
++            return ids
++        scored = [(reference_context_score(reference_file, asset_by_id[aid]), aid) for aid in ids]
++        best = max(score for score, _aid in scored)
++        # Two shared path segments (normally assets/package or res/drawable) establish
++        # useful local context. Exact-directory matches receive +10.
++        if best >= 2:
++            narrowed = tuple(aid for score, aid in scored if score == best)
++            if narrowed:
++                return narrowed
++        return ids
++
+     references: list[dict[str, Any]] = []
+     refs_by_asset: dict[str, list[dict[str, Any]]] = defaultdict(list)
+     referenced_source_files: set[str] = set()
+@@ -748,11 +776,16 @@
+             found = collect_matches(line, auto, alias_to_ids)
+             seen_assets: set[str] = set()
+             for alias, ids in found:
++                ids = narrow_ids_for_reference(rel, ids)
+                 for aid in ids:
+                     if aid in seen_assets:
+                         continue
+-                    seen_assets.add(aid)
+                     a = asset_by_id[aid]
++                    # The frame key inside its own plist is already represented by the
++                    # explicit atlas_frame_definition edge created above. It is not a call.
++                    if a.kind == 'atlas_frame' and a.atlas_plist and norm_path(rel).lower() == norm_path(a.atlas_plist).lower():
++                        continue
++                    seen_assets.add(aid)
+                     cls, func = contexts[lineno - 1]
+                     ref_type = 'direct_path' if '/' in alias else ('atlas_frame_name' if a.kind == 'atlas_frame' else 'basename_or_stem')
+                     rel_low = rel.lower()
+@@ -853,6 +886,27 @@
+     for r in references:
+         refs_by_asset[r['asset_id']].append(r)
+ 
++    # Deduplicate repeated binary strings and repeated same-line aliases while preserving
++    # distinct offsets, files and evidence types.
++    deduped_references: list[dict[str, Any]] = []
++    seen_reference_keys: set[tuple[Any, ...]] = set()
++    for row in references:
++        key = (
++            row.get('asset_id'), row.get('reference_file'), row.get('line'), row.get('symbol'),
++            row.get('reference_type'), row.get('matched_alias'), row.get('archive_member'),
++            row.get('binary_offset'), row.get('snippet')
++        )
++        if key in seen_reference_keys:
++            continue
++        seen_reference_keys.add(key)
++        deduped_references.append(row)
++    references = deduped_references
++    refs_by_asset = defaultdict(list)
++    referenced_source_files = set()
++    for row in references:
++        refs_by_asset[row['asset_id']].append(row)
++        referenced_source_files.add(row['reference_file'])
++
+     # Aggregate reference counts and refine feature from evidence.
+     for a in assets:
+         rs = refs_by_asset.get(a.asset_id, [])
+@@ -891,8 +945,10 @@
+         feature_groups[a.feature].append(a)
+     feature_rows = []
+     for feature, group in sorted(feature_groups.items()):
+-        ref_files = Counter(r['reference_file'] for a in group for r in refs_by_asset.get(a.asset_id, []))
+-        symbols = Counter(r.get('symbol') for a in group for r in refs_by_asset.get(a.asset_id, []) if r.get('symbol'))
++        non_usage_types = {'atlas_frame_definition', 'package_manifest_entry', 'android_resource_definition'}
++        group_usage_refs = [r for a in group for r in refs_by_asset.get(a.asset_id, []) if r['reference_type'] not in non_usage_types]
++        ref_files = Counter(r['reference_file'] for r in group_usage_refs)
++        symbols = Counter(r.get('symbol') for r in group_usage_refs if r.get('symbol'))
+         components = Counter(a.component_kind for a in group)
+         feature_rows.append({
+             'feature': feature, 'asset_count': len(group), 'usage_referenced_assets': sum(a.reference_count > 0 for a in group),
+@@ -993,7 +1049,8 @@
+     build_html(out / '06_interactive_browser' / 'index.html', assets, refs_by_asset)
+ 
+     # Architecture report.
+-    top_ref_files = Counter(r['reference_file'] for r in references).most_common(30)
++    non_usage_types = {'atlas_frame_definition', 'package_manifest_entry', 'android_resource_definition'}
++    top_ref_files = Counter(r['reference_file'] for r in references if r['reference_type'] not in non_usage_types).most_common(30)
+     top_assets = sorted(assets, key=lambda a: (-a.reference_count, a.asset_id))[:50]
+     unreferenced = [a for a in assets if a.reference_count == 0]
+     summary = {
+@@ -1008,7 +1065,8 @@
+         'dynamic_patterns': len(pattern_rows),
+         'related_source_files': len(referenced_source_files),
+         'analysis_errors': len(errors),
+-        'top_reference_files': top_ref_files,
++        'top_usage_reference_files': top_ref_files,
++        'evidence_type_counts': dict(Counter(r['reference_type'] for r in references)),
+         'top_assets': [{'id': a.asset_id, 'name': a.basename, 'path': a.canonical_path, 'references': a.reference_count, 'feature': a.feature} for a in top_assets]
+     }
+     write_json(out / '00_overview' / 'summary.json', summary)
