@@ -82,22 +82,25 @@ jobs:
             --report .build/native-generated/report.json
           test -s .build/native-generated/MagiaLegacy.cpp
           grep -q '#include "RuntimeTextI18n.inc"' .build/native-generated/MagiaLegacy.cpp
+          grep -q '#include "RuntimeFontPathHook.inc"' .build/native-generated/MagiaLegacy.cpp
           grep -q 'installRuntimeTextI18nHooks(H);' .build/native-generated/MagiaLegacy.cpp
-          grep -q 'fonts/MTF4a5kp.ttf' .build/native-generated/MagiaLegacy.cpp
-          grep -q 'fonts/TTZhiHeiGB3-W4.ttf' .build/native-generated/MagiaLegacy.cpp
-          grep -q 'font: createWithTTF(cfg)' .build/native-generated/MagiaLegacy.cpp
-          grep -q 'font: createWithTTF(str)' .build/native-generated/MagiaLegacy.cpp
-          grep -q 'font: setTTFConfigInternal' .build/native-generated/MagiaLegacy.cpp
-          if grep -n -E 'FakeNdkStr|g_engineI18n\.swap|struct CNColor4B \{ unsigned char r, g, b; \}' \
+          grep -q 'installRuntimeFontPathHooks(H);' .build/native-generated/MagiaLegacy.cpp
+          grep -q 'fonts/MTF4a5kp.ttf' magia-native/src/RuntimeFontPathHook.inc
+          grep -q 'fonts/TTZhiHeiGB3-W4.ttf' magia-native/src/RuntimeFontPathHook.inc
+          grep -q 'SetTtfConfigInternalFn = bool' magia-native/src/RuntimeFontPathHook.inc
+          grep -q 'font: createWithTTF(cfg) typed' magia-native/src/RuntimeFontPathHook.inc
+          grep -q 'font: createWithTTF(str) typed' magia-native/src/RuntimeFontPathHook.inc
+          grep -q 'font: setTTFConfigInternal typed' magia-native/src/RuntimeFontPathHook.inc
+          if grep -n -E 'FakeNdkStr|g_engineI18n\.swap|NdkStrView|fontPathOverwrite|fontPathFix|struct CNColor4B \{ unsigned char r, g, b; \}' \
               .build/native-generated/MagiaLegacy.cpp; then
-            echo 'Unsafe legacy text-hook code survived generation.' >&2
+            echo 'Unsafe legacy text/font-hook code survived generation.' >&2
             exit 1
           fi
 
-      - name: Host syntax smoke-test ABI-safe text include
+      - name: Host syntax smoke-test ABI-safe text and font includes
         run: |
           set -euo pipefail
-          cat > .build/native-text-smoke.cpp <<'CPP'
+          cat > .build/native-i18n-smoke.cpp <<'CPP'
           #include <algorithm>
           #include <atomic>
           #include <cstdint>
@@ -115,14 +118,21 @@ jobs:
           #define LOGI(...) log_stub(__VA_ARGS__)
           #define LOGE(...) log_stub(__VA_ARGS__)
           #include "RuntimeTextI18n.inc"
+          #include "RuntimeFontPathHook.inc"
           int main() {
               auto H = [](const char*, void*, void**, const char*) { return true; };
               installRuntimeTextI18nHooks(H);
+              installRuntimeFontPathHooks(H);
+              RuntimeTtfConfig config;
+              config.fontFilePath = RUNTIME_FONT_FROM;
+              std::string mapped;
+              if (!runtimeMapFontPath(config.fontFilePath, mapped, "smoke")) return 2;
+              if (mapped != RUNTIME_FONT_TO) return 3;
               return sizeof(CNColor4B) == 4 ? 0 : 1;
           }
           CPP
           g++ -std=c++17 -Wall -Wextra -Werror -fsyntax-only \
-            -I magia-native/src .build/native-text-smoke.cpp
+            -I magia-native/src .build/native-i18n-smoke.cpp
 
       - name: Audit original loader and effective build
         run: |
