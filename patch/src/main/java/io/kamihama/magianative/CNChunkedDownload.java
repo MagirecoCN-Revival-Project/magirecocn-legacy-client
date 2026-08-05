@@ -232,12 +232,14 @@ public final class CNChunkedDownload {
             throw new IOException("无法创建下载目录: " + parent);
         }
 
+        // ── 判定断点是否可信 ──
         int    chunks   = requestedChunks < 1 ? 1 : requestedChunks;
         long[] resumed  = null;
         Resume st = readResume(meta);
         if (st != null) {
             String why = resumeRejectReason(st, total, probe.etag, url, part);
             if (why == null) {
+                // 沿用元数据里的分片布局，保证换线也能接着下
                 chunks  = st.chunks;
                 resumed = st.done;
                 long have = 0L;
@@ -260,6 +262,8 @@ public final class CNChunkedDownload {
             done.set(i, resumed != null ? resumed[i] : 0L);
         }
 
+        // 预分配到完整长度（分片要按偏移随机写入）。
+        // 注意顺序：断点可信度已在上面判完，这里再拉长文件就不会影响判定。
         RandomAccessFile raf = new RandomAccessFile(part, "rw");
         try {
             if (raf.length() != total) raf.setLength(total);
@@ -276,6 +280,8 @@ public final class CNChunkedDownload {
             sink.onProgress(totalDone.get(), total);
         }
 
+        // 元数据显示已全部完成：此时 .cpart 的存在与长度已在 resumeRejectReason
+        // 里验过，可以直接提交
         if (totalDone.get() >= total) {
             promote(part, target);
             deleteQuietly(meta);
@@ -286,11 +292,13 @@ public final class CNChunkedDownload {
 
         final AtomicReference<IOException> firstErr = new AtomicReference<IOException>(null);
         final AtomicBoolean abort        = new AtomicBoolean(false);
+        /** 任一分片收到 HTTP 200（Range 被忽略）时置位。 */
         final AtomicBoolean rangeIgnored = new AtomicBoolean(false);
         final AtomicLong    lastMoveNs  = new AtomicLong(System.nanoTime());
         final AtomicLong    windowStart = new AtomicLong(System.nanoTime());
         final AtomicLong    windowBytes = new AtomicLong(0L);
 
+        // 分片跨镜像并发：开关打开且有多条健康镜像时，分片轮转派到各线路
         final String[] chunkUrls;
         java.util.List<CNMirrors.Mirror> spread = null;
         if (remoteName != null && CNMirrors.chunksAcrossMirrors()) {
@@ -333,6 +341,9 @@ public final class CNChunkedDownload {
         }
 
         final long stallNs = TimeUnit.SECONDS.toNanos(CNMirrors.stallSeconds());
+        // 配置字段叫 min_speed_kbps，语义是 kilobits/s；换算成 bytes/s 要 /8。
+        // 旧实现直接 *1000 当 bytes/s，把 6400 kbps 错当成 6.4 MB/s，
+        // 低于约 51.2 Mbps 的正常连接会被误判过慢、反复换线。
         final long minBps  = (long) CNMirrors.minSpeedKbps() * 1000L / 8L;
         long checkStartNs  = System.nanoTime();
         long bytesAtCheck  = totalDone.get();
@@ -385,6 +396,7 @@ public final class CNChunkedDownload {
             throw err;
         }
 
+        // 全部分片完成：核对字节数再提交
         long written = 0L;
         for (int i = 0; i < chunks; i++) written += done.get(i);
         if (written != total) {
@@ -406,6 +418,7 @@ public final class CNChunkedDownload {
         return new Result(total, probe.etag);
     }
 
+    /** 返回断点不可用的原因；null 表示可信。 */
     private static String resumeRejectReason(Resume st, long total, String etag,
                                              String url, File part) {
         if (st.total != total) return "总长度不符 " + st.total + " != " + total;
@@ -535,6 +548,7 @@ public final class CNChunkedDownload {
         }
     }
 
+    /** 原子写断点元数据（每个分片最多两秒写一次，synchronized 防交叉）。 */
     private static synchronized void saveMeta(File meta, long total,
                                               String etag, String url,
                                               AtomicLongArray done) {
@@ -563,6 +577,7 @@ public final class CNChunkedDownload {
         }
     }
 
+    /** 读取断点；任何格式错误都当作无断点。 */
     private static synchronized Resume readResume(File meta) {
         if (!meta.isFile() || meta.length() > 1 << 20) return null;
         BufferedReader br = null;
