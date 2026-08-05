@@ -1,0 +1,72 @@
+name: Runtime i18n verification
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/legacy-client-runtime-i18n
+    paths:
+      - 'patch/src/main/java/io/kamihama/magianative/**'
+      - 'i18n/cn-downloader-ui-text.tsv'
+      - 'tools/prepare-cn-downloader-ui-text.py'
+      - 'tools/validate-js-update-package.py'
+      - 'tools/materialize-ui-text-overlay.py'
+      - '.github/workflows/runtime-i18n-verify.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-i18n-verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-sources:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout work branch
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compile Python tools
+        run: |
+          python -m py_compile \
+            tools/prepare-cn-downloader-ui-text.py \
+            tools/validate-js-update-package.py \
+            tools/materialize-ui-text-overlay.py
+
+      - name: Materialise downloader UI Java sources
+        run: |
+          rm -rf .build/runtime-i18n-java
+          python tools/prepare-cn-downloader-ui-text.py \
+            --table i18n/cn-downloader-ui-text.tsv \
+            --repo-root . \
+            --output-root .build/runtime-i18n-java \
+            --report .build/runtime-i18n-java-report.json
+          test -s .build/runtime-i18n-java/io/kamihama/magianative/CNCNDownloadUIText.java
+          grep -q 'MagiaCN 安装器' \
+            .build/runtime-i18n-java/io/kamihama/magianative/CNCNDownloadUIText.java
+          if grep -R -n -E 'MagiaCN Installer|\(waiting\.\.\.\)|\(initializing\.\.\.\)|\[ERR\]' \
+              .build/runtime-i18n-java/io/kamihama/magianative/CNCNDownloadUI.java; then
+            echo 'Visible downloader English remained after materialisation.' >&2
+            exit 1
+          fi
+
+      - name: Check tool command lines
+        run: |
+          python tools/validate-js-update-package.py --help >/dev/null
+          python tools/materialize-ui-text-overlay.py --help >/dev/null
+
+      - name: Upload verification report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-i18n-verification
+          path: .build/runtime-i18n-java-report.json
+          if-no-files-found: warn
+          retention-days: 14
