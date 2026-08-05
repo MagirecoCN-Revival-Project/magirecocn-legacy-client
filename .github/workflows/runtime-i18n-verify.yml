@@ -25,6 +25,7 @@ jobs:
           python -m py_compile \
             tools/prepare-cn-downloader-ui-text.py \
             tools/prepare-changed-downloader-ui-text.py \
+            tools/prepare-hot-update-transaction.py \
             tools/prepare-native-text-i18n.py \
             tools/audit-webview-runtime-overlay.py \
             tools/validate-js-update-package.py \
@@ -32,7 +33,7 @@ jobs:
             tools/apply-cn-js-english-i18n.py \
             tools/verify-cn-js-update-package.py
 
-      - name: Materialise changed downloader UI text
+      - name: Materialise effective Java sources
         run: |
           set -euo pipefail
           rm -rf .build/runtime-i18n-java
@@ -41,6 +42,10 @@ jobs:
             --repo-root . \
             --output-root .build/runtime-i18n-java \
             --report .build/runtime-i18n-java-report.json
+          python tools/prepare-hot-update-transaction.py \
+            --java-root .build/runtime-i18n-java \
+            --report .build/hot-update-transaction-report.json
+
           test -s .build/runtime-i18n-java/io/kamihama/magianative/CNCNDownloadUIText.java
           grep -q 'MagiaCN 安装器' \
             .build/runtime-i18n-java/io/kamihama/magianative/CNCNDownloadUIText.java
@@ -49,6 +54,14 @@ jobs:
             echo 'Visible downloader English remained after materialisation.' >&2
             exit 1
           fi
+
+          CHECK=.build/runtime-i18n-java/io/kamihama/magianative/CNHotUpdateCheck.java
+          TX=.build/runtime-i18n-java/io/kamihama/magianative/CNHotUpdateTransaction.java
+          grep -q 'CNHotUpdateTransaction.recover(filesRoot);' "$CHECK"
+          grep -q 'CNHotUpdateTransaction.apply(tmp, new File(FILES_DIR));' "$CHECK"
+          ! grep -q 'CNDownloaderFix.extractChecked(tmp, new File(FILES_DIR));' "$CHECK"
+          grep -q 'childCanonical.equals(rootCanonical)' "$TX"
+          ! grep -q 'writeState(txRoot, STATE_ROLLING_BACK);' "$TX"
 
       - name: Generate audited native source
         run: |
@@ -102,16 +115,17 @@ jobs:
           g++ -std=c++17 -Wall -Wextra -Werror -fsyntax-only \
             -I magia-native/src .build/native-text-smoke.cpp
 
-      - name: Audit WebView overlay chain
+      - name: Audit original loader and effective build
         run: |
           set -euo pipefail
           python tools/audit-webview-runtime-overlay.py \
             --report .build/webview-overlay-audit.json
-          grep -q 'getCanonicalPath' patch/src/main/java/jp/f4samurai/web/WebViewImpl.java
-          grep -q 'MIXED_CONTENT_NEVER_ALLOW' patch/src/main/java/jp/f4samurai/web/WebViewImpl.java
-          grep -q 'SHA-256' patch/src/main/java/io/kamihama/magianative/CNHotUpdateCheck.java
-          grep -q '热更新已应用，3 秒后自动重启游戏' \
-            patch/src/main/java/io/kamihama/magianative/CNHotUpdateCheck.java
+          python - <<'PY'
+          import json
+          data = json.load(open('.build/webview-overlay-audit.json', encoding='utf-8'))
+          assert data['originalLoaderEnabled'] is True
+          assert data['effectiveBuildStaticallyReady'] is True
+          PY
 
       - name: Upload verification reports
         if: always()
@@ -120,6 +134,7 @@ jobs:
           name: runtime-i18n-source-verification
           path: |
             .build/runtime-i18n-java-report.json
+            .build/hot-update-transaction-report.json
             .build/native-generated/report.json
             .build/webview-overlay-audit.json
           if-no-files-found: warn
