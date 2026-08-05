@@ -1,27 +1,22 @@
 #!/usr/bin/env bash
-#
-# 本地出包：native → lib/ → javac → d8 → baksmali → apktool → zipalign → 签名 → 自检。
-#
-# 用法：tools/build-local.sh <工作目录>
-#   工作目录用于放中间产物与最终 APK；不写则用 .build-local。
+# 本地出包：native → Java 三组 dex → apktool → zipalign → 签名 → 自检。
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OUT="${1:-${REPO}/.build-local}"
 cd "$REPO"
 
-: "${NDK:?请设置 NDK 指向 android-ndk 根目录}"
-: "${BUILD_TOOLS:?请设置 BUILD_TOOLS 指向 Android SDK build-tools/<ver>}"
+: "${NDK:?请设置 NDK}"
+: "${BUILD_TOOLS:?请设置 BUILD_TOOLS}"
 : "${APKTOOL_JAR:?请设置 APKTOOL_JAR}"
 : "${BAKSMALI_JAR:?请设置 BAKSMALI_JAR}"
-: "${DEPS_DIR:?请设置 DEPS_DIR（含 android.jar / okhttp / okio）}"
-: "${SIGN_KEY:?请设置 SIGN_KEY（.pk8）}"
-: "${SIGN_CERT:?请设置 SIGN_CERT（.x509.pem）}"
+: "${DEPS_DIR:?请设置 DEPS_DIR}"
+: "${SIGN_KEY:?请设置 SIGN_KEY}"
+: "${SIGN_CERT:?请设置 SIGN_CERT}"
 
 ABIS=(arm64-v8a armeabi-v7a)
 say() { printf '\n\033[1m== %s ==\033[0m\n' "$*"; }
 
-# ── 1. native ────────────────────────────────────────────────
 say "编译 native（${#ABIS[@]} 个 ABI）"
 for abi in "${ABIS[@]}"; do
     bdir="magia-native/build/$abi"
@@ -34,14 +29,12 @@ for abi in "${ABIS[@]}"; do
     cmake --build "$bdir"
 done
 
-# ── 2. 拷进 lib/ 并核对 ──────────────────────────────────────
 say "把 native 产物拷进 lib/ 并校验"
 for abi in "${ABIS[@]}"; do
     src="magia-native/build/$abi/libMagiaLegacy.so"
     cp "$src" "lib/$abi/libMagiaLegacy.so"
     cmp -s "$src" "lib/$abi/libMagiaLegacy.so" \
         || { echo "✘ $abi/libMagiaLegacy.so 不一致"; exit 1; }
-
     src_sh="magia-native/build/$abi/_deps/shadowhook-build/libshadowhook.so"
     if [ -f "$src_sh" ]; then
         cp "$src_sh" "lib/$abi/libshadowhook.so"
@@ -51,9 +44,8 @@ for abi in "${ABIS[@]}"; do
     echo "  ✔ $abi"
 done
 
-# ── 3. Java → dex → smali ────────────────────────────────────
 say "编译 Java 补丁源码"
-rm -rf "$OUT/classes" "$OUT/stub-classes" \
+rm -rf "$OUT/classes" "$OUT/stub-classes" "$OUT/stubs.jar" \
        "$OUT/dexmain" "$OUT/dexui" "$OUT/dex3" \
        "$OUT/smalimain" "$OUT/smaliui" "$OUT/smali3" "$OUT/stubs"
 mkdir -p "$OUT/classes" "$OUT/stub-classes" \
@@ -61,7 +53,7 @@ mkdir -p "$OUT/classes" "$OUT/stub-classes" \
          "$OUT/stubs/io/kamihama/magianative" \
          "$OUT/stubs/jp/f4samurai/web" "$OUT/stubs/jp/f4samurai"
 
-# 编译期桩只用于 javac 解析原 APK 类；先单独编译到 stub-classes，绝不进入 dex。
+# 编译期桩只为 javac/d8 提供原 APK 类签名，单独打成 classpath jar，绝不进入 dex。
 cat > "$OUT/stubs/io/kamihama/magianative/RestClient.java" <<'STUB'
 package io.kamihama.magianative;
 import android.app.Activity;
@@ -85,19 +77,27 @@ public final class WebViewHelper {
     public static boolean _shouldStartLoading(String url) { return true; }
 }
 STUB
+cat > "$OUT/stubs/jp/f4samurai/web/ShouldStartLoadingWorker.java" <<'STUB'
+package jp.f4samurai.web;
+import java.util.concurrent.CountDownLatch;
+class ShouldStartLoadingWorker implements Runnable {
+    ShouldStartLoadingWorker(CountDownLatch latch, boolean[] result, String url) {}
+    public void run() {}
+}
+STUB
 
 CP="$DEPS_DIR/android.jar:$(ls "$DEPS_DIR"/okhttp-*.jar):$(ls "$DEPS_DIR"/okio-*.jar)"
 mapfile -t STUB_SRC < <(find "$OUT/stubs" -name '*.java' | sort)
 javac -nowarn -source 8 -target 8 -encoding UTF-8 -cp "$CP" \
       -d "$OUT/stub-classes" "${STUB_SRC[@]}"
+jar cf "$OUT/stubs.jar" -C "$OUT/stub-classes" .
 
 mapfile -t SRC < <(find patch/src/main/java -name '*.java' | sort)
 javac -nowarn -source 8 -target 8 -encoding UTF-8 \
-      -cp "$CP:$OUT/stub-classes" -d "$OUT/classes" "${SRC[@]}"
+      -cp "$CP:$OUT/stubs.jar" -d "$OUT/classes" "${SRC[@]}"
 
 # classes.dex：重建游戏原有 WebViewImpl 及其内部类。
-# classes2.dex：下载浮层。
-# classes3.dex：其余 Java 补丁。
+# classes2.dex：下载浮层。classes3.dex：其余 Java 补丁。
 mapfile -t DEX_MAIN < <(find "$OUT/classes/jp/f4samurai/web" \
     -name 'WebViewImpl*.class' | sort)
 mapfile -t DEX_UI < <(find "$OUT/classes" -name 'CNCNDownloadUI*.class' | sort)
@@ -113,12 +113,10 @@ if [ "$(( ${#DEX_MAIN[@]} + ${#DEX_UI[@]} + ${#DEX_3[@]} ))" -ne "$TOTAL" ]; the
     echo "✘ dex 分组没覆盖全部 Java 产物"; exit 1
 fi
 
-"$BUILD_TOOLS/d8" --min-api 21 --output "$OUT/dexmain" \
-    --lib "$DEPS_DIR/android.jar" "${DEX_MAIN[@]}"
-"$BUILD_TOOLS/d8" --min-api 21 --output "$OUT/dexui" \
-    --lib "$DEPS_DIR/android.jar" "${DEX_UI[@]}"
-"$BUILD_TOOLS/d8" --min-api 21 --output "$OUT/dex3" \
-    --lib "$DEPS_DIR/android.jar" "${DEX_3[@]}"
+D8_COMMON=(--min-api 21 --lib "$DEPS_DIR/android.jar" --classpath "$OUT/stubs.jar")
+"$BUILD_TOOLS/d8" "${D8_COMMON[@]}" --output "$OUT/dexmain" "${DEX_MAIN[@]}"
+"$BUILD_TOOLS/d8" "${D8_COMMON[@]}" --output "$OUT/dexui" "${DEX_UI[@]}"
+"$BUILD_TOOLS/d8" "${D8_COMMON[@]}" --output "$OUT/dex3" "${DEX_3[@]}"
 java -jar "$BAKSMALI_JAR" d "$OUT/dexmain/classes.dex" -o "$OUT/smalimain"
 java -jar "$BAKSMALI_JAR" d "$OUT/dexui/classes.dex" -o "$OUT/smaliui"
 java -jar "$BAKSMALI_JAR" d "$OUT/dex3/classes.dex" -o "$OUT/smali3"
@@ -135,15 +133,17 @@ cp "$OUT"/smaliui/io/kamihama/magianative/CNCNDownloadUI*.smali \
 rm -rf smali_classes3 && mkdir -p smali_classes3
 cp -r "$OUT"/smali3/. smali_classes3/
 
-# 构建前明确核对 Java WebView 替换真的进入 apktool 输入树。
+# 构建前确认替换发生在 classes.dex 输入树，而不是重复塞进 classes3。
 grep -R -q 'MagiaHook-Reject' smali/jp/f4samurai/web/WebViewImpl*.smali \
     || { echo "✘ 加固 WebViewImpl 未进入 smali/"; exit 1; }
 if grep -R -q '/data/data/io.kamihama.totentanz/files/magica/' \
         smali/jp/f4samurai/web/WebViewImpl*.smali; then
-    echo "✘ WebViewImpl 仍含硬编码私有路径"; exit 1
+    echo "✘ WebViewImpl 仍含旧硬编码私有路径"; exit 1
+fi
+if find smali_classes3 -name 'WebViewImpl*.smali' | grep -q .; then
+    echo "✘ WebViewImpl 被重复放进 classes3"; exit 1
 fi
 
-# ── 4. 打包 / 对齐 / 签名 ────────────────────────────────────
 say "apktool b"
 java -jar "$APKTOOL_JAR" b . -o "$OUT/unsigned.apk" --use-aapt2
 "$BUILD_TOOLS/zipalign" -f 4 "$OUT/unsigned.apk" "$OUT/aligned.apk"
@@ -155,7 +155,6 @@ java -jar "$APKTOOL_JAR" b . -o "$OUT/unsigned.apk" --use-aapt2
 git checkout -- smali smali_classes2 smali_classes3 2>/dev/null || true
 git clean -fdq smali smali_classes2 smali_classes3 2>/dev/null || true
 
-# ── 5. 自检 ──────────────────────────────────────────────────
 say "自检"
 python3 tools/check-so-deps.py           "$OUT/magireco-legacy.apk"
 python3 tools/check-entry-guard.py       "$OUT/magireco-legacy.apk"
