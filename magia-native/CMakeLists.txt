@@ -1,5 +1,5 @@
-# libMagiaLegacy.so：以 MagiaLegacy.cpp 为审计基线，构建时只替换不安全文本层。
-# 已经真机验证成功的全局字体路径 hook 必须保留；生成器会逐项断言。
+# libMagiaLegacy.so：以 MagiaLegacy.cpp 为审计基线，构建时替换不安全文本层
+# 和手写 libc++ 字体内存层；运行时字体路径 hook 的三个符号与映射路线保持不变。
 cmake_minimum_required(VERSION 3.18)
 project(MagiaLegacy C CXX)
 
@@ -32,11 +32,11 @@ find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
 set(BASELINE_CPP "${CMAKE_CURRENT_SOURCE_DIR}/src/MagiaLegacy.cpp")
 set(TEXT_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/src/RuntimeTextI18n.inc")
-set(FONT_COMPAT_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/src/RuntimeFontCompat.inc")
+set(FONT_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/src/RuntimeFontPathHook.inc")
 set(GENERATOR "${CMAKE_CURRENT_SOURCE_DIR}/../tools/prepare-native-text-i18n.py")
 set(GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
 set(GENERATED_CPP "${GENERATED_DIR}/MagiaLegacy.cpp")
-set(GENERATED_REPORT "${GENERATED_DIR}/native-text-i18n-report.json")
+set(GENERATED_REPORT "${GENERATED_DIR}/native-text-font-i18n-report.json")
 
 add_custom_command(
     OUTPUT "${GENERATED_CPP}"
@@ -49,9 +49,9 @@ add_custom_command(
     DEPENDS
             "${BASELINE_CPP}"
             "${TEXT_INCLUDE}"
-            "${FONT_COMPAT_INCLUDE}"
+            "${FONT_INCLUDE}"
             "${GENERATOR}"
-    COMMENT "Generating ABI-safe text hooks while preserving verified font-path hooks"
+    COMMENT "Generating ABI-safe text hooks and typed font-path hooks"
     VERBATIM
 )
 set_source_files_properties("${GENERATED_CPP}" PROPERTIES GENERATED TRUE)
