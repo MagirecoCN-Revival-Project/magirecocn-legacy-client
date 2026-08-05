@@ -105,7 +105,7 @@ public final class CNHotUpdate {
             CNCNDownloadUI.setDownloadSpeed(index, 0.0f);
 
             try {
-                fetch(tryUrl, dest, index, direct, mirror);
+                fetch(tryUrl, dest, index, direct, mirror, remoteName);
                 CNMirrors.reportSuccess(mirror);
                 markDone(index);
                 CNLog.i(TAG, "下载完成 " + remoteName + " attempt=" + attempt
@@ -135,7 +135,8 @@ public final class CNHotUpdate {
 
     /** 优先分片，条件不满足时退回单线程续传。 */
     private static void fetch(String url, File dest, int index,
-                              boolean direct, CNMirrors.Mirror mirror) throws IOException {
+                              boolean direct, CNMirrors.Mirror mirror,
+                              String remoteName) throws IOException {
         int wanted = mirror.effectiveChunks();
         if (wanted > 1) {
             CNChunkedDownload.Probe probe = CNChunkedDownload.probe(url, direct);
@@ -151,7 +152,7 @@ public final class CNHotUpdate {
                             + " bytes=" + probe.total + " mirror=" + mirror.name);
                     CNCNDownloadUI.setFileSize(index, (float) (probe.total / 1000000.0d));
                     CNChunkedDownload.download(url, dest, chunks, direct, probe,
-                            new HotSink(index), mirror);
+                            new HotSink(index), mirror, remoteName);
                     return;
                 }
             }
@@ -203,7 +204,8 @@ public final class CNHotUpdate {
         c.setUseCaches(false);
         c.setInstanceFollowRedirects(true);
         c.setRequestProperty("Accept-Encoding", "identity");
-        c.setRequestProperty("Connection", "close");
+        // 不写 Connection: close——保留 keep-alive 复用连接池，
+        // 分片/重试接连不断时省掉每段一次的 TCP+TLS 握手
         if (offset > 0) c.setRequestProperty("Range", "bytes=" + offset + "-");
 
         InputStream  in  = null;
