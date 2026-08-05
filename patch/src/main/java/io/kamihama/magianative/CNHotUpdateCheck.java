@@ -43,19 +43,18 @@ import org.json.JSONObject;
  * <ul>
  *   <li>版本号记在 SharedPreferences {@code MagiaCN} 的
  *       {@code scenario_version} / {@code js_version} 两个 int 键上；</li>
- *   <li>两份 version json <b>直连主线</b>（与 {@code config.json} 同理，
- *       配置类请求不换线）；</li>
- *   <li>分发文件本身走支线：交给 {@link CNHotUpdate#download} —— 与首次安装
- *       同一套选线 + 分片 + 失败换线；</li>
+ *   <li>版本 JSON 与分发文件都走可用线路；</li>
+ *   <li>分发文件交给 {@link CNHotUpdate#download}，与首次安装使用同一套
+ *       选线、分片和失败换线逻辑；</li>
  *   <li>解压到 {@code <files>/}，解压完删临时包。</li>
  * </ul>
  *
- * <h3>不重启</h3>
+ * <h3>成功后必须重启</h3>
  *
- * 应用成功后<b>不</b>重启进程，与原实现一致：热更是启动早期跑的，引擎此时还
- * 没读到台词/脚本，原地替换即可生效。整个客户端里只有一处会重启——首次安装
- * 跑完那一次（见 {@code CNDownloaderFix} 末尾），因为那次引擎是在「没有资源」
- * 的状态下起来的，非重启不可。
+ * <p>热更新检查要等 Activity / decorView 可用后才开始，此时 WebView 可能已经
+ * 创建，RequireJS 也可能已经缓存模块或 HTML 模板。即使新文件已经覆盖到
+ * {@code files/magica/}，当前进程仍可能继续执行旧模块，甚至形成半新半旧状态。
+ * 因此只要本轮确实应用了任一热更新包，就统一走现有的安全重启链；无更新时不重启。
  */
 public final class CNHotUpdateCheck {
 
@@ -107,7 +106,7 @@ public final class CNHotUpdateCheck {
     /** 一个热更包的全部参数。 */
     private static final class Pkg {
         final String label;        // 日志与 UI 上的名字
-        final String versionUrl;   // 版本 json（直连主线）
+        final String versionUrl;   // 版本 json
         final String versionKey;   // SharedPreferences 键
         final String zipUrl;       // 分发地址（会被换成支线）
         final String tmpName;      // 落地的临时文件名
@@ -159,12 +158,17 @@ public final class CNHotUpdateCheck {
                     } catch (Throwable th) {
                         CNLog.e(TAG, "热更检查异常终止: " + th, th);
                         try { CNCNDownloadUI.hide(); } catch (Throwable ignore) {}
+                    } finally {
+                        // 异常路径同样必须清掉，否则教程胶囊会永远认为检查仍在跑，
+                        // 把重启请求挂到一个已经死亡的线程上。
+                        running = false;
                     }
                 }
             };
             t.setDaemon(true);
             t.start();
         } catch (Throwable t) {
+            running = false;
             try { android.util.Log.e(TAG, "热更检查线程起不来", t); } catch (Throwable ignore) {}
         }
     }
@@ -202,26 +206,34 @@ public final class CNHotUpdateCheck {
 
         // 无论有没有更新都把结论留在屏幕上——否则和「压根没跑」看起来一模一样。
         if (applied) {
-            CNLog.i(TAG, "热更检查完毕：已应用更新");
-            CNCNDownloadUI.updateSimple("更新完成", "热更新已应用，即将进入游戏", 0);
+            CNLog.i(TAG, "热更检查完毕：已应用更新，将重启以启用全部新文件");
+            CNCNDownloadUI.updateSimple("更新完成", "热更新已应用，即将重启游戏", 0);
         } else {
             CNLog.i(TAG, "热更检查完毕：无需更新");
             CNCNDownloadUI.updateSimple("已是最新", "台词与前端脚本均为最新版本，即将进入游戏", 0);
         }
         sleep(IDLE_LINGER_MS);
-        // running 要在浮层收掉之前清掉：之后再点胶囊（浮层还在的最后一刻）
-        // 应当走「自己重启」那条路，而不是挂在一个马上就结束的检查上。
+
+        // 先清 running，再收浮层。之后的新请求应由调用方自己处理，不能再挂到本线程。
         running = false;
         CNCNDownloadUI.hide();
 
-        // 检查本身不重启——热更是启动早期跑的，引擎此时还没读到台词/脚本，
-        // 原地替换即可生效，原实现也是这么做的。唯一的例外是玩家在检查进行中
-        // 点了教程胶囊：那次重启不能打断下载/解压，于是接力到这里来做。
-        String msg = pendingRestartMsg;
+        String requested = pendingRestartMsg;
         pendingRestartMsg = null;
-        if (msg != null) {
+
+        if (applied) {
+            // 覆盖发生在 Activity/WebView 已存在之后。清 WebView HTTP cache 也清不掉
+            // RequireJS 已实例化模块，因此统一重启比尝试局部 reload 更可靠。
+            if (requested != null) {
+                CNLog.i(TAG, "教程胶囊的重启请求已并入热更新重启");
+            }
+            CNDownloaderFix.noticeAndRestart("热更新已应用，3 秒后自动重启游戏");
+            return;
+        }
+
+        if (requested != null) {
             CNLog.i(TAG, "检查已收工，执行教程胶囊请求的重启");
-            CNDownloaderFix.noticeAndRestart(msg);
+            CNDownloaderFix.noticeAndRestart(requested);
         }
     }
 
@@ -371,11 +383,8 @@ public final class CNHotUpdateCheck {
     // ==================================================================
 
     /**
-     * 取版本 json。<b>走换线</b>：与资源文件同一套线路（维护者 2026-08-03 定的
-     * 新规——「配置直连主线」的铁律对这两份 version json 不再适用；仍直连主线
-     * 的只有线路表本身 config.json，它定义了线路，没得选）。从规范地址取出
-     * 文件名后逐条线路试，失败记冷却；全部失败才抛出（调用方按「跳过本次
-     * 热更」处理，不会卡住启动）。
+     * 取版本 json。走与资源文件相同的线路；从规范地址取文件名后逐条线路尝试，
+     * 失败记冷却。全部失败才抛出，调用方按“跳过本次热更”处理，不阻塞启动。
      */
     private static int fetchVersion(String url) throws Exception {
         String base = CNMirrors.DEFAULT_BASE;
