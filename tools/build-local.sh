@@ -12,6 +12,7 @@ BACKUP="$OUT/committed-java-backup"
 TEXT_REPORT="$OUT/downloader-ui-text-materialisation.json"
 TX_REPORT="$OUT/hot-update-transaction-materialisation.json"
 LINK_REPORT="$OUT/safe-external-links-materialisation.json"
+PROBE_REPORT="$OUT/webview-overlay-probe-materialisation.json"
 
 restore_sources() {
     if [ -d "$BACKUP" ]; then
@@ -36,8 +37,13 @@ python3 "$REPO/tools/prepare-safe-external-links.py" \
     --java-root "$GENERATED" \
     --report "$LINK_REPORT"
 
+python3 "$REPO/tools/prepare-webview-overlay-probe.py" \
+    --java-root "$GENERATED" \
+    --report "$PROBE_REPORT"
+
 CHECK="$GENERATED/io/kamihama/magianative/CNHotUpdateCheck.java"
 UI="$GENERATED/io/kamihama/magianative/CNCNDownloadUI.java"
+WEBVIEW="$GENERATED/jp/f4samurai/web/WebViewImpl.java"
 grep -q 'CNHotUpdateTransaction.recover(filesRoot);' "$CHECK"
 grep -q 'CNHotUpdateTransaction.apply(tmp, new File(FILES_DIR));' "$CHECK"
 if grep -q 'CNDownloaderFix.extractChecked(tmp, new File(FILES_DIR));' "$CHECK"; then
@@ -49,9 +55,11 @@ if grep -q 'new Intent(Intent.ACTION_VIEW, Uri.parse(url))' "$UI"; then
     echo '✘ 未限制的 ACTION_VIEW 调用仍存在' >&2
     exit 1
 fi
+grep -q 'RuntimeOverlayProbe.onLocalFile(candidatePath, mime);' "$WEBVIEW"
+grep -q 'RuntimeOverlayProbe.onPageFinished(view, url);' "$WEBVIEW"
 
 # 核心构建脚本仍从 patch/src/main/java 取事实源。只在当前构建进程内临时换成
-# 三层物化后的 Java 树，退出（成功或失败）都由 trap 恢复提交源码。
+# 四层物化后的 Java 树，退出（成功或失败）都由 trap 恢复提交源码。
 mv "$SOURCE_ROOT" "$BACKUP"
 cp -a "$GENERATED" "$SOURCE_ROOT"
 
