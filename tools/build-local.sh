@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# latest-main 基线 + 六层 Java 物化；实际 APK 构建由 build-apk-core.sh 完成。
+# latest-main 基线 + 六层 Java 物化 + 国服字体守卫；APK 构建由 build-apk-core.sh 完成。
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -10,6 +10,7 @@ SOURCE_ROOT="$REPO/patch/src/main/java"
 GENERATED="$OUT/generated-java"
 BACKUP="$OUT/committed-java-backup"
 MAIN_REPORT="$OUT/main-runtime-baseline.json"
+FONT_REPORT="$OUT/authoritative-cn-fonts.json"
 TEXT_REPORT="$OUT/downloader-ui-text-materialisation.json"
 HARDEN_REPORT="$OUT/main-hot-update-hardening.json"
 TX_REPORT="$OUT/hot-update-transaction-materialisation.json"
@@ -36,6 +37,13 @@ if [ "${REQUIRE_ORIGIN_MAIN:-0}" = "1" ]; then
     fi
 fi
 printf 'latest-main baseline: %s\n' "$MAIN_SHA"
+
+# 字体文件必须与项目方提供的国服 2.2.1 APK 逐字节一致。这里在任何 Java、
+# native 或 APK 构建发生前先失败关闭，防止历史上的“把源字体文件直接覆盖为
+# 目标字体”再次进入测试产品。
+python3 "$REPO/tools/check-authoritative-cn-fonts.py" \
+    --font-root "$REPO/assets/fonts" \
+    --report "$FONT_REPORT"
 
 restore_sources() {
     if [ -d "$BACKUP" ]; then
