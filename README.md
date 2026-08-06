@@ -45,6 +45,7 @@ config.json                    ← 线上线路列表的快照（真实配置，
 | `CNChunkedDownload` | 多线程分片下载 + 断点续传 |
 | `CNMirrors` | 线路目录：从 `config.json` 拉取线路表，失败/停滞/过慢时自动换线 |
 | `CNHotUpdate` | 热更新的文件下载，与首次安装共用同一套选线与分片逻辑 |
+| `CNHotUpdateTx` | 热更包的**事务化应用**：暂存 → 备份 → 换入，出错整体回滚，崩溃后按 journal 恢复。只用于热更，安装器的大包仍直接解压 |
 | `CNLog` | 统一日志：logcat + 内存环形缓冲 + 文件，LOG 面板直接渲染同一份缓冲区 |
 
 补丁类的 smali（`smali_classes2/…/CNCNDownloadUI*` 与整个 `smali_classes3/`）
@@ -177,6 +178,10 @@ python3 tools/server.py 2097152 8771          # 支持 Range 的测试服务器
 `ResumeTest` 覆盖 27 项断言：完整下载、短读拒绝、断点复用、临时文件丢失、
 同线路 ETag 变化（拒绝复用）、越界多发、跨线路续传（复用断点）、
 **服务端忽略 Range 返回 200（清断点而非反复撞墙）**。`HotUpdateTest` 覆盖 12 项。
+
+`HotUpdateTxTest`（26 项）只碰文件系统，**连测试服务器都不需要**，编译完直接
+`java -cp … HotUpdateTxTest` 即可：覆盖正常提交、中途失败回滚、崩溃在提交前/后的
+两个恢复方向、恶意包拒收、残留事务不污染下一轮、幂等。
 
 测试服务器支持用控制端点在不改变请求 URL 的前提下改变服务端行为
 （`/settruncate?v=N` 截断、`/setetag?v=X` 换 ETag）——这很关键：
