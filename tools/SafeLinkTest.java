@@ -43,7 +43,8 @@ public class SafeLinkTest {
         // 云端配置里出现过的
         ok("https://assets.magireco.top/magirecocn-legacy-client.apk");
         ok("https://api.magireco.top/legacy/config.json");
-        ok("https://r2.assets.magireco.top/version_js.json");
+        ok("https://assets.magireco.top/version_js.json");
+        ok("https://edgeone.assets.magireco.top/cn_js_update.zip");
         ok("https://docs.magireco.top/client/bootstrap");
         ok("https://github.com/magirecocn-revival-project/magirecocn-legacy-client");
         // right_pill 的「支持我们」跳爱发电；两个域名是同一个站
