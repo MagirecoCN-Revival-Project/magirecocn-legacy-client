@@ -101,9 +101,32 @@ invoke-static {p0, p1, p2, p3}, Lio/kamihama/magianative/CNHotUpdate;->download(
 | `/magica/api/snaa`（端点发现） | 直连 Totentanz | `CNDownloaderFix.BOOTSTRAP_URL` |
 | 15 个基础资源包 | **走支线** | `CNDownloaderFix.fetchArchive` |
 | `cn_scenario_update.zip` / `cn_js_update.zip`（热更新） | **走支线** | `CNHotUpdate.download` |
+| **游戏本身的 API / 页面 / 图片** | **不经上述任何一条** | 见下 |
 
 换线只改「从哪里取字节」。安装完成标记里记的始终是规范 URL
 （`https://assets.magireco.top/` + 文件名），所以换线不会让既有安装失效。
+
+### 游戏运行时的流量走 WebView，不走上面这些（2026-08-07 真机查明）
+
+上表全是**我们自己的**下载链路。游戏跑起来之后的流量是另一套，完全不经过它们：
+
+```
+WebView（jp.f4samurai.web.WebViewImpl$WebViewClientImpl.shouldInterceptRequest）
+    ↓ 每个请求先记一行 MagiaHook-URL
+    ↓ URL 含 /magica/ → 映射到 /data/data/<包名>/files/magica/<其后部分>
+    ├─ 本地有这个文件 → MagiaHook-Found，直接本地供给（不出网）
+    └─ 没有            → super.shouldInterceptRequest()，真的走网络
+```
+
+这段拦截在**原始 APK 的 `classes.dex` 里**（`smali/jp/f4samurai/web/`），不是本仓库
+写的。一次真机会话的实测分布：143 个请求里 93 个命中本地文件，出网的少数里包含
+`/magica/api/page/TopPage`、`MyPage`、`MainQuest` 这些真正的业务请求。
+
+**推论**：`UrlConfig::api` / `chat` 这两个 native getter 在整场会话里**一次都没被
+调用**——游戏的 API 地址是前端 JS 按页面 origin 拼出来的，走 WebView 发出去。
+所以任何挂在 `UrlConfig` 上的代理都碰不到游戏的实际流量。要代理它只能在 WebView
+这一层动手，而那正是 `45289988` 撞黑屏退回来的地方（页面 origin 一变，前端里写死
+指向原域名的绝对地址就跨域了——**此为推测，待抓 WebView console 证实**）。
 
 `CNHotUpdate` 只在 URL 确实指向主线资源根、且其后只剩一段文件名时才换线；
 其余地址一律原样使用。
