@@ -46,6 +46,9 @@ public class SafeLinkTest {
         ok("https://r2.assets.magireco.top/version_js.json");
         ok("https://docs.magireco.top/client/bootstrap");
         ok("https://github.com/magirecocn-revival-project/magirecocn-legacy-client");
+        // right_pill 的「支持我们」跳爱发电；两个域名是同一个站
+        ok("https://afdian.com/a/magireco");
+        ok("https://ifdian.net/a/magireco");
 
         System.out.println("\n[2] 协议：只放行 https");
         no("http://www.magireco.top", "明文 http");
@@ -67,6 +70,8 @@ public class SafeLinkTest {
         no("https://pages.dev/", "pages.dev 本身是公共后缀");
         no("https://someone-else.pages.dev/", "别人的 Cloudflare Pages 站");
         no("https://example.com/", "无关域名");
+        no("https://afdian.net/a/x", "爱发电的旧域名已停止解析，不在列表里");
+        no("https://afdian.com.evil.example/", "把爱发电放在左边当子域");
 
         System.out.println("\n[5] 空白与控制字符");
         no("  https://www.magireco.top", "首尾空白");
