@@ -24,8 +24,14 @@ smali_classes3/                 ← classes3.dex；全部由 patch/ 的 Java 编
 patch/src/main/java/            ← ★ 补丁源码，唯一事实来源
 jadx-reference/                 ← jadx 反编译产物（只读参考，不参与构建）
 tools/                          ← 测试套件、构建前置检查、汉化与资源工具
-config.json                    ← 线上线路列表的快照（真实配置，非样例）
+config.json                    ← 线上 config.json 的快照（真实配置，非样例）
 ```
+
+`config.json` 是**某一时刻的拷贝，不参与构建，也不会自动跟着线上走**。它的用途是
+让人在本地看清字段长什么样。真正生效的永远是
+<https://api.magireco.top/legacy/config.json>；改线路、改 `proxy`、改
+`min_speed_kbps` 都是改线上那一份，改这里没有任何效果。发现两边对不上时以线上为准，
+顺手把这份快照更新一下。
 
 ### 为什么 jadx 产物不参与构建
 
@@ -99,7 +105,7 @@ invoke-static {p0, p1, p2, p3}, Lio/kamihama/magianative/CNHotUpdate;->download(
 | `config.json`（线路表本身） | 直连主线 | `CNMirrors.MIRRORS_URL` |
 | `version_scenario.json` | **走支线** | `CNHotUpdateCheck.fetchVersion` |
 | `version_js.json` | **走支线** | `CNHotUpdateCheck.fetchVersion` |
-| `/magica/api/snaa`（端点发现） | 直连 Totentanz | `CNDownloaderFix.BOOTSTRAP_URL` |
+| `/magica/api/snaa`（端点发现） | 代理配置已下发则经 `/stream/`，否则直连 Totentanz | `CNDownloaderFix.snaaUrl()` |
 | 15 个基础资源包 | **走支线** | `CNDownloaderFix.fetchArchive` |
 | `cn_scenario_update.zip` / `cn_js_update.zip`（热更新） | **走支线** | `CNHotUpdate.download` |
 | **游戏本身的 API / 页面 / 图片** | **不经上述任何一条** | 见下 |
@@ -167,16 +173,27 @@ POST 一律透传。Range 请求也主动不接管（见 `CNWebProxy.afterLocalM
 `CNHotUpdate` 只在 URL 确实指向主线资源根、且其后只剩一段文件名时才换线；
 其余地址一律原样使用。
 
-### 线上线路实测（2026-08-01）
+### 线上线路实测（2026-08-07）
 
-拿本仓库的 `CNChunkedDownload.probe()` 直接打线上四条线路，结果：
+线路表在 2026-08 换过一整轮：`assets-cdn1/2/3` 那套已经**整体退役**，现役是下面这些
+（权重取自线上 `config.json`，schema 8）。拿 `cn_js_update.zip` 逐条打 HEAD：
 
-| 线路 | 权重 | 探测结果 | ETag |
+| 线路 | 权重 | 探测结果 | ETag 形态 |
 |---|---|---|---|
-| `assets-cdn1.magireco.top` | 80 | ❌ **HTTP 403** | — |
-| `assets-cdn2.magireco.top` | 60 | ✅ 7437513 / 支持 Range | `"9eea8ff0491d9bd68e0b1a51c12ecf32"` |
-| `assets.magireco.top`（主线） | 40 | ✅ 7437513 / 支持 Range | `"6a01a2f8-717cc9"` |
-| GitHub Release（默认关闭） | 10 | ✅ 7437513 / 支持 Range | `"0x8DEAF40B1CE13E4"` |
+| `hkcdn.assets.magireco.top` | 100 | ✅ 8414194 / 支持 Range | `"0x8DEF471691E6CB0"` |
+| `edgeone.assets.magireco.top` | 80 | ✅ 8414194 / 支持 Range | `"7a7cecf8…-2"` |
+| `esa.assets.magireco.top` | 60 | ✅ 8414194 / 支持 Range | `"7a7cecf8…-2"` |
+| `r2.assets.magireco.top` | 40 | ⏸ 可达但 `enabled:false` | `"7a7cecf8…-2"` |
+| `v4.gh-proxy.org` → GitHub Release | 30 | ✅ 8414194 / 支持 Range | `"0x8DEF471691E6CB0"` |
+| `gh-proxy.org` → GitHub Release | 20 | 同上 | 同上 |
+
+> `r2` 关掉是因为 NS 换出 Cloudflare 之后 R2 自定义域失效（自定义域只在 Cloudflare
+> 接管 DNS 时才生效）。它现在还能回 200 是因为前面挡着别的层，但不该再依赖它。
+
+ETag 恰好分成两族，正是下面第 1 条设计决定的现场证据：`hkcdn` 与两条 gh-proxy 都
+是转 GitHub Release，拿到的是对象存储的版本号；`edgeone`/`esa`/`r2` 都在 R2 前面，
+拿到的是 S3 分段上传的 `<md5>-<段数>`。同一个文件、同一份字节，**四种线路给出三种
+格式**。
 
 两个由此定下的设计决定：
 
@@ -190,15 +207,42 @@ POST 一律透传。Range 请求也主动不接管（见 `CNWebProxy.afterLocalM
    `extractChecked`——内容对不上会抛 `ZipException`，随后删档重下。
 
 2. **`min_speed_kbps` 按「千比特每秒」解释。** 字段名里的 kbps 按惯例是 bit，
-   而线上配置是 `800`。若按 KiB/s 解释，阈值会变成 800 KiB/s ≈ 6.5 Mbit/s，
-   任何慢于此的用户每条线都会在 10 秒后被判「过慢」中断，4 次尝试耗尽即整包
-   安装失败。现按 bit 解释：800 kbps = 100 KB/s，是个合理下限。
-   **若原意就是 KB/s，请改代码而不是把线上值调大**，否则慢速用户会全量失败。
+   所以 `CNChunkedDownload` 里是 `minSpeedKbps() * 1000 / 8` 换成字节每秒。
+   曾经按 KiB/s 解释过，那会把当时线上的 `800` 变成 800 KiB/s ≈ 6.5 Mbit/s 的下限。
 
-> `assets-cdn1` 从构建环境访问是 100% 403（nginx 原样返回，与 UA / Referer 无关，
-> 连 `config.json` 本身也是 403）。无法区分「对所有人都坏」还是「只挡机房 IP」。
-> 它是最高权重线路，所以每次安装的第一次尝试都会撞上它；好在
-> `switch_after_failures: 1` 会让它立刻进入 60 秒冷却，后续文件自动跳过，
+3. **拉版本 json 失败不打冷却。** 这条是 2026-08-07 从真机日志里挖出来的：
+   启动时先做镜像竞速，量的是 `cn_js_update.zip` 前 256 KB 的**吞吐**，
+   在**已经预热**的对象上；紧接着去拉几百字节的 `version_js.json`，那是个
+   **冷对象**，量的是**首字节延迟**。两件事根本不是一个维度。
+
+   结果就是：竞速刚把 EdgeOne 提为首选，版本 json 一超时就
+   `reportFailure` 把它打进 60 秒冷却——**自己刚选出来的最快线，被自己刷掉了**。
+   现在 `fetchMeta` 拉版本 json 失败只记日志、换下一条镜像，不再上报失败；
+   读超时也从 8s 放宽到 12s（`VER_READ_TIMEOUT_MS`），冷对象值得多等一会儿。
+
+### 「过慢」这条线到底会怎样（别把它读成"装不上"）
+
+线上现在是 `min_speed_kbps: 6400`，即 **800 KB/s ≈ 6.4 Mbit/s**。这个值是**有意
+设定**的：整套资源加热更 15 GB 量级，低于这个速度的下载体验已经很难接受，6400
+本身就是妥协过的结果。
+
+它的语义是**「这条线不够快，换一条」，不是「你太慢，不给你装」**——这点以前这份
+文档写得偏重，特此更正：
+
+- `CNChunkedDownload` 每 10 秒测一次窗口吞吐，低于阈值就 `abort` 并抛
+  `IOException("线路过慢：…")`；
+- `CNHotUpdate.download` 接住它，`reportFailure` 把该线打进冷却，退避
+  2/4/8 秒后**换线重试**，最多 4 次（`MAX_ATTEMPTS`）；
+- **`.part` 文件和断点元数据全程不删**，`markFailed` 只改浮层状态。所以四次尝试是
+  **接力续传**，每次从上次断的地方接着走；四次用完这个文件本次失败，但
+  `.part` 还在，下次启动继续。
+
+也就是说慢速用户是多花几次启动，不是被永久锁死。
+
+> 历史记录：`assets-cdn1` 曾经从构建环境访问 100% 403（nginx 原样返回，与 UA /
+> Referer 无关，连 `config.json` 本身也 403），而它是最高权重线路，每次安装第一次
+> 尝试都会撞上。这套线路已在 2026-08 整体退役，问题随之消失；留着这段是因为它是
+> `switch_after_failures: 1` 这个配置能救场的实证——撞一次立刻进 60 秒冷却，
 > 代价被限制在一次尝试 + 2 秒退避。
 
 ---
@@ -222,12 +266,24 @@ apksigner → 上传 artifact。
 ### apktool 重组的等价性
 
 `apktool b` 会重新编码 dex、`resources.arsc` 与 manifest，所以产物与逐字节替换 dex
-的做法**不会二进制相同**。已验证语义等价：
+的做法**不会二进制相同**。当时验证过语义等价：
 
 - 三个 dex 的类全集完全一致（8457 / 443 / 22 个类）
 - `resources.arsc` 资源条目数一致（1422）
 - 831 个 `assets/` 与 `lib/` 文件逐字节一致
 - AndroidManifest 去掉行号标注后完全一致
+
+> ⚠ 上面这组数字是**那一次验证的快照，不是当前值**。`smali/` 的 8457 没动过
+> （引擎本体我们不碰），但另外两个会随补丁层增长：当前仓库是
+> `smali_classes2/` 447 个、`smali_classes3/` 27 个 `.smali`。
+>
+> 而且 `smali_classes3/` 里那 27 个**本身就是过期的**——它由 `patch/` 的 Java
+> 每次 CI 重新生成，当前源码编出来是 59 个类。这不是问题（构建时先覆盖再
+> `apktool b`），但别拿仓库里的 smali 去推断产物内容，**唯一事实来源是
+> `patch/src/main/java/`**。
+>
+> 要重新做等价性验证，比的应该是「`smali/` 这一份」和「原始 APK 的 classes.dex」，
+> 补丁那两个 dex 本来就该不一样。
 
 ---
 
@@ -259,17 +315,41 @@ python3 tools/make-connecting-sprite.py <原版connecting.png> connecting.png
 另有 `--sheet` 输出 334×432 竖向雪碧图 + 配套 `steps(8)` CSS，作为
 真机上 APNG 万一不动时的退路。
 
+**真机反馈追加的一处修正：描边。** 原版 `Connecting...` 是画在纯白背景上的，
+自带描边；而国服素材里的丘比是白色的，直接搬过来在白底上就只剩"半只"。
+所以 `outline()` 给丘比补了一圈 **2px 深色描边**（`STROKE_RGB = (27,25,23)`，
+取自字芯同族色，不是原版那种洋红）。
+
+两个踩过的坑记在这里，省得下次重来：
+
+- **描边不能做成线性渐变**，那读起来是"发光"不是"描边"。现在的做法是内圈实心
+  255、只有最外 1 圈做淡出。
+- **4px 太粗**，在白底上像给丘比镶了道黑框；3px 仍偏重，最后定在 2px。
+- 文字**不额外描边**：试过之后笔画之间会糊在一起，反而更难认。
+
+产出的图随 `cn_js_update` 走热更（v22 是无描边版，**v23 起是 2px 描边版**），
+路径 `magica/resource/image_web/common/global/connecting.png`。
+
 > 图和 CSS（若走雪碧图）必须**同时**到达客户端。把两者放进同一个
 > `cn_js_update.zip` 就是原子的——热更是一次性解压覆盖。
 
 ### 热更包里的 CSS 是哪儿来的（重要）
 
-包里有两个 CSS，来路完全不同，弄混会出事：
+包里的 CSS 分三类，来路完全不同，弄混会出事。**当前是 13 个**（`cn_js_update` v22
+起；此前只有前两个）：
 
 | 包内路径 | 来源 | 性质 |
 |---|---|---|
 | `magica/css/_common/fonts.css` | **重写**。线上原文只有 73 字节、一条 `@font-face{font-family:koruri;src:url(…/koruri-semibold.ttf)}`；包里保留同一族名，把 `src` 改指包内的 `magica/fonts/TTZhiHeiGB3-W4.ttf` | 完整覆盖，无遗漏——全站只有这一处 `@font-face`，`motoya`/`mbm` 是系统侧回退（native 的 `fontPathOverwrite` 管），不在 CSS 里 |
-| `magica/css/_common/common.css` | **快照 + 追加**。第 1 行 = 线上 `common.css` 原封不动的 265927 字节（md5 `18b32a9b…`，与 `index.html` 里 `common.css?18b32a9b…` 一致），其后追加一段 `cn-patch` 覆盖规则 | 冻结了线上文件 |
+| `magica/css/_common/common.css` | **快照 + 追加**。第 1 行 = 线上 `common.css` 原封不动的 265927 字节（md5 `18b32a9b…`，与 `index.html` 里 `common.css?18b32a9b…` 一致），其后追加 2890 字节 `cn-patch` 覆盖规则 | 冻结了线上文件 |
+| 其余 11 个（`quest/MainQuest.css`、`quest/QuestCommon.css`、`quest/PuellaHistoriaTop.css`、`quest/PuellaHistoriaLastBattle/*.css` 四个、`quest/QuestBattleSelect.css`、`top/Top.css`、`user/MyPage.css`、`collection/StoryCollection.css`） | **原样照抄服务端现役内容**，一个字节都没改 | 纯解毒用——见下节 |
+
+第三类不是为了改样式，而是为了**盖掉设备上早年冻住的旧快照**。所以它们的正确状态
+就是「与服务端逐字节相同」，`tools/check-css-freeze.py` 正是在守这一条。
+
+范围也是刻意收窄的：最初一版放了全站 188 个，后来收到 13 个——按「主页 + 历史篇这
+两条链路上每个页面模块 `text!css/…` 依赖」逐个推出来的。放得越多，将来要负责同步的
+就越多，而每一个都是不可逆的（见下节）。
 
 为什么必须整文件替换：`common.css` 由 `index.html` 的静态 `<link>` 加载，
 不走 requirejs，没有别的注入点。而 `shouldInterceptRequest` **只按路径匹配、
@@ -319,6 +399,22 @@ CSS 给——规则一没，它塌成 0 高度空 div，**历史篇（Puella His
 
 解毒只有一条路：**把服务端现役内容原样放回包里再发一次**，把设备上那份盖掉。
 
+> **这一例已解决（`cn_js_update` v22）。** 包里 `magica/css/quest/MainQuest.css`
+> 的 md5 是 `0344b11c…`，与服务端现役版本逐字节相同；同批还有
+> `QuestCommon.css`、`PuellaHistoriaTop.css` 等共 13 个。
+>
+> 验证方式值得记一笔，因为"我改对了吗"在这类问题上特别难判：把线上四个
+> `<link>`（sanitize / common / base / fonts）加 `<style id="headStyle">`
+> 注入的 `MainQuest.css + QuestCommon.css`，再加 `MainQuest.html` 的 DOM 骨架，
+> 在真 Chromium 里渲染，读 `#toPuellaHistoriaTopButtonWrap` 的计算样式——
+> 包内版本与服务端原版**逐项一致**（`display:block` / visible / 160×56 /
+> 定位 (200,430) / z-index 100 / 背景图 `btn_main.png`）。
+>
+> 顺带证否了一个当时很自然的猜测：「国服整体 `common.css` 和 Totentanz 的散乱
+> per-page CSS 打架」。打不起来——`index.html` 里 `<style id="headStyle">` 排在四个
+> `<link>` **之后**，同特异性下 per-page CSS 永远赢；而我们追加的那 2890 字节
+> 只写了 `#sideMenu` 和 `#globalMenu`，压根没碰 `#QuestMap`。
+
 所以只要包里有 CSS，就永远要负责让它和服务端同步。发包前跑：
 
 ```bash
@@ -333,24 +429,57 @@ python3 tools/check-css-freeze.py <cn_js_update.zip>
 
 ## 测试
 
-`tools/` 下是断点续传与热更新下载的测试套件，跑在 JVM 上，不需要设备：
+`tools/` 下是补丁层的测试套件，跑在 JVM 上，不需要设备。先编译一次：
+
+```bash
+javac -nowarn -source 8 -target 8 -encoding UTF-8 \
+      -cp .cache/deps/android.jar -d .build-test \
+      $(find patch/src/main/java -name '*.java') tools/*Test.java
+```
+
+> ⚠ **运行时也要把 `android.jar` 挂上**，不只是编译时：
+>
+> ```bash
+> java -cp .build-test:.cache/deps/android.jar <类名>
+> ```
+>
+> 少了它，`BgmLoopTest` / `ThrottleTest` 会以
+> `NoClassDefFoundError: android/content/Context`（或 `org/json/JSONObject`）
+> 挂掉——**看起来像测试失败，其实是 classpath 少了一截**。踩过，记下来。
+
+| 测试 | 断言数 | 需要测试服务器 | 覆盖 |
+|---|---|---|---|
+| `HotUpdateTxTest` | 57 | 否 | 事务化应用：正常提交、中途失败回滚、崩溃在提交前/后的两个恢复方向、恶意包拒收、残留事务不污染下一轮、幂等，以及**清单与孤儿清理**（跨版本删除、白名单外子树不删、无清单时不删、孤儿删除也能回滚、`listEntries` 拒收 7 类非法路径 + 重复条目 + 空包） |
+| `SafeLinkTest` | 40 | 否 | 外链白名单：协议、authority 伪装、公共后缀（`pages.dev`）、空白与控制字符、大小写与末尾点归一化 |
+| `WebProxyTest` | 31 | 否 | 代理改写判据：后缀匹配必须卡在点上、排除自身（`*.magireco.top`）、只改 https、端口摘取、配置不全一律透传、白名单里的空串不得变成"匹配一切" |
+| `LogTest` | 20 | 否 | 日志缓冲与文件落盘 |
+| `BgmLoopTest` | 19 | 否 | HCA 循环点的采样级无缝拼接 |
+| `ThrottleTest` | 7 | 否 | 「值不值得换线」的相对基线决策 |
+| `FlushTest` | 5 | 否 | 日志 flush 时序 |
+| `ResumeTest` | 28 | **是** | 完整下载、短读拒绝、断点复用、临时文件丢失、同线路 ETag 变化（拒绝复用）、越界多发、跨线路续传（复用断点）、**服务端忽略 Range 返回 200（清断点而非反复撞墙）** |
+| `HotUpdateTest` | 13 | **是** | 非主线地址走直连单线程、目标已存在则不重复下载、服务端提前断流时报失败而**不提交残缺文件**、承接上一步残片续传补齐 |
+
+前七个直接 `java -cp … <类名>` 就能跑。后两个是**集成测试**，要先起测试服务器、
+再把地址/sha/大小当命令行参数传进去（少传参数会以
+`ArrayIndexOutOfBoundsException` 挂掉，那不是断言失败）：
 
 ```bash
 python3 tools/server.py 2097152 8771          # 支持 Range 的测试服务器
-# 另开一个终端，按 tools/*.java 头部注释编译运行
+java -cp .build-test:.cache/deps/android.jar ResumeTest <base> <sha256> <size>
 ```
 
-`ResumeTest` 覆盖 27 项断言：完整下载、短读拒绝、断点复用、临时文件丢失、
-同线路 ETag 变化（拒绝复用）、越界多发、跨线路续传（复用断点）、
-**服务端忽略 Range 返回 200（清断点而非反复撞墙）**。`HotUpdateTest` 覆盖 12 项。
+除测试外，`tools/` 里还有几个构建前置检查，都是纯 Python、随时可跑：
 
-`HotUpdateTxTest`（57 项）与 `SafeLinkTest`（35 项）只碰文件系统与字符串，
-**连测试服务器都不需要**，编译完直接 `java -cp … <类名>` 即可：前者覆盖正常提交、
-中途失败回滚、崩溃在提交前/后的两个恢复方向、恶意包拒收、残留事务不污染下一轮、
-幂等，以及**清单与孤儿清理**（跨版本删除、白名单外的子树不删、无清单时不删、
-孤儿删除也能回滚、`listEntries` 拒收 7 类非法路径 + 重复条目 + 空包）；
-后者覆盖协议白名单、authority 伪装、公共后缀（`pages.dev`）、
-空白与控制字符、大小写与末尾点归一化。
+| 脚本 | 守的是什么 |
+|---|---|
+| `check-proxy-hooks.py` | native 侧哪些代理钩子该装、哪些必须保持停用（把"停用"从注释里的承诺变成可核验的事实） |
+| `check-base-urls.py` | 规范前缀与各条热更地址的一致性，防止某条被硬绑到具体 CDN |
+| `check-entry-guard.py` | 被 native 调用的入口方法体首条语句必须是 `try`（见「铁律：安装器入口绝不能抛异常」） |
+| `check-css-freeze.py` | 热更包里的 CSS 是否还与服务端现役内容一致（见「CSS 进过热更包就再也拿不出来了」） |
+| `check-fonts.py` | 钉死 `assets/fonts/` 下每个文件的哈希，并校验内容与文件名相符 |
+| `check-so-deps.py` | 每个 `.so` 的 `DT_NEEDED` 都能在包内或系统里找到。踩过：`libMagiaLegacy.so` 链接 shadowhook，但 CI 只拷了前者，`libshadowhook.so` 落在构建目录没带上——**能打包、能签名、能安装，只在真机启动那一刻炸** |
+| `check-asset-compression.py` | BGM 的 ogg 在 APK 里必须是 Stored 而非 deflate。`AssetManager.openFd()` 打不开压缩过的 asset，后果是「界面一切正常、就是没声音」 |
+| `check-apk-freshness.py` | 产物确实是刚编译出来的那一份，不是上一版残留。踩过两次：`CNBgm` 编出了 `.class` 却不在任何一组 d8 输入里；`libMagiaLegacy.so` 编好了却忘了拷进 `lib/` |
 
 ### 热更包的文件清单与孤儿清理
 
