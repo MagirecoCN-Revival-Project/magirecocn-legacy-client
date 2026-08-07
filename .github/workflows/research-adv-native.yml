@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - research/adv-native-evidence-20260807
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -45,8 +48,6 @@ jobs:
             native-evidence/dynamic-symbols-demangled.txt \
             > native-evidence/adv-dynamic-symbols.txt || true
 
-          # Full ARM64 disassembly is compressed as an artifact; keeping it out
-          # of Git avoids polluting the source repository with generated text.
           aarch64-linux-gnu-objdump -d -C "$SO" \
             | gzip -9 > native-evidence/libmadomagi_native.objdump.txt.gz
 
