@@ -1,0 +1,1 @@
+Research-only trigger marker. No APK/runtime code depends on this file.
