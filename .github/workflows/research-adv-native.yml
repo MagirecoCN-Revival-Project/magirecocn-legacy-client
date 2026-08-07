@@ -52,8 +52,6 @@ jobs:
           aarch64-linux-gnu-objdump -d -C "$SO" \
             | gzip -9 > native-evidence/libmadomagi_native.objdump.txt.gz
 
-          # Small deterministic rodata windows referenced directly by
-          # StoryEffectUnit::setEffectFlash / setThinking / StoryCharaUnit.
           {
             echo '=== flash slow/fade constants around 0x16937f4 ==='
             aarch64-linux-gnu-objdump -s --start-address=0x16937d0 --stop-address=0x1693820 "$SO"
@@ -61,8 +59,12 @@ jobs:
             aarch64-linux-gnu-objdump -s --start-address=0x167f870 --stop-address=0x167f8c0 "$SO"
             echo '=== thinking scale around 0x17723b4 ==='
             aarch64-linux-gnu-objdump -s --start-address=0x1772390 --stop-address=0x17723e0 "$SO"
-            echo '=== thinking fade around 0x167ef74 ==='
+            echo '=== thinking fade-in around 0x167ef74 ==='
             aarch64-linux-gnu-objdump -s --start-address=0x167ef50 --stop-address=0x167efa0 "$SO"
+            echo '=== StoryEffect stop/fade-out around 0x1680898 ==='
+            aarch64-linux-gnu-objdump -s --start-address=0x1680870 --stop-address=0x16808c0 "$SO"
+            echo '=== StoryBg shake MoveTo duration around 0x1694b6c ==='
+            aarch64-linux-gnu-objdump -s --start-address=0x1694b40 --stop-address=0x1694b90 "$SO"
             echo '=== StoryChara convert sentinel constants ==='
             aarch64-linux-gnu-objdump -s --start-address=0x3d36bd0 --stop-address=0x3d36c10 "$SO" || true
             aarch64-linux-gnu-objdump -s --start-address=0x167a100 --stop-address=0x167a150 "$SO" || true
