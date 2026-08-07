@@ -94,6 +94,26 @@ invoke-static {p0, p1, p2, p3}, Lio/kamihama/magianative/CNHotUpdate;->download(
 这样热更新的文件下载也走支线。改这一处而不是重写整个 `RestClient`，是因为
 `RestClient` 里有被 native 调用的方法和 jadx 无法完整还原的代码，整类重写风险过大。
 
+### 右上角胶囊：`right_pill`
+
+浮层右上角那个胶囊默认是「GitHub」，`config.json` 下发 `right_pill` 时会变成
+「支持我们」——点了弹内建样式弹窗，弹窗里的「去支持」跳 `url`（一律先过
+`CNSafeLink`，只放行 HTTPS + 允许列表内的域名）。
+
+```json
+"right_pill": {
+  "enabled": true,
+  "label": "♥  支持我们",
+  "title": "支持我们",
+  "content": "弹窗正文",
+  "url": "https://afdian.com/a/xxx"
+}
+```
+
+`enabled` **缺省 true**（老配置行为不变），置 `false` 时**无视其余字段**直接回落
+默认 GitHub 胶囊。之所以要这个显式开关：原先只看「有没有 `right_pill` 且 `label`
+非空」，想临时关掉就得把整段删了或把 `label` 清空，改回来还得把字段重新敲一遍。
+
 ---
 
 ## 网络出口：谁走支线、谁直连主线
