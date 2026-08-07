@@ -47,6 +47,7 @@ config.json                    ← 线上线路列表的快照（真实配置，
 | `CNHotUpdate` | 热更新的文件下载，与首次安装共用同一套选线与分片逻辑 |
 | `CNHotUpdateCheck` | 热更检查流程：启动时比对台词包/前端脚本包版本，必要时下载并应用。重写自原包的 `RestClient.checkAndApplyHotUpdate`——那版浮层自始至终不出现，无从判断跑没跑 |
 | `CNHotUpdateTx` | 热更包的**事务化应用**：暂存 → 备份 → 换入，出错整体回滚，崩溃后按 journal 恢复。只用于热更，安装器的大包仍直接解压 |
+| `CNWebProxy` | WebView 拦截层代理：把原 `WebViewClient` 包一层，本地文件没命中的 GET 可改走 `/stream/`。默认纯透传，模式由 `config.json` 的 `proxy.web_mode`（`off` / `measure` / `on`）下发，切换不用重打 APK。端点级代理在真机上五次会话零命中（见「网络出口」一节），这是替代路线 |
 | `CNSafeLink` | 外链统一出口：只放行 HTTPS 且域名在**写死在客户端**的允许列表内。挡的是「服务端被攻破后靠改配置把玩家导去任意地址」与配置写错，**不是**中间人——那一层已由 DNSSEC + 完整 TLS 验证覆盖 |
 | `CNVersionCheck` | 客户端版本检查，跑在热更检查**之前**。本端版本硬编码在 native（`CLIENT_VERSION`，与 APK 的 versionName/versionCode 无关），云端版本在 `config.json` 的 `client` 段。任何异常一律放行，绝不因网络抖动挡住进游戏 |
 | `CNRestart` | 重启本进程：先用 `AlarmManager` 把启动 Intent 排到 ~300ms 后再自杀。原包的 `RestClient.restartApp()` 是坏的——它开头会重跑旧热更（浮层再现），且新 Activity 起在同进程里被随后那一刀砍掉 |
@@ -102,6 +103,8 @@ invoke-static {p0, p1, p2, p3}, Lio/kamihama/magianative/CNHotUpdate;->download(
 | 15 个基础资源包 | **走支线** | `CNDownloaderFix.fetchArchive` |
 | `cn_scenario_update.zip` / `cn_js_update.zip`（热更新） | **走支线** | `CNHotUpdate.download` |
 | **游戏本身的 API / 页面 / 图片** | **不经上述任何一条** | 见下 |
+| 同上，但 `proxy.web_mode=on` 时的 GET | 经 `/stream/` 转发（失败即回退直连） | `CNWebProxy.fetchViaProxy` |
+| 同上，`proxy.web_mode=measure` 时的配对测速 | 直连与 `/stream/` 各拉一次，只记时不接管 | `CNWebProxy.probe` |
 
 换线只改「从哪里取字节」。安装完成标记里记的始终是规范 URL
 （`https://assets.magireco.top/` + 文件名），所以换线不会让既有安装失效。
@@ -124,9 +127,42 @@ WebView（jp.f4samurai.web.WebViewImpl$WebViewClientImpl.shouldInterceptRequest�
 
 **推论**：`UrlConfig::api` / `chat` 这两个 native getter 在整场会话里**一次都没被
 调用**——游戏的 API 地址是前端 JS 按页面 origin 拼出来的，走 WebView 发出去。
-所以任何挂在 `UrlConfig` 上的代理都碰不到游戏的实际流量。要代理它只能在 WebView
-这一层动手，而那正是 `45289988` 撞黑屏退回来的地方（页面 origin 一变，前端里写死
-指向原域名的绝对地址就跨域了——**此为推测，待抓 WebView console 证实**）。
+所以任何挂在 `UrlConfig` 上的代理都碰不到游戏的实际流量。
+
+#### 端点级代理已判定为零命中（2026-08-07，五次会话）
+
+`endpointRewrite` 在真正改写时会打一行 `[proxy] api[n]: 原址 -> 新址`。
+0103 / 0104 / 0105 / 0107 / 0112 五份真机日志里，这一行**一次都没有出现过**。
+原因是两条独立的死路正好凑齐：
+
+- 引擎自始至终只读 `api[0]`，而它的值是个**裸主机名**（`dorothy.magi-reco.com`，
+  没有 scheme），native 的 `tryRewriteUrl` 第一道 `"https://"` 判断就返回 false；
+- `api[1..13]` 与 `chat[0..5]` 确实是完整 URL——`probeEndpointSlots` 在 0112 里把
+  20 个槽位全 dump 出来了，这正是当初写那个探针要回答的问题。但那些值走的是
+  **原始** getter，只观测不改写；引擎自己压根没调过这些槽位的钩子。
+
+结论：端点级这条路在当前引擎行为下**不可能生效**。钩子仍然装着（观测有价值，
+且成本只有几次字符串比较），但不要再指望它代理到任何东西。
+
+#### 拦截层与端点级不是同一件事（别把黑屏记到它头上）
+
+`45289988` 的黑屏是**改写 `UrlConfig::web`** 造成的：web 端点一改，页面的 origin
+跟着变，前端里写死指向原域名的绝对地址全部跨域。那条改写至今停用。
+
+`CNWebProxy` 走的是另一层——`shouldInterceptRequest`。它把字节**交回**给 WebView，
+页面 origin 始终是 `dorothy.magi-reco.com`，浏览器根本不知道数据是从哪拿的，
+所以跨域无从谈起。两者机制不同，黑屏那笔账不适用于它。
+
+它还有一个端点级永远做不到的性质：**能失败回退**。端点级改写是「改完就交给引擎去
+连」，连没连上我们这边根本不知道，代理一挂玩家就永远进不去（这正是当年删掉代理配置
+磁盘缓存的理由）。拦截层取不到就 `return null`，WebView 自己按原地址直连。
+
+硬限制：Android 的 `WebResourceRequest` **不提供请求体**，所以只有 GET 能代理，
+POST 一律透传。Range 请求也主动不接管（见 `CNWebProxy.afterLocalMiss` 的注释）。
+
+默认 `off`。目的是加速，而加速必须先证明——开发机（境外容器）量出 `/stream/` 每次
+都比直连慢 2～8 倍，但那个数字对国内玩家没有参考价值。先发 `measure` 收真机数字，
+数字说得通再从 `config.json` 翻成 `on`，不用重打 APK。
 
 `CNHotUpdate` 只在 URL 确实指向主线资源根、且其后只剩一段文件名时才换线；
 其余地址一律原样使用。
