@@ -256,6 +256,43 @@ python3 tools/make-connecting-sprite.py <原版connecting.png> connecting.png
 `#globalBackBtn` 本来就指根目录，显式重写一遍防路径漂移。靠「文件末尾追加、
 后写覆盖」生效，不用 `!important`。
 
+### 🔴 CSS 进过热更包就再也拿不出来了
+
+**每个页面的 CSS 也走拦截。** 不只是 `index.html` 里那四个 `<link>`——
+其余页面的 CSS 是用 requirejs 的 text 插件当**文本**读进来再注进
+`<style id="headStyle">` 的：
+
+```js
+// js/quest/MainQuest.js
+define("… text!css/quest/MainQuest.css text!css/quest/QuestCommon.css …",
+       function(…){ … a.setStyle(k + l); … })
+```
+
+两条路径最后都是请求 `/magica/css/**`，而 `shouldInterceptRequest` 只按路径
+匹配、把 `?<md5>` 丢掉。**再叠上热更「只写不删」**（`RestClient.unzip` 只
+`mkdirs` + 写文件，包里没有的既不删也不还原）——
+
+> **往热更包里放过一次某个 CSS，这个动作不可逆。** 从包里移除它只是以后不再
+> 更新它；设备上那份**永远留着、永远赢过服务端**。
+
+这已经出过一次事故：有人为了改样式把某个页面 CSS 整份放进热更包，那份快照
+缺了 `#QuestMap #toPuellaHistoriaTopButtonWrap` 的规则。这个 div 在
+`template/quest/MainQuest.html` 里是**无条件渲染**的，尺寸/背景图/定位全靠
+CSS 给——规则一没，它塌成 0 高度空 div，**历史篇（Puella Historia）入口就此
+消失**，而模板、js、图片、控制台全都正常。
+
+解毒只有一条路：**把服务端现役内容原样放回包里再发一次**，把设备上那份盖掉。
+
+所以只要包里有 CSS，就永远要负责让它和服务端同步。发包前跑：
+
+```bash
+python3 tools/check-css-freeze.py <cn_js_update.zip>
+```
+
+它从服务端 `js/system/replacement.js` 的 `fileTimeStamp` 取每个文件的 md5
+（`index.html` 的 `?<hash>` 就是从这来的），逐个比对包里的 CSS；
+`fonts.css` 在豁免名单里，`common.css` 按「前 N 字节 == 服务端原文」校验。
+
 ---
 
 ## 测试
