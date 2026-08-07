@@ -802,13 +802,21 @@ java -cp .build-test:.cache/deps/android.jar ResumeTest <base> <sha256> <size>
 `magireco-cn-patch`，本仓库用不上）；`RuntimeTextI18n.inc` / `RuntimeFontPathHook.inc`
 （native i18n 与字体 hook 的另一种组织方式，main 已有等价能力）。
 
-> 归档用的是**分支**而不是 tag：本仓库的自动化会话凭证推 tag 会 403，推分支正常。
-> 想要一个真 tag 的话，本地跑：
+> 归档用的是**分支**而不是 tag：本仓库的自动化会话凭证推 tag 会 `HTTP 403`，
+> 推分支正常。**一条只读的归档分支已经够用**，不必再转成 tag。
+>
+> 真要 tag 语义的话，注意两点：**打标对象要用 SHA 或 `origin/` 前缀**（裸名在本地
+> 解析不到远端分支），而且**打完要把同名分支删掉**——tag 与 branch 同名会让
+> `git rev-parse` 一类的解析静默偏向 tag，是个长期的歧义源：
 >
 > ```bash
+> git fetch origin
 > git tag -a archive/legacy-client-runtime-i18n-20260806 \
->         archive/legacy-client-runtime-i18n-20260806 -m "归档：已被 main 取代"
-> git push origin archive/legacy-client-runtime-i18n-20260806
+>         a66aac13f89d3aeb52b62d564a98fa8915c7119a \
+>         -m "归档：feature/legacy-client-runtime-i18n，已被 main 取代"
+> git push origin refs/tags/archive/legacy-client-runtime-i18n-20260806
+> # 确认 tag 到位后，再删掉同名分支，避免歧义
+> git push origin --delete archive/legacy-client-runtime-i18n-20260806
 > ```
 
 ---
