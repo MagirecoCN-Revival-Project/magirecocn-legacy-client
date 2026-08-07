@@ -675,6 +675,7 @@ java -cp .build-test:.cache/deps/android.jar ResumeTest <base> <sha256> <size>
 | 脚本 | 守的是什么 |
 |---|---|
 | `check-proxy-hooks.py` | native 侧哪些代理钩子该装、哪些必须保持停用（把"停用"从注释里的承诺变成可核验的事实） |
+| `check-webview-interceptor.py` | 基础 APK 里 WebView 拦截链的形状是否还和 `CNWebProxy` 的假设对得上（13 项）：`WebViewHelper.sWebView` 字段、两个 `shouldInterceptRequest` 重载及其转调关系、`api/` 排除、`?<md5>` 丢弃、本地根目录、未命中回落 `super`。**这些是前提不是选择**——`smali/jp/f4samurai/web/` 是原始 APK 的产物，我们只是在运行时包了一层 |
 | `check-base-urls.py` | 规范前缀与各条热更地址的一致性，防止某条被硬绑到具体 CDN |
 | `check-entry-guard.py` | 被 native 调用的入口方法体首条语句必须是 `try`（见「铁律：安装器入口绝不能抛异常」） |
 | `check-css-freeze.py` | 热更包里的 CSS 是否还与服务端现役内容一致（见「CSS 进过热更包就再也拿不出来了」） |
