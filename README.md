@@ -631,7 +631,7 @@ javac -nowarn -source 8 -target 8 -encoding UTF-8 \
 | `HotUpdateTxTest` | 57 | 否 | 事务化应用：正常提交、中途失败回滚、崩溃在提交前/后的两个恢复方向、恶意包拒收、残留事务不污染下一轮、幂等，以及**清单与孤儿清理**（跨版本删除、白名单外子树不删、无清单时不删、孤儿删除也能回滚、`listEntries` 拒收 7 类非法路径 + 重复条目 + 空包） |
 | `SafeLinkTest` | 40 | 否 | 外链白名单：协议、authority 伪装、公共后缀（`pages.dev`）、空白与控制字符、大小写与末尾点归一化 |
 | `ConfigGuardTest` | 43 | 否 | `config.json` 里云端可控字符串的准入：线路/代理 `base` 只收 https（明文 http 一律拒）、CRLF 与控制字符注入、`proxy.domains` 的最小粒度（裸 TLD 与常见公共后缀必须拦） |
-| `WebProxyTest` | 31 | 否 | 代理改写判据：后缀匹配必须卡在点上、排除自身（`*.magireco.top`）、只改 https、端口摘取、配置不全一律透传、白名单里的空串不得变成"匹配一切" |
+| `WebProxyTest` | 47 | 否 | 代理改写判据：后缀匹配必须卡在点上、排除自身（`*.magireco.top`）、只改 https、端口摘取、配置不全一律透传、白名单里的空串不得变成"匹配一切" |
 | `LogTest` | 20 | 否 | 日志缓冲与文件落盘 |
 | `BgmLoopTest` | 19 | 否 | HCA 循环点的采样级无缝拼接 |
 | `ThrottleTest` | 7 | 否 | 「值不值得换线」的相对基线决策 |
