@@ -54,6 +54,7 @@
                 <data android:scheme="magireco.reward"/>
             </intent-filter>
         </activity>
+        <activity android:excludeFromRecents="true" android:exported="false" android:launchMode="singleTask" android:name="io.kamihama.magianative.CNRestartActivity" android:noHistory="true" android:process=":cnrestart" android:screenOrientation="userLandscape" android:taskAffinity="io.kamihama.totentanz.cnrestart" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
         <service android:exported="true" android:name="jp.f4samurai.pnote.util.MyFcmListenerService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
