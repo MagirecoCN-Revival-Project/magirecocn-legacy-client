@@ -167,6 +167,19 @@ invoke-static {p0, p1, p2, p3}, Lio/kamihama/magianative/CNHotUpdate;->download(
 
 这一条与内容是否可信无关，纯粹是别让一个坏包造成不可逆的破坏。
 
+### 资源与生命周期（2026-08 审查补的两处）
+
+- **代理响应流要能自己收尾。** `WebResourceResponse` 拿走的是一个裸
+  `InputStream`，什么时候关全在 WebView 手里。读到 EOF 再 close 时
+  `HttpURLConnection` 会把连接放回池子；但页面被换掉、请求被取消时只有 close
+  没有 EOF，那条连接就悬着。所以 `CNWebProxy` 把 `disconnect()` 挂在流的
+  `close()` 上（`DisconnectOnClose`），两种收尾都覆盖得到。
+- **`hide()` 要把 static 视图引用清干净。** `CNCNDownloadUI` 的视图引用全是
+  `static`，生命周期是整个进程；漏掉一个就等于把 `Activity` 钉住不放。原先漏了
+  `vGitHubChip` / `githubChipBg` / `supportModal` / `vFooter` 四个，
+  其中 `vGitHubChip` 身上还挂着 `SupportClick`，那个监听器里又捏着一个 Activity。
+  加新视图字段时记得同步 `HideRunnable` 的清理列表。
+
 ### 判据的回归测试
 
 上面这些判据都在 `tools/ConfigGuardTest.java` 里钉着（43 项）。改动它们之前先跑：
