@@ -230,6 +230,22 @@ WebView（jp.f4samurai.web.WebViewImpl$WebViewClientImpl.shouldInterceptRequest�
 写的。一次真机会话的实测分布：143 个请求里 93 个命中本地文件，出网的少数里包含
 `/magica/api/page/TopPage`、`MyPage`、`MainQuest` 这些真正的业务请求。
 
+它的形状由 `tools/check-webview-interceptor.py` 守着（13 项断言）——这些是**前提
+而非选择**，改了会变成运行时一个静默失效，而不是构建失败。
+
+> **HTML 覆盖不是「推测可用」，是有调用链的。**（数据来自
+> `feature/legacy-client-runtime-i18n` 分支的静态交叉核对，该分支已归档为
+> `archive/legacy-client-runtime-i18n-20260806`）
+>
+> 对当时的 v6 包做静态扫描：401 个文件 = 197 JS + 181 HTML + 23 JSON；其中
+> **154 个打包 JavaScript 含 `text!template/….html` 加载**，共 211 次模板引用、
+> 192 个唯一模板目标，**119 个打包 HTML 明确被打包 JavaScript 引用**。
+>
+> 也就是说 `magica/template/**` 不只是被解压到目录躺着——业务 JS 确实通过
+> RequireJS 的 `text!template/` 路径去请求它们。这和 CSS 走
+> `text!css/…` 是同一个机制，**因此同一个「进过包就再也拿不出来」的陷阱对
+> HTML 与 JS 一样成立**（见下方 CSS 那节）。
+
 **推论**：`UrlConfig::api` / `chat` 这两个 native getter 在整场会话里**一次都没被
 调用**——游戏的 API 地址是前端 JS 按页面 origin 拼出来的，走 WebView 发出去。
 所以任何挂在 `UrlConfig` 上的代理都碰不到游戏的实际流量。
@@ -474,10 +490,31 @@ apksigner → 上传 artifact。
 会把所有 `/magica/<path>`（`api/` 除外）重定向到 `<files>/magica/<path>`，
 而热更包正好解压到那里。
 
-**它有个盲区：图片。** 提取器只找日文假名/汉字，遇到「文字被画进 PNG 里」的
+### 「进游戏后还是英文」分别归谁管
+
+这条清单来自 `feature/legacy-client-runtime-i18n` 的排查（分支已归档为
+`archive/legacy-client-runtime-i18n-20260806`）。**不能把所有英文都归到 JS 上**——
+不同来源要动的层完全不同：
+
+| 英文出现在哪 | 归谁管 | 现状 |
+|---|---|---|
+| JS 里的按钮、确认框、错误提示、动态拼接文本 | 前端热更包（`magica/js/**`） | 已覆盖 |
+| HTML／EJS 模板里的静态标题、标签、按钮 | 前端热更包（`magica/template/**`） | 已覆盖，且确有 RequireJS 调用链（见上节） |
+| 数据 JSON 里的角色/道具/技能/章节等结构化字段 | 前端热更包（23 个 JSON + 注入器） | 已覆盖 |
+| cocos2d 原生弹窗、下载／网络错误 | **native 文本 hook**（`MagiaLegacy.cpp` 的 i18n 表） | 已做，实测「已加载 295 条 + 2 前缀规则」 |
+| 原生中文被渲染成日文字形 | **native 字体路径 hook**（`fontPathOverwrite`） | 已做，见 `check-fonts.py` |
+| 资源下载浮层 | Java 补丁（`CNCNDownloadUI`） | 已做 |
+| **烘焙进 PNG／plist 图集的英文** | **只能改图片资源** | 见下 |
+| 服务端直接返回、未经注入器的字段 | 需扩展数据映射，或服务端处理 | 未做 |
+
+**图片是提取器的盲区。** 提取器只找日文假名/汉字，遇到「文字被画进 PNG 里」的
 就完全看不见。已知的一处是切页面时右下角那条英文 `Connecting...`——
 它是 `base.css` 里 `#loading p` 的背景图 `connecting.png`（334×54），
 不是文本，所以两轮汉化都漏了。
+
+> 真要系统性做图片汉化，起点是全量图像清单——`research/apk-image-classification`
+> 分支上有一份（APK 图像双层清单 + plist 图集拆解，4.4 万行）。目前没用上，
+> 留着是因为那件事迟早要做。
 
 `tools/make-connecting-sprite.py` 用**APK 里已有的国服素材**把它重拼成中文版：
 文字取自 `assets/package/loading/loading_icon.png` 的
@@ -731,6 +768,48 @@ java -cp .build-test:.cache/deps/android.jar ResumeTest <base> <sha256> <size>
 - 国内加速与修复：@PhotonFlow
 
 项目官网：<https://www.magireco.top>
+
+---
+
+## 远端分支现状（2026-08-07 盘点）
+
+| 分支 | 状态 |
+|---|---|
+| `main` | 唯一在维护的线 |
+| `archive/legacy-client-runtime-i18n-20260806` | **归档，只读**。原 `feature/legacy-client-runtime-i18n`，见下 |
+| `research/adv-native-evidence-20260807` | ADV 剧情播放器（`magiaexedralive2dviewer`）的取证，**不是本客户端的活**，停错仓库了，别动 |
+| `research/apk-image-classification` | APK 图像双层清单 + plist 图集拆解（4.4 万行）。目前没用上，**留着**——真要做图片汉化，起点就是它 |
+
+### `archive/legacy-client-runtime-i18n-20260806` 里有什么
+
+2026-08-05/06 的一条**平行实现路线**，124 个提交、42 个文件。功能已全部被 main
+取代且实现更完整，因此不再维护。对应关系：
+
+| 分支上的 | 被 main 的什么取代 |
+|---|---|
+| `CNHotUpdateTransaction.java` | `CNHotUpdateTx.java`（事务化应用 + 孤儿清理，57 项测试） |
+| `CNSafeExternalLinks.java` | `CNSafeLink.java`（外链白名单，40 项测试） |
+| `jp/f4samurai/web/WebViewImpl.java`（用 Java 整个重写拦截器） | 运行时包一层（`CNWebProxy.Delegating`）——**两者互斥**，后者不必替换原类，原行为是结构上的保证 |
+
+**已从它回收进 main 的**：WebView 拦截链的机器守卫（想法来自
+`audit-webview-runtime-overlay.py`，脚本本身不可用——它的 `FILES` 表指的全是那条
+分支自己的产物）→ `tools/check-webview-interceptor.py`；v6 包的静态交叉核对数据
+与「进游戏后还是英文」的来源分层清单 → 本文上面两节。
+
+**没回收、要看得去翻它的**：`docs/` 五篇（构建签名校验、字体加载、js 包运行时
+兼容、i18n 交付报告、WebView 覆盖安全审计）；`validate-js-update-package.py` /
+`verify-cn-js-update-package.py`（热更包的构建期校验——但打包发生在
+`magireco-cn-patch`，本仓库用不上）；`RuntimeTextI18n.inc` / `RuntimeFontPathHook.inc`
+（native i18n 与字体 hook 的另一种组织方式，main 已有等价能力）。
+
+> 归档用的是**分支**而不是 tag：本仓库的自动化会话凭证推 tag 会 403，推分支正常。
+> 想要一个真 tag 的话，本地跑：
+>
+> ```bash
+> git tag -a archive/legacy-client-runtime-i18n-20260806 \
+>         archive/legacy-client-runtime-i18n-20260806 -m "归档：已被 main 取代"
+> git push origin archive/legacy-client-runtime-i18n-20260806
+> ```
 
 ---
 
