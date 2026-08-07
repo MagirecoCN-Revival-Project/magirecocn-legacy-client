@@ -636,10 +636,32 @@ javac -nowarn -source 8 -target 8 -encoding UTF-8 \
 | `BgmLoopTest` | 19 | 否 | HCA 循环点的采样级无缝拼接 |
 | `ThrottleTest` | 7 | 否 | 「值不值得换线」的相对基线决策 |
 | `FlushTest` | 5 | 否 | 日志 flush 时序 |
+| `ProxyFetchTest` | 32 | **是**（`proxy-test-server.py`） | 把 `CNWebProxy.fetchViaProxy` 真跑一遍：200 明文 / gzip / **条件请求 304 不得接管** / 跨协议 301 / 上游 5xx（进冷却）/ 上游 4xx（不进冷却）/ 分块传输 / 缺 Content-Type 的扩展名兜底 / 请求头转发白名单 / 连不上 |
 | `ResumeTest` | 28 | **是** | 完整下载、短读拒绝、断点复用、临时文件丢失、同线路 ETag 变化（拒绝复用）、越界多发、跨线路续传（复用断点）、**服务端忽略 Range 返回 200（清断点而非反复撞墙）** |
 | `HotUpdateTest` | 13 | **是** | 非主线地址走直连单线程、目标已存在则不重复下载、服务端提前断流时报失败而**不提交残缺文件**、承接上一步残片续传补齐 |
 
-前七个直接 `java -cp … <类名>` 就能跑。后两个是**集成测试**，要先起测试服务器、
+> **`ProxyFetchTest` 要多带一个 stub。** `CNWebProxy.fetchViaProxy` 成功路径一定会
+> `new WebResourceResponse(...)`，而 android.jar 里那个构造函数是
+> `throw new RuntimeException("Stub!")`——不盖掉它，这条路径在 JVM 上一步都跑不了。
+> `tools/teststubs/android/webkit/WebResourceResponse.java` 是个能用的实现，
+> 编译时**加进源文件列表**即可（先匹配者胜）：
+>
+> ```bash
+> python3 tools/proxy-test-server.py 8791 &
+> javac -nowarn -source 8 -target 8 -encoding UTF-8 \
+>       -cp .cache/deps/android.jar -d .build-test \
+>       $(find patch/src/main/java -name '*.java') \
+>       tools/teststubs/android/webkit/WebResourceResponse.java tools/ProxyFetchTest.java
+> java -cp .build-test:.cache/deps/android.jar ProxyFetchTest 8791
+> ```
+>
+> 有一条**桌面上验不到**：Android 的 `HttpURLConnection` 底层是 OkHttp，会自己加
+> `Accept-Encoding: gzip` 并透明解压（这正是我们不转发 WebView 那个
+> `Accept-Encoding` 的理由）；桌面 JDK 不会自动加，所以 gzip 协商那一支只能在真机
+> 验。测试会打一行 `⏭` 明说这件事，而不是假装验过了。
+
+表里前七个（`HotUpdateTxTest` 到 `FlushTest`）直接 `java -cp … <类名>` 就能跑。
+`ResumeTest` / `HotUpdateTest` 是**集成测试**，要先起测试服务器、
 再把地址/sha/大小当命令行参数传进去（少传参数会以
 `ArrayIndexOutOfBoundsException` 挂掉，那不是断言失败）：
 
