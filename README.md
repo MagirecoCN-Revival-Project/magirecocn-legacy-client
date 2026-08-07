@@ -116,6 +116,67 @@ invoke-static {p0, p1, p2, p3}, Lio/kamihama/magianative/CNHotUpdate;->download(
 
 ---
 
+## 安全模型：config.json 是半可信输入
+
+客户端的信任锚只有三样，都**写死在包里**：`CNMirrors.MIRRORS_URL`（去哪儿取配置）、
+`CNSafeLink` 的外链允许列表、APK 签名。**其余一切都来自 `config.json`，而它是
+「服务端被攻破就能改」的东西**——所以从它流出来的每个字符串都要当输入校验。
+
+### 🔴 只收 https：这是整条信任链的第一环
+
+本项目的完整性前提是「DNSSEC + 完整 TLS 验证都开着，能在这种情况下劫持约等于
+服务器已被攻破」。问题在于**这个前提本身就是 `config.json` 能关掉的**：只要往
+`mirrors[].base` 或 `proxy.base` 里填一个 `http://`，TLS 就整个不参与了。
+
+后果不止「被人看见下了什么」，能串成一条完整的执行链：
+
+```
+配置被改 → mirrors 填 http:// → 明文 / 任意主机投毒
+  → extractChecked 只验结构不验内容，照单全收
+  → 恶意 JS 落进 <files>/magica/js/
+  → shouldInterceptRequest 本地优先、热更只写不删 → 永久执行
+  → androidCommand.jsCallback 进 native
+```
+
+**安装器那 15 个基础包没有 md5/sha 校验**（只有热更包有 `verifyZip`），完整性
+全押在 TLS 上——这让上面那条链只差一个 `http://` 就能走通。
+
+所以 `CNMirrors.normalizeBase` 现在**只收 https**，另外拒掉内嵌控制字符
+（换行/CRLF 会把一次请求拆成两条）。代价是零：线上六条线路本来全是 https。
+
+> 仍然欠着的一层：给 15 个基础包也加上 md5/大小校验。那需要服务端先出一份清单，
+> 属于运维改动，本仓库这边没有单方面能做的部分。**在那之前，基础包的完整性
+> 完全依赖 https 不被绕过**——这也正是上面那条只收 https 的规则不能松的原因。
+
+### `proxy.domains` 的最小粒度
+
+它是**后缀**匹配（`magi-reco.com` 命中 `dorothy.magi-reco.com`）。没有下限的话，
+填一个 `"com"` 就能把玩家所有 `.com` 流量吸进代理——配置被改时这是最省事的全量
+劫持。`isSaneProxyDomain` 要求至少两段、每段非空、纯 ASCII，并点名拒掉常见的两级
+公共后缀（`com.cn` / `co.uk` / `pages.dev` / `github.io` …）。
+
+挡不住所有情况（多级公共后缀仍会漏），但「一个词吸走整个顶级域」这条最便宜的路
+被堵死了。
+
+### 解压膨胀比上限
+
+归档的 md5/大小校验管的是**压缩后**那份，管不到解压出来有多大。一个几十 MB 的包
+可以炸出几十 GB 把玩家存储写满，而写满之后倒霉的不只是游戏。`extractChecked`
+边写边看膨胀比，超过 200 倍且已写出 256 MB 就中止——游戏资源本来就是 PNG/音频，
+实测膨胀比接近 1，离 200 差两个数量级，正常包不会误伤。
+
+这一条与内容是否可信无关，纯粹是别让一个坏包造成不可逆的破坏。
+
+### 判据的回归测试
+
+上面这些判据都在 `tools/ConfigGuardTest.java` 里钉着（43 项）。改动它们之前先跑：
+
+```bash
+java -cp .build-test:.cache/deps/android.jar ConfigGuardTest
+```
+
+---
+
 ## 网络出口：谁走支线、谁直连主线
 
 约定是 **支线只负责分发文件，配置一律直连主线**。
@@ -551,6 +612,7 @@ javac -nowarn -source 8 -target 8 -encoding UTF-8 \
 |---|---|---|---|
 | `HotUpdateTxTest` | 57 | 否 | 事务化应用：正常提交、中途失败回滚、崩溃在提交前/后的两个恢复方向、恶意包拒收、残留事务不污染下一轮、幂等，以及**清单与孤儿清理**（跨版本删除、白名单外子树不删、无清单时不删、孤儿删除也能回滚、`listEntries` 拒收 7 类非法路径 + 重复条目 + 空包） |
 | `SafeLinkTest` | 40 | 否 | 外链白名单：协议、authority 伪装、公共后缀（`pages.dev`）、空白与控制字符、大小写与末尾点归一化 |
+| `ConfigGuardTest` | 43 | 否 | `config.json` 里云端可控字符串的准入：线路/代理 `base` 只收 https（明文 http 一律拒）、CRLF 与控制字符注入、`proxy.domains` 的最小粒度（裸 TLD 与常见公共后缀必须拦） |
 | `WebProxyTest` | 31 | 否 | 代理改写判据：后缀匹配必须卡在点上、排除自身（`*.magireco.top`）、只改 https、端口摘取、配置不全一律透传、白名单里的空串不得变成"匹配一切" |
 | `LogTest` | 20 | 否 | 日志缓冲与文件落盘 |
 | `BgmLoopTest` | 19 | 否 | HCA 循环点的采样级无缝拼接 |
