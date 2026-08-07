@@ -23,7 +23,7 @@ smali_classes2/                 ← classes2.dex；含 RestClient 的一处委�
 smali_classes3/                 ← classes3.dex；全部由 patch/ 的 Java 编译而来
 patch/src/main/java/            ← ★ 补丁源码，唯一事实来源
 jadx-reference/                 ← jadx 反编译产物（只读参考，不参与构建）
-tools/                          ← 断点续传 / 热更新的测试套件
+tools/                          ← 测试套件、构建前置检查、汉化与资源工具
 config.json                    ← 线上线路列表的快照（真实配置，非样例）
 ```
 
@@ -192,6 +192,39 @@ apksigner → 上传 artifact。
 - `resources.arsc` 资源条目数一致（1422）
 - 831 个 `assets/` 与 `lib/` 文件逐字节一致
 - AndroidManifest 去掉行号标注后完全一致
+
+---
+
+## 前端资源汉化
+
+前端（WebView 那一半）的汉化不走 APK，走热更包 `cn_js_update.zip`：
+`tools/i18n-extract.py` 抽取待译串 → `i18n-apply.py` 回填 → `i18n-package.py`
+打包。客户端不需要任何改动——`WebViewImpl$WebViewClientImpl.shouldInterceptRequest`
+会把所有 `/magica/<path>`（`api/` 除外）重定向到 `<files>/magica/<path>`，
+而热更包正好解压到那里。
+
+**它有个盲区：图片。** 提取器只找日文假名/汉字，遇到「文字被画进 PNG 里」的
+就完全看不见。已知的一处是切页面时右下角那条英文 `Connecting...`——
+它是 `base.css` 里 `#loading p` 的背景图 `connecting.png`（334×54），
+不是文本，所以两轮汉化都漏了。
+
+`tools/make-connecting-sprite.py` 用**APK 里已有的国服素材**把它重拼成中文版：
+文字取自 `assets/package/loading/loading_icon.png` 的
+「数据加载中 . . .」，丘比取自 `loading_char.png` 的 8 帧奔跑循环，
+底条从原图第 53 行逐列复制（那一行是纯底条）。
+
+```bash
+python3 tools/make-connecting-sprite.py <原版connecting.png> connecting.png
+```
+
+输出是**同名同尺寸的 APNG**，直接替换即可，**不用改 CSS**：不认 APNG 的
+旧 WebView 会当普通 PNG 显示第 1 帧（静止中文），降级是干净的。
+脚本自带回读校验，逐帧比对写出的 APNG 与合成结果。
+另有 `--sheet` 输出 334×432 竖向雪碧图 + 配套 `steps(8)` CSS，作为
+真机上 APNG 万一不动时的退路。
+
+> 图和 CSS（若走雪碧图）必须**同时**到达客户端。把两者放进同一个
+> `cn_js_update.zip` 就是原子的——热更是一次性解压覆盖。
 
 ---
 
