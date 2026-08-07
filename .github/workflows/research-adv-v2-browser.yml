@@ -1,0 +1,40 @@
+name: ADV v2 deployed browser smoke
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Playwright Chromium
+        run: |
+          set -euo pipefail
+          npm install --no-save playwright@1.54.2
+          npx playwright install --with-deps chromium
+
+      - name: Exercise deployed ADV v2 first chapter
+        env:
+          ADV_V2_URL: https://feature-story-playback-local.magiaexedralive2dviewer.pages.dev/
+        run: node tools/research_adv_v2_smoke.mjs
+
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: adv-v2-browser-smoke
+          path: adv-v2-smoke
+          if-no-files-found: warn
+          retention-days: 7
