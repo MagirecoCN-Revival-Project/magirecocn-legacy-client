@@ -38,6 +38,7 @@ jobs:
           readelf -SW "$SO" > native-evidence/elf-sections.txt
           readelf -dW "$SO" > native-evidence/elf-dynamic.txt
           readelf -Ws "$SO" > native-evidence/elf-symbols.txt
+          readelf -rW "$SO" > native-evidence/elf-relocations.txt
           aarch64-linux-gnu-nm -D -C --defined-only "$SO" > native-evidence/dynamic-symbols-demangled.txt || true
           strings -a -t x "$SO" > native-evidence/strings-offsets.txt
 
@@ -50,6 +51,22 @@ jobs:
 
           aarch64-linux-gnu-objdump -d -C "$SO" \
             | gzip -9 > native-evidence/libmadomagi_native.objdump.txt.gz
+
+          # Small deterministic rodata windows referenced directly by
+          # StoryEffectUnit::setEffectFlash / setThinking / StoryCharaUnit.
+          {
+            echo '=== flash slow/fade constants around 0x16937f4 ==='
+            aarch64-linux-gnu-objdump -s --start-address=0x16937d0 --stop-address=0x1693820 "$SO"
+            echo '=== flash normal-delay constants around 0x167f898 ==='
+            aarch64-linux-gnu-objdump -s --start-address=0x167f870 --stop-address=0x167f8c0 "$SO"
+            echo '=== thinking scale around 0x17723b4 ==='
+            aarch64-linux-gnu-objdump -s --start-address=0x1772390 --stop-address=0x17723e0 "$SO"
+            echo '=== thinking fade around 0x167ef74 ==='
+            aarch64-linux-gnu-objdump -s --start-address=0x167ef50 --stop-address=0x167efa0 "$SO"
+            echo '=== StoryChara convert sentinel constants ==='
+            aarch64-linux-gnu-objdump -s --start-address=0x3d36bd0 --stop-address=0x3d36c10 "$SO" || true
+            aarch64-linux-gnu-objdump -s --start-address=0x167a100 --stop-address=0x167a150 "$SO" || true
+          } > native-evidence/story-effect-constants.txt
 
           tar -czf native-evidence.tar.gz native-evidence
           ls -lh native-evidence native-evidence.tar.gz
