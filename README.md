@@ -170,6 +170,34 @@ POST 一律透传。Range 请求也主动不接管（见 `CNWebProxy.afterLocalM
 都比直连慢 2～8 倍，但那个数字对国内玩家没有参考价值。先发 `measure` 收真机数字，
 数字说得通再从 `config.json` 翻成 `on`，不用重打 APK。
 
+##### 拿 WebView 实例：读 `WebViewHelper.sWebView`，别遍历 view 树找 tag
+
+`WebViewImpl` 的构造函数里有 `setTag("WebViewImpl")`，看着像是给外人留的门。
+**它不是。** 创建它的 `WebViewHelper.createWebView()` 紧接着就把标签覆盖掉了：
+
+```java
+WebViewHelper.sWebView = new WebViewImpl(sAppActivity);
+WebViewHelper.sWebView.setTag("WebView");        // ← 覆盖成 "WebView"
+WebViewHelper.sFrameLayout.addView(...);
+```
+
+第一版 `CNWebProxy` 就是照构造函数写的 `findViewWithTag("WebViewImpl")`，真机
+（0117）上等满 180 秒也找不到——而 WebView 其实在开机后 **9 秒**就建好了。
+
+现在直接反射读 `jp.f4samurai.web.WebViewHelper.sWebView`：引擎自己就是靠这个字段
+握着唯一那个 WebView 的（`createWebView` 赋值、`removeWebView` 置空），是**事实
+来源**，不会被别处改名。
+
+顺带两点：
+
+- `removeWebView()` 会 `destroy()` 掉当前 WebView 并把字段置空，之后可能再
+  `createWebView()` 建一个**新的**——新对象身上是引擎自己的 WebViewClient。
+  所以等待线程**不在包上之后就收工**，而是长期比对实例身份，换了对象就重新包
+  （前 180 秒 1 秒一轮，之后降到 5 秒一轮）。
+- 找不到时按 10/30/60/120 秒各记一行。第一版全程静默，真机上只看得到
+  「等了 180s 没等到」，**分不清是「引擎还没建」还是「建了但我找错地方」**——
+  而那次恰恰是后者。
+
 `CNHotUpdate` 只在 URL 确实指向主线资源根、且其后只剩一段文件名时才换线；
 其余地址一律原样使用。
 
