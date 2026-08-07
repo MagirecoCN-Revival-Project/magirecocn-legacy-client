@@ -179,6 +179,11 @@ invoke-static {p0, p1, p2, p3}, Lio/kamihama/magianative/CNHotUpdate;->download(
   `vGitHubChip` / `githubChipBg` / `supportModal` / `vFooter` 四个，
   其中 `vGitHubChip` 身上还挂着 `SupportClick`，那个监听器里又捏着一个 Activity。
   加新视图字段时记得同步 `HideRunnable` 的清理列表。
+- **启动期的东西要挂在 `triggerInstaller()` 的分支之前。** 那个方法分两支：
+  安装标记存在走「版本检查 → 热更检查」，不存在走 `runInstaller()` 然后
+  **直接 return**。挂在热更检查里的东西，首次安装那一整个会话都不会跑
+  ——`CNWebProxy.install()` 一开始就踩了这个坑。装完是否重启还取决于
+  `NO_RESTART_FLAG`，不重启就一路裸奔进游戏。
 
 ### 判据的回归测试
 
