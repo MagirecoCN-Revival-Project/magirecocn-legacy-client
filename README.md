@@ -190,6 +190,45 @@ POST 一律透传。Range 请求也主动不接管（见 `CNWebProxy.afterLocalM
 都比直连慢 2～8 倍，但那个数字对国内玩家没有参考价值。先发 `measure` 收真机数字，
 数字说得通再从 `config.json` 翻成 `on`，不用重打 APK。
 
+##### 代理线路表 `proxy.lines`：**和下载线路是两回事，永远不要合并**
+
+代理入口也会换机器、也会临时不通，所以做成表而不是单个 `base`：
+
+```json
+"proxy": {
+  "base": "https://api.magireco.top/stream/",
+  "domains": ["magi-reco.com", "sisyphus.systems", "magica.f4samurai.com"],
+  "lines": [
+    { "name": "香港小鸡 • hk.example",   "base": "https://hk.example/stream/",       "weight": 100, "enabled": true },
+    { "name": "主站 • api.magireco.top", "base": "https://api.magireco.top/stream/", "weight": 50,  "enabled": true }
+  ],
+  "web_mode": "measure"
+}
+```
+
+- 按 `weight` **降序**取第一条没在冷却里的；某条失败（连不上/超时/5xx）打进 60 秒
+  冷却，下一次请求自动落到下一条；全在冷却就回退直连。
+- `lines` 缺省时从 `base` 合成一条，老配置一个字都不用改。
+- `base` 仍然是下发给 native 的那个（native 只吃单值，改它要动 `.so`，不值当）。
+  只写 `lines` 没写 `base` 时，权重最高那条会被拿去给 native。
+
+**字段名和 `mirrors` 长得一样，纯粹是为了填配置的人少记一套约定。两张表不可
+互换，也不共用任何选路逻辑：**
+
+| | `mirrors`（下载线路） | `proxy.lines`（代理线路） |
+|---|---|---|
+| 成员是什么 | 绝大多数是**公共 CDN**（EdgeOne / ESA / gh-proxy / 对象存储） | 我们自己的反代入口 |
+| 能不能转发 API | **不能**。它们只分发我们放上去的静态文件，API 指过去只会拿到 404 或它们的错误页 | 能，这就是它存在的理由 |
+| 选路判据 | **吞吐**（`raceTopMirrors` 用 256 KB 预热对象量 KB/s）——那边是几 GB 的大文件 | **首字节延迟**——这边是几 KB 的 API 往返，吞吐再高也救不了 RTT |
+| 失败后果 | 换线续传，字节不丢 | 回退直连，代价是这一个请求慢一点 |
+
+拿吞吐去挑代理线，会挑出一条「带宽大但绕地球一圈」的。所以 `CNWebProxy` 自成一套
+线路表 + 冷却，**不复用 `CNMirrors` 的任何竞速/降级机制，也不从 `mirrors` 取任何
+一条**。
+
+`measure` 模式下会拉同一个 URL、直连与**每条线**各测一次 TTFB，横排记进同一行
+日志——要回答的不再是「代理比直连快吗」，而是「哪条最快、值不值得把权重调过去」。
+
 ##### 拿 WebView 实例：读 `WebViewHelper.sWebView`，别遍历 view 树找 tag
 
 `WebViewImpl` 的构造函数里有 `setTag("WebViewImpl")`，看着像是给外人留的门。
