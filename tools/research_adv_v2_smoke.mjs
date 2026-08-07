@@ -5,6 +5,7 @@ import path from 'node:path';
 const BASE = process.env.ADV_V2_URL || 'https://feature-story-playback-local.magiaexedralive2dviewer.pages.dev/';
 const OUT = path.resolve(process.env.ADV_V2_SMOKE_OUT || 'adv-v2-smoke');
 const TIMEOUT = 120_000;
+const EXPECTED_RELEASE = 'adv-v2-native-story-layout-first-chapter-20260807';
 fs.mkdirSync(OUT, { recursive: true });
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -34,6 +35,38 @@ async function advanceUntil(page, needle, maxTurns = 80) {
   throw new Error(`Did not reach text: ${needle}`);
 }
 
+async function canvasPixels(page, selector, logicalRect = null) {
+  return page.evaluate(async (sel, rect) => {
+    const source = document.querySelector(sel);
+    if (!(source instanceof HTMLCanvasElement)) throw new Error(`canvas missing: ${sel}`);
+    const image = new Image();
+    image.src = source.toDataURL('image/png');
+    await image.decode();
+    const probe = document.createElement('canvas');
+    probe.width = image.naturalWidth;
+    probe.height = image.naturalHeight;
+    const ctx = probe.getContext('2d', { willReadFrequently: true });
+    if (!ctx) throw new Error('pixel context unavailable');
+    ctx.drawImage(image, 0, 0);
+    const sx = probe.width / 1280;
+    const sy = probe.height / 720;
+    const area = rect ?? { x: 0, y: 0, width: 1280, height: 720 };
+    const data = ctx.getImageData(
+      Math.round(area.x * sx), Math.round(area.y * sy),
+      Math.max(1, Math.round(area.width * sx)), Math.max(1, Math.round(area.height * sy)),
+    ).data;
+    let alpha = 0; let bright = 0; let dark = 0; let coloured = 0;
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i]; const g = data[i + 1]; const b = data[i + 2]; const a = data[i + 3];
+      if (a > 80) alpha++;
+      if (a > 150 && r + g + b > 650) bright++;
+      if (a > 150 && r + g + b < 420) dark++;
+      if (a > 150 && Math.max(r, g, b) - Math.min(r, g, b) > 45) coloured++;
+    }
+    return { alpha, bright, dark, coloured, width: probe.width, height: probe.height };
+  }, selector, logicalRect);
+}
+
 async function openFirstSection(page) {
   await page.waitForSelector('#toggleAdvPanelBtn', { timeout: TIMEOUT });
   await page.click('#toggleAdvPanelBtn');
@@ -49,7 +82,7 @@ async function openFirstSection(page) {
     search.dispatchEvent(new Event('input', { bubbles: true }));
   });
   await sleep(150);
-  const selected = await page.evaluate(() => {
+  await page.evaluate(() => {
     const story = document.querySelector('#magi-reader-story');
     const section = document.querySelector('#magi-reader-section');
     const load = document.querySelector('#magi-reader-load');
@@ -61,12 +94,10 @@ async function openFirstSection(page) {
     story.value = storyOption.value;
     story.dispatchEvent(new Event('change', { bubbles: true }));
     const sectionOption = [...section.options].find((entry) => entry.textContent?.includes('101101-1'));
-    if (!sectionOption) throw new Error(`101101-1 section not found: ${[...section.options].map(x => x.textContent).join(' | ')}`);
+    if (!sectionOption) throw new Error('101101-1 section not found');
     section.value = sectionOption.value;
     load.click();
-    return { story: storyOption.textContent, section: sectionOption.textContent };
   });
-  console.log('[chapter]', selected);
   await page.waitForFunction(() => document.body.classList.contains('magireco-adv-mode'), null, { timeout: TIMEOUT });
   await page.waitForSelector('#magireco-adv-v2-active-canvas', { timeout: TIMEOUT });
   await page.waitForFunction(
@@ -76,21 +107,43 @@ async function openFirstSection(page) {
   );
 }
 
-function visibleNodeState() {
+async function assertCanvasStack(page) {
+  const stack = await page.evaluate(() => {
+    const under = document.getElementById('magireco-adv-v2-effect-underlay');
+    const live = document.getElementById('live2dCanvas');
+    const stage = document.getElementById('magireco-adv-stage-ui');
+    const active = document.getElementById('magireco-adv-v2-active-canvas');
+    if (!(under instanceof HTMLElement) || !(live instanceof HTMLElement)
+      || !(stage instanceof HTMLElement) || !(active instanceof HTMLElement)) {
+      throw new Error('ADV canvas stack incomplete');
+    }
+    return {
+      underZ: Number(getComputedStyle(under).zIndex || 0),
+      liveZ: Number(getComputedStyle(live).zIndex || 0),
+      stageZ: Number(getComputedStyle(stage).zIndex || 0),
+    };
+  });
+  console.log('[canvas-stack]', stack);
+  if (!(stack.underZ < stack.liveZ && stack.liveZ < stack.stageZ)) {
+    throw new Error(`Native cross-Live2D stack is reversed: ${JSON.stringify(stack)}`);
+  }
+}
+
+function legacyState() {
   const turn = [...document.querySelectorAll('.magireco-adv-cocos-effect')]
     .find((node) => node instanceof HTMLElement && node.dataset.armatureId === 'named-turn-effect');
   const emblem = [...document.querySelectorAll('.magireco-adv-item')]
     .find((node) => node instanceof HTMLImageElement && node.src.includes('6103_zenobia_emblem.png'));
-  const visible = (node) => {
+  const state = (node) => {
     if (!(node instanceof HTMLElement)) return null;
-    const s = getComputedStyle(node);
+    const style = getComputedStyle(node);
     return {
-      opacity: Number(s.opacity),
-      visibility: s.visibility,
+      opacity: Number(style.opacity),
+      visibility: style.visibility,
       replaced: node.dataset.magirecoAdvV2Replaced ?? node.dataset.magirecoAdvV2ItemReplaced ?? '',
     };
   };
-  return { turn: visible(turn), emblem: visible(emblem) };
+  return { turn: state(turn), emblem: state(emblem) };
 }
 
 const browser = await chromium.launch({
@@ -113,15 +166,16 @@ try {
   url.searchParams.set('advRenderer', 'pixi-v2');
   await page.goto(url.href, { waitUntil: 'domcontentloaded', timeout: TIMEOUT });
   const build = await page.evaluate(async () => {
-    const response = await fetch('/build-info.json', { cache: 'no-store' });
+    const response = await fetch(`/build-info.json?smoke=${Date.now()}`, { cache: 'no-store' });
     return response.json();
   });
   console.log('[build-info]', JSON.stringify(build));
-  if (build.release !== 'adv-v2-first-chapter-cocos-particle-compositor-20260807') {
-    throw new Error(`Unexpected deployed release: ${build.release}`);
+  if (build.release !== EXPECTED_RELEASE) {
+    throw new Error(`Unexpected deployed release: ${build.release}; expected ${EXPECTED_RELEASE}`);
   }
 
   await openFirstSection(page);
+  await assertCanvasStack(page);
   await advanceUntil(page, '为什么我……', 12);
   await shot(page, '01-dream-question');
 
@@ -133,10 +187,14 @@ try {
   await shot(page, '03-very-close');
 
   await page.keyboard.press('ArrowRight');
+  await page.waitForFunction(() => document.documentElement.dataset.magirecoAdvV2NamedEffect === 'true', null, { timeout: TIMEOUT });
   await sleep(220);
-  const named = await page.evaluate(() => document.documentElement.dataset.magirecoAdvV2NamedEffect ?? '');
-  if (named !== 'true') throw new Error(`ef_adv_01 did not acquire v2 ownership: ${named}`);
-  await shot(page, '04-ef-adv-01-detect-magic');
+  const charFrontPixels = await canvasPixels(page, '#magireco-adv-v2-active-canvas', {
+    x: 120, y: 80, width: 1040, height: 500,
+  });
+  console.log('[ef_adv_01-character-front]', charFrontPixels);
+  if (charFrontPixels.alpha < 500) throw new Error(`ef_adv_01 missing from character-front surface: ${JSON.stringify(charFrontPixels)}`);
+  await shot(page, '04-ef-adv-01-detect-magic-native-front');
 
   await advanceUntil(page, '（必须赶紧去确认！）', 12);
   await page.keyboard.press('ArrowRight');
@@ -153,19 +211,24 @@ try {
       && emblem.dataset.magirecoAdvV2ItemReplaced === 'true';
   }, null, { timeout: TIMEOUT });
   await sleep(800);
-  const replaced = await page.evaluate(visibleNodeState);
-  console.log('[witch-composite]', JSON.stringify(replaced));
+  const underPixels = await canvasPixels(page, '#magireco-adv-v2-effect-underlay', {
+    x: 40, y: 20, width: 1200, height: 650,
+  });
+  console.log('[ef_adv_06+emblem-under-cubism]', underPixels);
+  if (underPixels.alpha < 1000) throw new Error(`Witch barrier underlay missing: ${JSON.stringify(underPixels)}`);
+  const replaced = await page.evaluate(legacyState);
+  console.log('[witch-legacy-replaced]', JSON.stringify(replaced));
   if (!replaced.turn || !replaced.emblem) throw new Error('witch legacy layers missing');
   if (replaced.turn.visibility !== 'hidden' && replaced.turn.opacity > 0) throw new Error('legacy turn effect still visible');
   if (replaced.emblem.visibility !== 'hidden' && replaced.emblem.opacity > 0) throw new Error('legacy emblem still visible');
-  await shot(page, '05-ef-adv-06-witch-barrier-entry');
+  await shot(page, '05-ef-adv-06-witch-barrier-native-under');
 
   await advanceUntil(page, '找到了，是魔女的结界', 6);
   await shot(page, '06-witch-barrier-dialogue');
 
   const fatal = consoleErrors.filter((entry) => /ADV v2|TypeError|ReferenceError|WebGL/i.test(entry));
   if (fatal.length) throw new Error(`Browser errors:\n${fatal.join('\n')}`);
-  console.log('ADV v2 deployed first-chapter visual smoke passed');
+  console.log('ADV v2 deployed first-chapter native-layer smoke passed');
 } finally {
   await browser.close();
 }
