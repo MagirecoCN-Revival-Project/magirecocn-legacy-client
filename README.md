@@ -226,6 +226,36 @@ python3 tools/make-connecting-sprite.py <原版connecting.png> connecting.png
 > 图和 CSS（若走雪碧图）必须**同时**到达客户端。把两者放进同一个
 > `cn_js_update.zip` 就是原子的——热更是一次性解压覆盖。
 
+### 热更包里的 CSS 是哪儿来的（重要）
+
+包里有两个 CSS，来路完全不同，弄混会出事：
+
+| 包内路径 | 来源 | 性质 |
+|---|---|---|
+| `magica/css/_common/fonts.css` | **重写**。线上原文只有 73 字节、一条 `@font-face{font-family:koruri;src:url(…/koruri-semibold.ttf)}`；包里保留同一族名，把 `src` 改指包内的 `magica/fonts/TTZhiHeiGB3-W4.ttf` | 完整覆盖，无遗漏——全站只有这一处 `@font-face`，`motoya`/`mbm` 是系统侧回退（native 的 `fontPathOverwrite` 管），不在 CSS 里 |
+| `magica/css/_common/common.css` | **快照 + 追加**。第 1 行 = 线上 `common.css` 原封不动的 265927 字节（md5 `18b32a9b…`，与 `index.html` 里 `common.css?18b32a9b…` 一致），其后追加一段 `cn-patch` 覆盖规则 | 冻结了线上文件 |
+
+为什么必须整文件替换：`common.css` 由 `index.html` 的静态 `<link>` 加载，
+不走 requirejs，没有别的注入点。而 `shouldInterceptRequest` **只按路径匹配、
+会把 `?<md5>` 查询串丢掉**——所以只要本地存在这个文件，线上再怎么改版本号
+都不会生效。
+
+> ⚠ **这是个会过期的冻结**。今天 md5 还对得上；哪天服务端改了 `common.css`，
+> 玩家端仍然吃我们这份旧的，新增的样式/入口会静默消失。改版前先跑一遍：
+>
+> ```bash
+> curl -s https://dorothy.magi-reco.com/magica/index.html | grep common.css
+> head -c 265927 <包内common.css> | md5sum      # 两个 md5 必须一致
+> ```
+>
+> 不一致就要用新的线上原文重做快照，再把 `cn-patch` 段重新追加上去。
+
+`cn-patch` 段做的事：右侧菜单 `#sideMenu #menuBtns` 的基础 CSS 指向
+`common/global/update2/global_*.png`（线上那套是**英文**图标），把它们改指
+`common/global/` 根目录的国服中文图标；`sideBigBtns` 的 quest/battle 与
+`#globalBackBtn` 本来就指根目录，显式重写一遍防路径漂移。靠「文件末尾追加、
+后写覆盖」生效，不用 `!important`。
+
 ---
 
 ## 测试
