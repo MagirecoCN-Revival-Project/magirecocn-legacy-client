@@ -132,6 +132,13 @@ HiiragiNemu/magireco-cn-patch  →  madomagi/engine_i18n.tsv     ← 译文改�
 > 谁也说不清哪份是真的——而这张表「译文为空 = 删除该串」的语义会让分叉直接表现为
 > 界面上的文字消失。要改译文就去补丁仓库改。
 
+### 旧国服权威译文怎么回收
+
+研究证据放在 [`research/official-cn-recovery/`](research/official-cn-recovery/README.md)。
+它用旧国服双 ABI 原生库验证现行引擎译文，并用 `(charaNo, messageId)` 对齐旧国服
+角色台词字典。生成的多列 TSV 只供审阅，**不是第二份运行时表**；验证通过的条目仍然
+只能写回补丁仓库那一份 `madomagi/engine_i18n.tsv`。
+
 几条对得上的旁证（2026-08-08 核对）：
 
 - 补丁仓库那份 298 行 = 1 行注释 + 295 条精确条目 + 2 条前缀规则；设备日志是

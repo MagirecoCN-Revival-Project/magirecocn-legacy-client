@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "policy": {
+    "runtime_table_written": false,
+    "allowed_direct_confidence": [
+      "exact_authoritative",
+      "key_aligned"
+    ],
+    "review_only_confidence": [
+      "binary_context_aligned",
+      "fuzzy_review"
+    ],
+    "at_marker_requires_runtime_capture": true,
+    "non_battle_message_requires_route_capture": true
+  },
+  "sources": {
+    "old_cn_arm64": {
+      "path": "D:\\magia\\MyProducts\\MAGIA RECORD CN\\origin_apktool_decoded\\lib\\arm64-v8a\\libmadomagi_native.so",
+      "size": 277065000,
+      "sha256": "7de789f72b0afcf05cc96d938bb364be7136fddd6b00c616a8a8492686e2a31c"
+    },
+    "old_cn_armv7": {
+      "path": "D:\\magia\\MyProducts\\MAGIA RECORD CN\\origin_apktool_decoded\\lib\\armeabi-v7a\\libmadomagi_native.so",
+      "size": 221488240,
+      "sha256": "e8d3e7d3390a53224c7b208664dfe34534610da38fb8ca8a77372d56cc1d8081"
+    },
+    "engine_table": {
+      "path": "D:\\magia\\AuditSnapshots\\2026-08-08-sync\\engine_i18n.upstream.tsv",
+      "size": 16988,
+      "sha256": "3853a27f214bcc967535aa10caa837bcf0be334da6793f18355b69dd70fd8fd0"
+    },
+    "jp_bundle": {
+      "path": "D:\\magia\\MyProducts\\MAGIA RECORD CN\\Magireco-Rebuild\\bootstrap\\private_raw_DO_NOT_UPLOAD\\stage2_private_raw_bundle.json",
+      "size": 14870751,
+      "sha256": "1edbdc1a4b3e47d8edee4d7e319837098003eedc194f641d27740e01c634b513"
+    },
+    "official_cn_voice_json": {
+      "path": "D:\\magia\\MyProducts\\MAGIA RECORD CN\\json_web\\lobby_vo_char_text.json",
+      "size": 1137124,
+      "sha256": "6df106938b7f7333ef7b43f4116312cabbd68c7ea25dda516c1b869b540a61cf"
+    }
+  },
+  "engine_literal_audit": {
+    "rows": 297,
+    "confidence_counts": {
+      "exact_authoritative": 73,
+      "fuzzy_review": 224
+    }
+  },
+  "voice_key_alignment": {
+    "raw_jp_occurrences": 4180,
+    "unique_jp_records": 1705,
+    "confidence_counts": {
+      "key_aligned": 759,
+      "fuzzy_review": 946
+    },
+    "unique_key_aligned_ja": 759,
+    "new_engine_candidates": 759,
+    "already_same": 0,
+    "existing_conflicts": 0,
+    "at_marker_candidates_requiring_capture": 56,
+    "battle_result_candidates": 276,
+    "battle_result_without_at_marker": 220,
+    "non_battle_candidates_requiring_route_capture": 483,
+    "all_candidates_requiring_runtime_capture": 539,
+    "same_ja_conflicts": 0
+  }
+}

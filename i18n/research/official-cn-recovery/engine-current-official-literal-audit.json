@@ -1,0 +1,2972 @@
+[
+  {
+    "line": 2,
+    "rule": "exact",
+    "ja": "いいえ",
+    "current_zhCN": "否",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 3,
+    "rule": "exact",
+    "ja": "戻る",
+    "current_zhCN": "返回",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 4,
+    "rule": "exact",
+    "ja": "その他",
+    "current_zhCN": "其他",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 5,
+    "rule": "exact",
+    "ja": "キーボード入力: %s",
+    "current_zhCN": "键盘输入: %s",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 6,
+    "rule": "exact",
+    "ja": "環 いろは",
+    "current_zhCN": "环伊吕波",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 7,
+    "rule": "exact",
+    "ja": "不思議な夢の真相を探るべく、神浜市にやってきた魔法少女。お人好しな性格で、気遣いが行き過ぎてしまうことも多々ある。最新の流行には疎く、スマホの扱いもぎこちない。日頃は控えめだが、ここ一番では芯の強さを見せる。",
+    "current_zhCN": "为了探寻不可思议之梦的真相而来到神滨市的魔法少女。性格老好人，常常为别人操心过度。不赶最新潮流，用智能手机也很笨拙。平日低调内敛，关键时刻却展现出内心的坚强。",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 8,
+    "rule": "exact",
+    "ja": "(CV:麻倉もも)",
+    "current_zhCN": "(CV:麻仓桃)",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 9,
+    "rule": "exact",
+    "ja": "通信エラー",
+    "current_zhCN": "通信错误",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 10,
+    "rule": "exact",
+    "ja": "ネットワーク接続に失敗しました。再接続しますか？",
+    "current_zhCN": "网络连接失败。要重新连接吗？",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 11,
+    "rule": "exact",
+    "ja": "データダウンロード",
+    "current_zhCN": "数据下载",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 12,
+    "rule": "exact",
+    "ja": "魔法少女の画像や音声、ムービー等、ゲームに必要なデータをダウンロードします。",
+    "current_zhCN": "将下载魔法少女的图片、语音、影片等游戏所需数据。",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 13,
+    "rule": "exact",
+    "ja": "「ダウンロードしない」を選択した場合、ボイス、ムービーは再生されません。",
+    "current_zhCN": "选择「不下载」的话，将无法播放语音和影片。",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 14,
+    "rule": "exact",
+    "ja": "※ゲーム開始後に変更、再ダウンロードすることも可能です。",
+    "current_zhCN": "※游戏开始后也可以更改并重新下载。",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 15,
+    "rule": "exact",
+    "ja": "データ数が多いためWi-Fi環境でのダウンロードをお勧めします。\nプロローグ中もダウンロードを継続していますのでWi-Fi環境でのプレイをお勧めします。",
+    "current_zhCN": "数据量较大，建议在Wi-Fi环境下下载。\n序章期间也会继续下载，建议在Wi-Fi环境下游玩。",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 16,
+    "rule": "exact",
+    "ja": "データの整合性チェック中です。",
+    "current_zhCN": "正在检查数据完整性。",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 17,
+    "rule": "exact",
+    "ja": "ダウンロードエラー",
+    "current_zhCN": "下载错误",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 18,
+    "rule": "exact",
+    "ja": "ダウンロードしたファイルを保存できません。\n端末の空き容量などご確認ください。",
+    "current_zhCN": "无法保存已下载的文件。\n请检查设备的剩余空间。",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 19,
+    "rule": "exact",
+    "ja": "リトライ",
+    "current_zhCN": "重试",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 20,
+    "rule": "exact",
+    "ja": "データのダウンロード開始します。",
+    "current_zhCN": "开始下载数据。",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 21,
+    "rule": "exact",
+    "ja": "【データサイズ：",
+    "current_zhCN": "【数据大小：",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 22,
+    "rule": "exact",
+    "ja": "※Wi-Fi環境でのダウンロードをお勧めします。",
+    "current_zhCN": "※建议在Wi-Fi环境下下载。",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 23,
+    "rule": "exact",
+    "ja": "後でダウンロード",
+    "current_zhCN": "稍后下载",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 24,
+    "rule": "exact",
+    "ja": "Wi-Fiなど安定した通信環境をお勧めいたします。",
+    "current_zhCN": "建议使用Wi-Fi等稳定的网络环境。",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 25,
+    "rule": "exact",
+    "ja": "10連 - レアカード",
+    "current_zhCN": "10连 - 稀有卡牌",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 26,
+    "rule": "exact",
+    "ja": "単発 - レアカード",
+    "current_zhCN": "单发 - 稀有卡牌",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 27,
+    "rule": "exact",
+    "ja": "単発 - 通常カード",
+    "current_zhCN": "单发 - 普通卡牌",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 28,
+    "rule": "exact",
+    "ja": "単発 - レアメモリア",
+    "current_zhCN": "单发 - 稀有记忆结晶",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 29,
+    "rule": "exact",
+    "ja": "単発 - 通常メモリア",
+    "current_zhCN": "单发 - 普通记忆结晶",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 30,
+    "rule": "exact",
+    "ja": "使用禁止文字列が含まれています。",
+    "current_zhCN": "包含禁止使用的字符串。",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 31,
+    "rule": "exact",
+    "ja": "プレイヤー名を入力してください",
+    "current_zhCN": "请输入玩家名",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 32,
+    "rule": "exact",
+    "ja": "※後から変更可能です（当日中の変更はできません）",
+    "current_zhCN": "※之后可以更改(当天内无法更改)",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 33,
+    "rule": "exact",
+    "ja": "入力エラー",
+    "current_zhCN": "输入错误",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 34,
+    "rule": "exact",
+    "ja": "APが全回復しました！",
+    "current_zhCN": "AP已全部回复！",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 35,
+    "rule": "exact",
+    "ja": "に問題があります！】\n",
+    "current_zhCN": "有问题！】\n",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 36,
+    "rule": "exact",
+    "ja": "]は禁止です!! (",
+    "current_zhCN": "]禁止使用!! (",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 37,
+    "rule": "exact",
+    "ja": "敵からのダメージを ",
+    "current_zhCN": "无效化来自敌方的伤害 ",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 38,
+    "rule": "exact",
+    "ja": "だけ無効化する",
+    "current_zhCN": " 次",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 39,
+    "rule": "exact",
+    "ja": "デバフを反射します",
+    "current_zhCN": "反射减益",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 40,
+    "rule": "exact",
+    "ja": "（あと",
+    "current_zhCN": "（剩余",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 41,
+    "rule": "exact",
+    "ja": "敵から受けるダメージが ",
+    "current_zhCN": "受到敌方的伤害提升 ",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 42,
+    "rule": "exact",
+    "ja": "上昇する",
+    "current_zhCN": "",
+    "confidence": "fuzzy_review",
+    "reason": "intentional_empty_translation_requires_context",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 43,
+    "rule": "exact",
+    "ja": "プールシャッフル",
+    "current_zhCN": "重洗圆盘",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 44,
+    "rule": "exact",
+    "ja": "ディスク再配布",
+    "current_zhCN": "圆盘重新配发",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 45,
+    "rule": "exact",
+    "ja": "ナビ再配布",
+    "current_zhCN": "导航重新配发",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 46,
+    "rule": "exact",
+    "ja": "所持なし",
+    "current_zhCN": "未持有",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 47,
+    "rule": "exact",
+    "ja": "使用済み",
+    "current_zhCN": "已使用",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 48,
+    "rule": "exact",
+    "ja": "対象なし",
+    "current_zhCN": "无对象",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 49,
+    "rule": "exact",
+    "ja": "隣接してない",
+    "current_zhCN": "未相邻",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 50,
+    "rule": "exact",
+    "ja": "発動済み",
+    "current_zhCN": "已发动",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 51,
+    "rule": "exact",
+    "ja": "助っ人不可",
+    "current_zhCN": "不可助战",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 52,
+    "rule": "exact",
+    "ja": "アクセル",
+    "current_zhCN": "Accele",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 53,
+    "rule": "exact",
+    "ja": "ブラスト",
+    "current_zhCN": "Blast",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 54,
+    "rule": "exact",
+    "ja": "チャージ",
+    "current_zhCN": "Charge",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 55,
+    "rule": "exact",
+    "ja": "マギア",
+    "current_zhCN": "Magia",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 2
+  },
+  {
+    "line": 56,
+    "rule": "exact",
+    "ja": "MPゲージ",
+    "current_zhCN": "MP槽",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 57,
+    "rule": "exact",
+    "ja": "Cディスク",
+    "current_zhCN": "Charge圆盘",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 58,
+    "rule": "exact",
+    "ja": "MPブーストUp",
+    "current_zhCN": "MP增幅UP",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 59,
+    "rule": "exact",
+    "ja": "ドッペル",
+    "current_zhCN": "魔女化身",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 60,
+    "rule": "exact",
+    "ja": "チャージ後攻撃弱点",
+    "current_zhCN": "Charge后攻击弱点",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 61,
+    "rule": "exact",
+    "ja": "被ダメージ上昇",
+    "current_zhCN": "受到伤害提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 62,
+    "rule": "exact",
+    "ja": "コネクト",
+    "current_zhCN": "连携",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 63,
+    "rule": "exact",
+    "ja": "フィールド",
+    "current_zhCN": "场地",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 64,
+    "rule": "exact",
+    "ja": "マギアストーン5個を消費して\n魔法少女のHPを全回復しますか？",
+    "current_zhCN": "消耗5个魔法石，\n要全部回复魔法少女的HP吗？",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 65,
+    "rule": "exact",
+    "ja": "決定後、すぐにアイテムが購入されマギアストーンが消費されます。\nマギアストーンは無償分から先に消費され、決定後のキャンセルはできません。",
+    "current_zhCN": "确定后将立即购买道具并消耗魔法石。\n魔法石优先消耗免费部分，确定后无法取消。",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 66,
+    "rule": "exact",
+    "ja": "マギア·スキル発動",
+    "current_zhCN": "Magia·技能发动",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 67,
+    "rule": "exact",
+    "ja": "マギア·スキルを所持しておりません。",
+    "current_zhCN": "未持有Magia·技能。",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 68,
+    "rule": "exact",
+    "ja": "発動する",
+    "current_zhCN": "发动",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 69,
+    "rule": "exact",
+    "ja": "あと ",
+    "current_zhCN": "还有",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 70,
+    "rule": "exact",
+    "ja": "エントリー",
+    "current_zhCN": "报名",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 71,
+    "rule": "exact",
+    "ja": "エントリー中",
+    "current_zhCN": "报名中",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 72,
+    "rule": "exact",
+    "ja": "スキル：",
+    "current_zhCN": "技能：",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 73,
+    "rule": "exact",
+    "ja": "マギア：",
+    "current_zhCN": "Magia：",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 74,
+    "rule": "exact",
+    "ja": "ドッペル：",
+    "current_zhCN": "魔女化身：",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 75,
+    "rule": "exact",
+    "ja": "マギアUp",
+    "current_zhCN": "Magia UP",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 76,
+    "rule": "exact",
+    "ja": "マギアによるダメージが上昇",
+    "current_zhCN": "Magia伤害提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 77,
+    "rule": "exact",
+    "ja": "悪い状態にかかる確率が減少",
+    "current_zhCN": "陷入异常状态的概率减少",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 78,
+    "rule": "exact",
+    "ja": "アクセルUp",
+    "current_zhCN": "Accele UP",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 79,
+    "rule": "exact",
+    "ja": "アクセルディスク使用時のマギアゲージ獲得量が上昇",
+    "current_zhCN": "使用Accele圆盘时Magia槽获得量提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 80,
+    "rule": "exact",
+    "ja": "チャージUp",
+    "current_zhCN": "Charge UP",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 81,
+    "rule": "exact",
+    "ja": "チャージを消費した際のダメージが上昇",
+    "current_zhCN": "消耗Charge时伤害提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 82,
+    "rule": "exact",
+    "ja": "ブラストUp",
+    "current_zhCN": "Blast UP",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 83,
+    "rule": "exact",
+    "ja": "ブラストディスクのダメージが上昇",
+    "current_zhCN": "Blast圆盘伤害提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 84,
+    "rule": "exact",
+    "ja": "攻撃力が減少",
+    "current_zhCN": "攻击力减少",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 85,
+    "rule": "exact",
+    "ja": "防御力が減少",
+    "current_zhCN": "防御力减少",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 86,
+    "rule": "exact",
+    "ja": "与えるダメージを減少",
+    "current_zhCN": "造成伤害减少",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 87,
+    "rule": "exact",
+    "ja": "マギアDown",
+    "current_zhCN": "Magia DOWN",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 88,
+    "rule": "exact",
+    "ja": "マギアによるダメージが減少",
+    "current_zhCN": "Magia伤害减少",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 89,
+    "rule": "exact",
+    "ja": "悪い状態にかかる確率が上昇",
+    "current_zhCN": "陷入异常状态的概率提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 90,
+    "rule": "exact",
+    "ja": "アクセルDown",
+    "current_zhCN": "Accele DOWN",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 91,
+    "rule": "exact",
+    "ja": "アクセルディスク使用時のマギアゲージ獲得量が減少",
+    "current_zhCN": "使用Accele圆盘时Magia槽获得量减少",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 92,
+    "rule": "exact",
+    "ja": "チャージDown",
+    "current_zhCN": "Charge DOWN",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 93,
+    "rule": "exact",
+    "ja": "チャージを消費した際のダメージが減少",
+    "current_zhCN": "消耗Charge时伤害减少",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 94,
+    "rule": "exact",
+    "ja": "ブラストDown",
+    "current_zhCN": "Blast DOWN",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 95,
+    "rule": "exact",
+    "ja": "ブラストディスクのダメージが減少",
+    "current_zhCN": "Blast圆盘伤害减少",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 96,
+    "rule": "exact",
+    "ja": "MPゲージダウン",
+    "current_zhCN": "MP槽DOWN",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 97,
+    "rule": "exact",
+    "ja": "スタン",
+    "current_zhCN": "眩晕",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 98,
+    "rule": "exact",
+    "ja": "行動不能＋弱点属性からのダメージが上昇",
+    "current_zhCN": "无法行动＋受到弱点属性伤害提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 99,
+    "rule": "exact",
+    "ja": "行動不能＋弱点属性からのダメージが上昇＋HP回復不能",
+    "current_zhCN": "无法行动＋受到弱点属性伤害提升＋HP无法回复",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 100,
+    "rule": "exact",
+    "ja": "毎ターンダメージ",
+    "current_zhCN": "每回合伤害",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 101,
+    "rule": "exact",
+    "ja": "やけど",
+    "current_zhCN": "烧伤",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 102,
+    "rule": "exact",
+    "ja": "毎ターンダメージ＋弱点属性からのダメージが上昇",
+    "current_zhCN": "每回合伤害＋受到弱点属性伤害提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 103,
+    "rule": "exact",
+    "ja": "呪い",
+    "current_zhCN": "诅咒",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 104,
+    "rule": "exact",
+    "ja": "毎ターンダメージ＋弱点からのダメージが上昇＋HP回復不能",
+    "current_zhCN": "每回合伤害＋受到弱点伤害提升＋HP无法回复",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 105,
+    "rule": "exact",
+    "ja": "確率で攻撃が失敗",
+    "current_zhCN": "概率攻击失败",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 106,
+    "rule": "exact",
+    "ja": "確率で攻撃が失敗＋弱点属性からのダメージが上昇",
+    "current_zhCN": "概率攻击失败＋受到弱点属性伤害提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 107,
+    "rule": "exact",
+    "ja": "確率で攻撃が失敗＋弱点属性からのダメージが上昇＋HP回復不能",
+    "current_zhCN": "概率攻击失败＋受到弱点属性伤害提升＋HP无法回复",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 108,
+    "rule": "exact",
+    "ja": "スキル不可",
+    "current_zhCN": "技能封印",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 109,
+    "rule": "exact",
+    "ja": "スキルが使用不能",
+    "current_zhCN": "无法使用技能",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 110,
+    "rule": "exact",
+    "ja": "マギア不可",
+    "current_zhCN": "Magia封印",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 111,
+    "rule": "exact",
+    "ja": "マギアが使用不能",
+    "current_zhCN": "无法使用Magia",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 112,
+    "rule": "exact",
+    "ja": "クリティカル",
+    "current_zhCN": "暴击",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 113,
+    "rule": "exact",
+    "ja": "確率で与えるダメージが大きく上昇",
+    "current_zhCN": "概率使造成伤害大幅提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 114,
+    "rule": "exact",
+    "ja": "受けるダメージが減少",
+    "current_zhCN": "受到伤害减少",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 115,
+    "rule": "exact",
+    "ja": "確率で攻撃を回避",
+    "current_zhCN": "概率回避攻击",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 116,
+    "rule": "exact",
+    "ja": "攻撃対象の回避を無効化",
+    "current_zhCN": "使攻击目标的回避无效化",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 117,
+    "rule": "exact",
+    "ja": "毎ターンHP回復",
+    "current_zhCN": "每回合回复HP",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 118,
+    "rule": "exact",
+    "ja": "スキルクイック",
+    "current_zhCN": "技能冷却加速",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 119,
+    "rule": "exact",
+    "ja": "スキルの発動待ちターンが減少",
+    "current_zhCN": "技能发动等待回合减少",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 120,
+    "rule": "exact",
+    "ja": "確率で攻撃対象の防御力を無視して攻撃",
+    "current_zhCN": "概率无视攻击目标的防御力进行攻击",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 121,
+    "rule": "exact",
+    "ja": "カウンター",
+    "current_zhCN": "反击",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 122,
+    "rule": "exact",
+    "ja": "確率で敵の攻撃後に反撃",
+    "current_zhCN": "概率在敌方攻击后反击",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 123,
+    "rule": "exact",
+    "ja": "確率で味方の攻撃後に攻撃",
+    "current_zhCN": "概率在我方攻击后追击",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 124,
+    "rule": "exact",
+    "ja": "カウンター無効",
+    "current_zhCN": "反击无效",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 125,
+    "rule": "exact",
+    "ja": "攻撃対象のカウンターを無効化",
+    "current_zhCN": "使攻击目标的反击无效化",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 126,
+    "rule": "exact",
+    "ja": "HP連動マギアアップ",
+    "current_zhCN": "HP联动Magia提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 127,
+    "rule": "exact",
+    "ja": "残HPが低いほどマギアのダメージが上昇",
+    "current_zhCN": "剩余HP越低，Magia伤害越高",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 128,
+    "rule": "exact",
+    "ja": "耐える",
+    "current_zhCN": "忍耐",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 129,
+    "rule": "exact",
+    "ja": "致死ダメージを受けてもHP1で生存",
+    "current_zhCN": "受到致命伤害也以HP1存活",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 130,
+    "rule": "exact",
+    "ja": "敵の攻撃時、ターゲットを自分に変更",
+    "current_zhCN": "敌方攻击时，将目标改为自己",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 131,
+    "rule": "exact",
+    "ja": "かばう",
+    "current_zhCN": "掩护",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 132,
+    "rule": "exact",
+    "ja": "仲間の代わりに攻撃を受ける",
+    "current_zhCN": "代替队友承受攻击",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 133,
+    "rule": "exact",
+    "ja": "状態異常ダメージアップ",
+    "current_zhCN": "异常状态伤害提升",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 134,
+    "rule": "exact",
+    "ja": "攻撃対象が悪い状態時に与えるダメージが上昇",
+    "current_zhCN": "攻击目标处于异常状态时伤害提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 135,
+    "rule": "exact",
+    "ja": "サヴァイヴ",
+    "current_zhCN": "Survive",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 136,
+    "rule": "exact",
+    "ja": "致死ダメージを受けても1ターン生存、次ターンにHP回復",
+    "current_zhCN": "受到致命伤害也存活1回合，下回合回复HP",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 137,
+    "rule": "exact",
+    "ja": "毎ターンMP回復",
+    "current_zhCN": "每回合回复MP",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 138,
+    "rule": "exact",
+    "ja": "ダメージカット無視",
+    "current_zhCN": "无视伤害削减",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 139,
+    "rule": "exact",
+    "ja": "攻撃対象のダメージカットを無効化",
+    "current_zhCN": "使攻击目标的伤害削减无效化",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 140,
+    "rule": "exact",
+    "ja": "Acceleダメージカット",
+    "current_zhCN": "Accele伤害削减",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 141,
+    "rule": "exact",
+    "ja": "Acceleによるダメージが減少",
+    "current_zhCN": "Accele伤害减少",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 142,
+    "rule": "exact",
+    "ja": "Blastダメージカット",
+    "current_zhCN": "Blast伤害削减",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 143,
+    "rule": "exact",
+    "ja": "Blastによるダメージが減少",
+    "current_zhCN": "Blast伤害减少",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 144,
+    "rule": "exact",
+    "ja": "Chargeダメージカット",
+    "current_zhCN": "Charge伤害削减",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 145,
+    "rule": "exact",
+    "ja": "Chargeによるダメージが減少",
+    "current_zhCN": "Charge伤害减少",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 146,
+    "rule": "exact",
+    "ja": "Charge後ダメージカット",
+    "current_zhCN": "Charge后伤害削减",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 147,
+    "rule": "exact",
+    "ja": "チャージ後のみダメージを減少",
+    "current_zhCN": "仅Charge后伤害减少",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 148,
+    "rule": "exact",
+    "ja": "マギアダメージカット",
+    "current_zhCN": "Magia伤害削减",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 149,
+    "rule": "exact",
+    "ja": "火属性ダメージカット ",
+    "current_zhCN": "火属性伤害削减",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 150,
+    "rule": "exact",
+    "ja": "火属性からのダメージが減少",
+    "current_zhCN": "受到火属性伤害减少",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 151,
+    "rule": "exact",
+    "ja": "水属性ダメージカット",
+    "current_zhCN": "水属性伤害削减",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 152,
+    "rule": "exact",
+    "ja": "水属性からのダメージが減少",
+    "current_zhCN": "受到水属性伤害减少",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 153,
+    "rule": "exact",
+    "ja": "木属性ダメージカット",
+    "current_zhCN": "木属性伤害削减",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 154,
+    "rule": "exact",
+    "ja": "木属性からのダメージが減少",
+    "current_zhCN": "受到木属性伤害减少",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 155,
+    "rule": "exact",
+    "ja": "光属性ダメージカット",
+    "current_zhCN": "光属性伤害削减",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 156,
+    "rule": "exact",
+    "ja": "光属性からのダメージが減少",
+    "current_zhCN": "受到光属性伤害减少",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 157,
+    "rule": "exact",
+    "ja": "闇属性ダメージカット",
+    "current_zhCN": "暗属性伤害削减",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 158,
+    "rule": "exact",
+    "ja": "闇属性からのダメージが減少",
+    "current_zhCN": "受到暗属性伤害减少",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 159,
+    "rule": "exact",
+    "ja": "無属性ダメージカット",
+    "current_zhCN": "无属性伤害削减",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 160,
+    "rule": "exact",
+    "ja": "無属性からのダメージが減少",
+    "current_zhCN": "受到无属性伤害减少",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 161,
+    "rule": "exact",
+    "ja": "クリティカル無効",
+    "current_zhCN": "暴击无效",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 162,
+    "rule": "exact",
+    "ja": "受けたクリティカルを1回無効にする",
+    "current_zhCN": "使受到的暴击无效1次",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 163,
+    "rule": "exact",
+    "ja": "対魔女ダメージアップ",
+    "current_zhCN": "对魔女伤害上升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 164,
+    "rule": "exact",
+    "ja": "魔女へのダメージが上昇",
+    "current_zhCN": "对魔女伤害提升",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 165,
+    "rule": "exact",
+    "ja": "CディスクダメージUp",
+    "current_zhCN": "Charge圆盘伤害UP",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 166,
+    "rule": "exact",
+    "ja": "チャージディスクのダメージが上昇",
+    "current_zhCN": "Charge圆盘伤害提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 167,
+    "rule": "exact",
+    "ja": "CディスクダメージDown",
+    "current_zhCN": "Charge圆盘伤害DOWN",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 168,
+    "rule": "exact",
+    "ja": "チャージディスクのダメージが減少",
+    "current_zhCN": "Charge圆盘伤害减少",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 169,
+    "rule": "exact",
+    "ja": "MP100以上の際にMPゲージアップ",
+    "current_zhCN": "MP100以上时MP槽提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 170,
+    "rule": "exact",
+    "ja": "チャージコンボプラス",
+    "current_zhCN": "Charge连击数提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 171,
+    "rule": "exact",
+    "ja": "チャージコンボ時のコンボ数UP",
+    "current_zhCN": "Charge连击时连击数UP",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 172,
+    "rule": "exact",
+    "ja": "デバフ無効",
+    "current_zhCN": "减益无效",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 173,
+    "rule": "exact",
+    "ja": "1回デバフを無効化する",
+    "current_zhCN": "无效化1次减益",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 174,
+    "rule": "exact",
+    "ja": "敵陣の挑発を無視する",
+    "current_zhCN": "无视敌方挑衅",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 175,
+    "rule": "exact",
+    "ja": "ドッペルUp",
+    "current_zhCN": "魔女化身 UP",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 176,
+    "rule": "exact",
+    "ja": "ドッペルによるダメージが上昇",
+    "current_zhCN": "魔女化身伤害提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 177,
+    "rule": "exact",
+    "ja": "弱体[アクセル]",
+    "current_zhCN": "弱化[Accele]",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 178,
+    "rule": "exact",
+    "ja": "アクセルディスクによる被ダメージが上昇",
+    "current_zhCN": "受到Accele圆盘伤害提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 179,
+    "rule": "exact",
+    "ja": "弱体[ブラスト]",
+    "current_zhCN": "弱化[Blast]",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 180,
+    "rule": "exact",
+    "ja": "ブラストディスクによる被ダメージが上昇",
+    "current_zhCN": "受到Blast圆盘伤害提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 181,
+    "rule": "exact",
+    "ja": "弱体[チャージ]",
+    "current_zhCN": "弱化[Charge]",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 182,
+    "rule": "exact",
+    "ja": "チャージを消費した攻撃による被ダメージが上昇",
+    "current_zhCN": "受到消耗Charge的攻击伤害提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 183,
+    "rule": "exact",
+    "ja": "弱体[チャージＤ]",
+    "current_zhCN": "弱化[Charge D]",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 184,
+    "rule": "exact",
+    "ja": "チャージディスクによる被ダメージが上昇",
+    "current_zhCN": "受到Charge圆盘伤害提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 185,
+    "rule": "exact",
+    "ja": "ブラスト時MPゲージUp",
+    "current_zhCN": "Blast攻击时MP槽UP",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 186,
+    "rule": "exact",
+    "ja": "ブラストディスクでの攻撃時にMPゲージUp",
+    "current_zhCN": "Blast圆盘攻击时MP槽UP",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 187,
+    "rule": "exact",
+    "ja": "水属性攻撃による被ダメージが上昇",
+    "current_zhCN": "受到水属性攻击伤害提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 188,
+    "rule": "exact",
+    "ja": "被攻撃時MPゲージUp",
+    "current_zhCN": "受击时MP槽UP",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 189,
+    "rule": "exact",
+    "ja": "通常攻撃を受けた時にMPゲージUp",
+    "current_zhCN": "受到普通攻击时MP槽UP",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 190,
+    "rule": "exact",
+    "ja": "光属性攻撃による被ダメージが上昇",
+    "current_zhCN": "受到光属性攻击伤害提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 191,
+    "rule": "exact",
+    "ja": "ヴァリアブル",
+    "current_zhCN": "Variable",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 2
+  },
+  {
+    "line": 192,
+    "rule": "exact",
+    "ja": "敵の属性を問わず、自身の攻撃を属性有利として扱う",
+    "current_zhCN": "无视敌方属性，自身攻击视为属性克制",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 193,
+    "rule": "exact",
+    "ja": "闇属性攻撃による被ダメージが上昇",
+    "current_zhCN": "受到暗属性攻击伤害提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 194,
+    "rule": "exact",
+    "ja": "受けた状態異常を1回無効にする",
+    "current_zhCN": "使受到的异常状态无效1次",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 195,
+    "rule": "exact",
+    "ja": "Charge消費なし",
+    "current_zhCN": "Charge无消耗",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 196,
+    "rule": "exact",
+    "ja": "自身の攻撃時、確率でチャージを消費せずに攻撃を行う",
+    "current_zhCN": "自身攻击时，概率不消耗Charge进行攻击",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 197,
+    "rule": "exact",
+    "ja": "火属性の攻撃力が上昇",
+    "current_zhCN": "火属性攻击力提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 198,
+    "rule": "exact",
+    "ja": "闇属性の攻撃力が上昇",
+    "current_zhCN": "暗属性攻击力提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 199,
+    "rule": "exact",
+    "ja": "光属性の攻撃力が上昇",
+    "current_zhCN": "光属性攻击力提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 200,
+    "rule": "exact",
+    "ja": "水属性の攻撃力が上昇",
+    "current_zhCN": "水属性攻击力提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 201,
+    "rule": "exact",
+    "ja": "木属性の攻撃力が上昇",
+    "current_zhCN": "木属性攻击力提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 202,
+    "rule": "exact",
+    "ja": "木属性攻撃による被ダメージが上昇",
+    "current_zhCN": "受到木属性攻击伤害提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 203,
+    "rule": "exact",
+    "ja": "状態異常の種類数に応じて被ダメージが上昇",
+    "current_zhCN": "按异常状态种类数提升受到伤害",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 204,
+    "rule": "exact",
+    "ja": "バリア",
+    "current_zhCN": "屏障",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 205,
+    "rule": "exact",
+    "ja": "瀕死時に攻撃力が上昇",
+    "current_zhCN": "濒死时攻击力提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 206,
+    "rule": "exact",
+    "ja": "瀕死時に防御力が上昇",
+    "current_zhCN": "濒死时防御力提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 207,
+    "rule": "exact",
+    "ja": "火属性攻撃による被ダメージが上昇",
+    "current_zhCN": "受到火属性攻击伤害提升",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 208,
+    "rule": "exact",
+    "ja": "デバフ反射",
+    "current_zhCN": "减益反射",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 209,
+    "rule": "exact",
+    "ja": "クエストデータの読み込みに失敗しました。",
+    "current_zhCN": "关卡数据读取失败。",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 210,
+    "rule": "exact",
+    "ja": "クエスト結果データの確認に失敗しました。",
+    "current_zhCN": "关卡结果数据确认失败。",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 211,
+    "rule": "exact",
+    "ja": "リプレイ再生の終了",
+    "current_zhCN": "回放播放结束",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 212,
+    "rule": "exact",
+    "ja": "コンテニューに失敗しました。",
+    "current_zhCN": "续关失败。",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 213,
+    "rule": "exact",
+    "ja": "予期せぬエラーが発生しました。",
+    "current_zhCN": "发生了意外错误。",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 214,
+    "rule": "exact",
+    "ja": "ターン有効",
+    "current_zhCN": "回合内有效",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 215,
+    "rule": "exact",
+    "ja": "スキル使用",
+    "current_zhCN": "使用技能",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 216,
+    "rule": "exact",
+    "ja": "フィールド効果",
+    "current_zhCN": "场地效果",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 217,
+    "rule": "exact",
+    "ja": "ステータス変化",
+    "current_zhCN": "状态变化",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 218,
+    "rule": "exact",
+    "ja": "残ターン ∞",
+    "current_zhCN": "剩余回合 ∞",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 219,
+    "rule": "exact",
+    "ja": "残ターン",
+    "current_zhCN": "剩余回合",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 220,
+    "rule": "exact",
+    "ja": "ディスク·スキル",
+    "current_zhCN": "圆盘·技能",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 221,
+    "rule": "exact",
+    "ja": "※スキル長押しで詳細を表示",
+    "current_zhCN": "※长按技能显示详情",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 222,
+    "rule": "exact",
+    "ja": "JCリプレイバージョンが古いため再生できません。\nクエストリプレイを中断します。",
+    "current_zhCN": "JC回放版本过旧，无法播放。\n将中断关卡回放。",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 223,
+    "rule": "exact",
+    "ja": "キャンセル",
+    "current_zhCN": "取消",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 224,
+    "rule": "exact",
+    "ja": "全バトルON",
+    "current_zhCN": "全部战斗ON",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 225,
+    "rule": "exact",
+    "ja": "ボス戦時のみON",
+    "current_zhCN": "仅BOSS战时ON",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 226,
+    "rule": "exact",
+    "ja": "全バトルOFF",
+    "current_zhCN": "全部战斗OFF",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 227,
+    "rule": "exact",
+    "ja": "ミッション内容",
+    "current_zhCN": "任务内容",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 228,
+    "rule": "exact",
+    "ja": "本当にリタイアしますか?",
+    "current_zhCN": "确定要撤退吗？",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 229,
+    "rule": "exact",
+    "ja": "ヘルプ",
+    "current_zhCN": "帮助",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 230,
+    "rule": "exact",
+    "ja": "オート設定",
+    "current_zhCN": "自动设置",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 231,
+    "rule": "exact",
+    "ja": "リタイア",
+    "current_zhCN": "放弃",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 232,
+    "rule": "exact",
+    "ja": "獲得したEXP·カースチップ(CC)·宝箱は\n入手できなくなります",
+    "current_zhCN": "已获得的EXP·诅咒晶片(CC)·宝箱\n将无法获得",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 233,
+    "rule": "exact",
+    "ja": "エラーコード：",
+    "current_zhCN": "错误代码：",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 234,
+    "rule": "exact",
+    "ja": "ネットワーク接続に失敗しました。",
+    "current_zhCN": "网络连接失败。",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 235,
+    "rule": "exact",
+    "ja": "クエスト再開",
+    "current_zhCN": "继续关卡",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 236,
+    "rule": "exact",
+    "ja": "進行中のクエストを再開しますか？\n再開しない場合、APのみ消費されます。",
+    "current_zhCN": "要继续进行中的关卡吗？\n不继续将只消耗AP。",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 237,
+    "rule": "exact",
+    "ja": "再開する",
+    "current_zhCN": "继续",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 238,
+    "rule": "exact",
+    "ja": "再開しない",
+    "current_zhCN": "不继续",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 239,
+    "rule": "exact",
+    "ja": "ストーリー中断",
+    "current_zhCN": "中断剧情",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 240,
+    "rule": "exact",
+    "ja": "ストーリーの鑑賞を中断しますか？\n次回、中断したシーンから再開できます。\n※既に中断データがある場合、上書きされます。",
+    "current_zhCN": "要中断剧情观赏吗？\n下次可从中断的场景继续。\n※如已有中断数据，将被覆盖。",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 241,
+    "rule": "exact",
+    "ja": "スキップ確認",
+    "current_zhCN": "跳过确认",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 242,
+    "rule": "exact",
+    "ja": "次の選択肢までスキップします。\nよろしいですか？",
+    "current_zhCN": "将跳过至下一个选项。\n确定吗？",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 243,
+    "rule": "exact",
+    "ja": "／8文字",
+    "current_zhCN": "／8个字符",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 244,
+    "rule": "exact",
+    "ja": "発動可能",
+    "current_zhCN": "可发动",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 245,
+    "rule": "exact",
+    "ja": "戦闘不能中",
+    "current_zhCN": "战斗不能中",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 246,
+    "rule": "exact",
+    "ja": "発動不可",
+    "current_zhCN": "不可发动",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 247,
+    "rule": "exact",
+    "ja": "準備中",
+    "current_zhCN": "准备中",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 248,
+    "rule": "exact",
+    "ja": "状態異常中",
+    "current_zhCN": "异常状态中",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 249,
+    "rule": "exact",
+    "ja": "使用禁止",
+    "current_zhCN": "禁止使用",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 250,
+    "rule": "exact",
+    "ja": "防御力",
+    "current_zhCN": "防御力",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 251,
+    "rule": "exact",
+    "ja": "異常耐性",
+    "current_zhCN": "异常抗性",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 252,
+    "rule": "exact",
+    "ja": "Blast弱点",
+    "current_zhCN": "Blast弱点",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 253,
+    "rule": "exact",
+    "ja": "水属性攻撃弱点",
+    "current_zhCN": "水属性攻击弱点",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 254,
+    "rule": "exact",
+    "ja": "火属性攻撃弱点",
+    "current_zhCN": "火属性攻击弱点",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 255,
+    "rule": "exact",
+    "ja": "木属性攻撃弱点",
+    "current_zhCN": "木属性攻击弱点",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 256,
+    "rule": "exact",
+    "ja": "光属性攻撃弱点",
+    "current_zhCN": "光属性攻击弱点",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 257,
+    "rule": "exact",
+    "ja": "闇属性攻撃弱点",
+    "current_zhCN": "暗属性攻击弱点",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 258,
+    "rule": "exact",
+    "ja": "無属性攻撃弱点",
+    "current_zhCN": "无属性攻击弱点",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 259,
+    "rule": "exact",
+    "ja": "火属性攻撃力",
+    "current_zhCN": "火属性攻击力",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 260,
+    "rule": "exact",
+    "ja": "闇属性攻撃力",
+    "current_zhCN": "暗属性攻击力",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 261,
+    "rule": "exact",
+    "ja": "光属性攻撃力",
+    "current_zhCN": "光属性攻击力",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 262,
+    "rule": "exact",
+    "ja": "水属性攻撃力",
+    "current_zhCN": "水属性攻击力",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 263,
+    "rule": "exact",
+    "ja": "木属性攻撃力",
+    "current_zhCN": "木属性攻击力",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 264,
+    "rule": "exact",
+    "ja": "再開確認",
+    "current_zhCN": "继续确认",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 265,
+    "rule": "exact",
+    "ja": "攻撃力Up",
+    "current_zhCN": "攻击力UP",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 266,
+    "rule": "exact",
+    "ja": "防御力Up",
+    "current_zhCN": "防御力UP",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 267,
+    "rule": "exact",
+    "ja": "状態異常耐性Up",
+    "current_zhCN": "异常状态抗性UP",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 268,
+    "rule": "exact",
+    "ja": "攻撃力Down",
+    "current_zhCN": "攻击力DOWN",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 269,
+    "rule": "exact",
+    "ja": "防御力Down",
+    "current_zhCN": "防御力DOWN",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 270,
+    "rule": "exact",
+    "ja": "状態異常耐性Down",
+    "current_zhCN": "异常状态抗性DOWN",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 271,
+    "rule": "exact",
+    "ja": "行動不能",
+    "current_zhCN": "无法行动",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 272,
+    "rule": "exact",
+    "ja": "HP回復禁止",
+    "current_zhCN": "HP回复禁止",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 273,
+    "rule": "exact",
+    "ja": "MP回復禁止",
+    "current_zhCN": "MP回复禁止",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 274,
+    "rule": "exact",
+    "ja": "MP回復不能",
+    "current_zhCN": "MP无法回复",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 275,
+    "rule": "exact",
+    "ja": "回避無効",
+    "current_zhCN": "回避无效",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 276,
+    "rule": "exact",
+    "ja": "HP自動回復",
+    "current_zhCN": "HP自动回复",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 277,
+    "rule": "exact",
+    "ja": "防御無視",
+    "current_zhCN": "无视防御",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 278,
+    "rule": "exact",
+    "ja": "MP自動回復",
+    "current_zhCN": "MP自动回复",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 279,
+    "rule": "exact",
+    "ja": "挑発無視",
+    "current_zhCN": "无视挑衅",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 280,
+    "rule": "exact",
+    "ja": "水属性耐性Down",
+    "current_zhCN": "水属性抗性DOWN",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 281,
+    "rule": "exact",
+    "ja": "光属性耐性Down",
+    "current_zhCN": "光属性抗性DOWN",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 282,
+    "rule": "exact",
+    "ja": "闇属性耐性Down",
+    "current_zhCN": "暗属性抗性DOWN",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 283,
+    "rule": "exact",
+    "ja": "状態異常無効",
+    "current_zhCN": "异常状态无效",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 284,
+    "rule": "exact",
+    "ja": "火属性攻撃力UP",
+    "current_zhCN": "火属性攻击力UP",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 285,
+    "rule": "exact",
+    "ja": "闇属性攻撃力UP",
+    "current_zhCN": "暗属性攻击力UP",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 286,
+    "rule": "exact",
+    "ja": "光属性攻撃力UP",
+    "current_zhCN": "光属性攻击力UP",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 287,
+    "rule": "exact",
+    "ja": "水属性攻撃力UP",
+    "current_zhCN": "水属性攻击力UP",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 288,
+    "rule": "exact",
+    "ja": "木属性攻撃力UP",
+    "current_zhCN": "木属性攻击力UP",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 289,
+    "rule": "exact",
+    "ja": "木属性耐性Down",
+    "current_zhCN": "木属性抗性DOWN",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 290,
+    "rule": "exact",
+    "ja": "瀕死時攻撃力UP",
+    "current_zhCN": "濒死时攻击力UP",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 291,
+    "rule": "exact",
+    "ja": "瀕死時防御力UP",
+    "current_zhCN": "濒死时防御力UP",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 292,
+    "rule": "exact",
+    "ja": "火属性耐性Down",
+    "current_zhCN": "火属性抗性DOWN",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 293,
+    "rule": "exact",
+    "ja": "開始前",
+    "current_zhCN": "开始前",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 294,
+    "rule": "exact",
+    "ja": "開始後",
+    "current_zhCN": "开始后",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 295,
+    "rule": "exact",
+    "ja": "難易度",
+    "current_zhCN": "难度",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 296,
+    "rule": "exact",
+    "ja": "はい",
+    "current_zhCN": "是",
+    "confidence": "exact_authoritative",
+    "reason": "current_translation_is_complete_c_string_in_both_official_cn_abis",
+    "old_cn_arm64_occurrences": 1,
+    "old_cn_armv7_occurrences": 1
+  },
+  {
+    "line": 297,
+    "rule": "prefix",
+    "ja": "ネットワーク接続に失敗しました。再接続しますか？\nエラーコード：",
+    "current_zhCN": "网络连接失败。要重新连接吗？\n错误代码：",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  },
+  {
+    "line": 298,
+    "rule": "prefix",
+    "ja": "ネットワーク接続に失敗しました。\nエラーコード：",
+    "current_zhCN": "网络连接失败。\n错误代码：",
+    "confidence": "fuzzy_review",
+    "reason": "current_translation_not_found_as_complete_c_string_in_both_abis",
+    "old_cn_arm64_occurrences": 0,
+    "old_cn_armv7_occurrences": 0
+  }
+]
