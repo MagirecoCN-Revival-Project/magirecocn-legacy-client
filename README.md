@@ -56,7 +56,8 @@ config.json                    ← 线上 config.json 的快照（真实配置�
 | `CNWebProxy` | WebView 拦截层代理：把原 `WebViewClient` 包一层，本地文件没命中的 GET 可改走 `/stream/`。默认纯透传，模式由 `config.json` 的 `proxy.web_mode`（`off` / `measure` / `on`）下发，切换不用重打 APK。端点级代理在真机上五次会话零命中（见「网络出口」一节），这是替代路线 |
 | `CNSafeLink` | 外链统一出口：只放行 HTTPS 且域名在**写死在客户端**的允许列表内。挡的是「服务端被攻破后靠改配置把玩家导去任意地址」与配置写错，**不是**中间人——那一层已由 DNSSEC + 完整 TLS 验证覆盖 |
 | `CNVersionCheck` | 客户端版本检查，跑在热更检查**之前**。本端版本硬编码在 native（`CLIENT_VERSION`，与 APK 的 versionName/versionCode 无关），云端版本在 `config.json` 的 `client` 段。任何异常一律放行，绝不因网络抖动挡住进游戏 |
-| `CNRestart` | 重启本进程：先用 `AlarmManager` 把启动 Intent 排到 ~300ms 后再自杀。原包的 `RestClient.restartApp()` 是坏的——它开头会重跑旧热更（浮层再现），且新 Activity 起在同进程里被随后那一刀砍掉 |
+| `CNRestart` | 重启本进程。原包的 `RestClient.restartApp()` 是坏的——它开头会重跑旧热更（浮层再现），且新 Activity 起在同进程里，被随后那一刀连带砍掉。**做法换过两版**：先是用 `AlarmManager` 把启动 Intent 排到 ~300ms 后再自杀，但部分机型上仍会退回桌面；现在改走独立进程的可见跳板（见下一行），确认跳板真的到了前台才杀旧进程 |
+| `CNRestartActivity` | 重启跳板，跑在独立进程 `:cnrestart` 里的透明 Activity。`onResume` 里确认自己已在前台后写就绪标记，`CNRestart` 轮询到该标记才敢杀旧进程；随后延迟拉起主 Activity，失败还会重试一次并把跳板留在前台，而不是悄悄消失。`AndroidManifest` 里是 `singleTask` + `noHistory` + `excludeFromRecents` + 独立 `taskAffinity` |
 | `CNTutorialPrompt` | 「下次启动去播序章」的标记读写与「自动询问只问一次」的记忆，另含给 native 用的隐藏/恢复前端界面入口。真正的触发在 native 侧（拦 `pushSceneTop` 改调 `pushScenePrologue`） |
 | `CNBgm` | 安装浮层的 BGM。不用 `MediaPlayer`——它只能整文件循环，会放出尾部 235 帧 padding 且接缝有空隙；这里自己 `MediaExtractor`+`MediaCodec` 解码喂 `AudioTrack`，按 HCA 循环点做采样级无缝循环。全类绝不外抛 |
 | `CNLog` | 统一日志：logcat + 内存环形缓冲 + 文件，LOG 面板直接渲染同一份缓冲区 |
@@ -402,8 +403,10 @@ ETag 恰好分成两族，正是下面第 1 条设计决定的现场证据：`hk
    默认线路上，`proxy` 段从来没下发过，`CNWebProxy` 拿不到配置一直是 off。
    而这一切只留下一行 WARN。
 
-   现在 `CNMirrors.ensureLoadedAsync()` 在后台按 3/6/12/24/48/48 秒退避重试，
-   成功即停。配置迟到不要紧：拦截层读的是 volatile 的 mode，中途变更即时生效。
+   现在 `CNMirrors.ensureLoadedAsync()` 在后台按 **5/15/45/90 秒**退避重试四次
+   （`RETRY_BACKOFF_MS`），成功即停。配置迟到不要紧：拦截层读的是 volatile 的
+   mode，中途变更即时生效。四次都失败时**不再静默收场**——浮层还在的话会弹框问
+   「再试一次 / 用内置线路」，见下面「网络慢时问玩家，而不是替他决定」。
 
 4. **拉版本 json 失败不打冷却。** 这条是 2026-08-07 从真机日志里挖出来的：
    启动时先做镜像竞速，量的是 `cn_js_update.zip` 前 256 KB 的**吞吐**，
@@ -412,8 +415,13 @@ ETag 恰好分成两族，正是下面第 1 条设计决定的现场证据：`hk
 
    结果就是：竞速刚把 EdgeOne 提为首选，版本 json 一超时就
    `reportFailure` 把它打进 60 秒冷却——**自己刚选出来的最快线，被自己刷掉了**。
-   现在 `fetchMeta` 拉版本 json 失败只记日志、换下一条镜像，不再上报失败；
-   读超时也从 8s 放宽到 12s（`VER_READ_TIMEOUT_MS`），冷对象值得多等一会儿。
+   现在 `fetchMeta` 拉版本 json 失败只记日志、换下一条镜像，不再上报失败。
+
+   > **读超时后来又收紧了，别照这段改回去。** 当时的结论是「冷对象值得多等」，
+   > 把 `VER_READ_TIMEOUT_MS` 从 8s 放宽到 12s；再后来加了一道 6 秒总闸
+   > （`VERSION_QUERY_DEADLINE_MS`），单条超时的意义就变了——判死得快才好早点换
+   > 下一条，于是收到 3.5s。**这两个值只有连着总闸一起看才成立**，要放宽单条
+   > 必须同时抬总闸，否则总闸先到期，单条那点余量根本用不上。
 
 ### 「过慢」这条线到底会怎样（别把它读成"装不上"）
 
@@ -441,6 +449,37 @@ ETag 恰好分成两族，正是下面第 1 条设计决定的现场证据：`hk
 > 代价被限制在一次尝试 + 2 秒退避。
 
 ---
+
+### 网络慢时问玩家，而不是替他决定
+
+启动路径上有两处会等网络，它们原先都是**静默 fail-open**：等超了就自己放行，
+玩家什么也看不到。
+
+这件事**众口难调**：网好的觉得被慢线路拖着，网差的觉得刚开始就被放弃。任何一个
+写死的超时都会得罪一半人，而且两种得罪都是静默的——玩家只看到「进游戏了但台词
+没更新」，根本不知道刚才发生过一次取舍。所以现在把取舍摆到台面上，用浮层自己的
+模态框（与教程询问框、LOG 面板同一套样式，不是系统 `AlertDialog`）问他。
+
+入口是 `CNCNDownloadUI.askSlowNetwork(...)`：阻塞式，**只能在后台线程调**，内部切
+UI 线程建框、在调用线程上等 `CountDownLatch`。
+
+两个调用点的**取舍轴不一样**，所以按钮文案是参数，框只有一个：
+
+| 场景 | 玩家真的在等吗 | 问什么 | 选正面之后 |
+|---|---|---|---|
+| 热更新版本查询（`CNHotUpdateCheck`） | **是**，卡在白屏期 | 继续等待 / 跳过 | 再给 15 秒（`VERSION_QUERY_EXTEND_MS`），到点再问一次 |
+| 线路表 `config.json`（`CNMirrors`） | **否** | 再试一次 / 用内置线路 | 复位 `RETRY_STARTED`，重跑一轮退避 |
+
+> 线路表那一栏值得多说一句：它从设计上就**不在启动关键路径里**（内置默认线路从
+> 进程启动起就可用，`api.magireco.top` 故障绝不能卡住启动），所以没有任何人在等
+> 它——问「要不要继续等」是个**假选择**。真正的取舍是退避表跑完之后「再试一次，
+> 还是就用内置线路过日子」。同一个框，问对问题。
+
+**护栏坏掉时一律退回原行为，绝不卡人。** 浮层不在、被误在 UI 线程上调用（会死锁）、
+建框抛异常、选择处理抛异常——四条路径都会 `countDown` 并返回 `SLOW_SKIP`，同时记
+日志说明这是「没条件问」而不是「玩家选了跳过」。**这两件事在排查时完全不同**，
+日志里必须分得开。线路表那边浮层通常已经收了（退避表跑完约 155 秒），那时弹框既
+打扰又没意义，自然退回只记日志。
 
 ## 构建
 
@@ -720,6 +759,8 @@ java -cp .build-test:.cache/deps/android.jar ResumeTest <base> <sha256> <size>
 | `check-so-deps.py` | 每个 `.so` 的 `DT_NEEDED` 都能在包内或系统里找到。踩过：`libMagiaLegacy.so` 链接 shadowhook，但 CI 只拷了前者，`libshadowhook.so` 落在构建目录没带上——**能打包、能签名、能安装，只在真机启动那一刻炸** |
 | `check-asset-compression.py` | BGM 的 ogg 在 APK 里必须是 Stored 而非 deflate。`AssetManager.openFd()` 打不开压缩过的 asset，后果是「界面一切正常、就是没声音」 |
 | `check-apk-freshness.py` | 产物确实是刚编译出来的那一份，不是上一版残留。踩过两次：`CNBgm` 编出了 `.class` 却不在任何一组 d8 输入里；`libMagiaLegacy.so` 编好了却忘了拷进 `lib/` |
+| `check-d8-pitfalls.py` | javac 之后、d8 之前跑，拦下会让 d8 崩掉的两种类形状（见「铁律 4」）。d8 撞上时只报一句 R8 内部的 `NullPointerException: Cannot invoke "String.length()"`，没有行号也没有别的线索；这个脚本把它换成「哪个类、什么形状、怎么改」 |
+| `check-branch-hygiene.py` | 远端分支是否只剩 `main` / `archive/*` / `research/*`（见 [`AGENTS.md`](AGENTS.md) §0） |
 
 ### 热更包的文件清单与孤儿清理
 
@@ -771,14 +812,65 @@ java -cp .build-test:.cache/deps/android.jar ResumeTest <base> <sha256> <size>
 
 ---
 
-## 远端分支现状（2026-08-07 盘点）
+## 提交与分支纪律（有钩子在管，不是靠自觉）
+
+克隆下来什么都不用做：`.claude/settings.json` 与 `.codex/config.toml` 各注册了一个
+`PreToolUse(Bash)` 钩子指向 `tools/agent-guard.py`，它在命令执行**之前**把这份克隆的
+`core.hooksPath` 指到 `tools/githooks/`。Claude 或 Codex 跑过任意一条 Bash 命令，
+git 钩子就此长期生效，之后连人类手敲的 `git commit` 也一并受管。
+
+没跑过 Agent 的克隆手动补一次：
+
+```bash
+bash tools/install-hooks.sh        # Windows: tools\install-hooks.cmd
+```
+
+| 钩子 | 拦什么 | 逃生口 |
+|---|---|---|
+| `commit-msg` | 标题非中文 / 缺 `Co-authored-by` / 缺「文档:」交代 | 信息里**顶格独占一行**写 `[skip-hooks]` |
+| `pre-push` | 本次推送**新增**提交的信息不合规 | `SKIP_MSG_HOOK=1 git push` |
+| | 新建远端分支违反 [`AGENTS.md`](AGENTS.md) §0 | `SKIP_BRANCH_HOOK=1 git push` |
+| `agent-guard.py` | `--no-verify` 与 `-c core.hooksPath=…`（绕过上面两个且不留痕迹） | 无——请改用上面的逃生口 |
+
+`pre-push` 那道**不是**多余的：`commit-msg` 只管得住「提交这个动作发生在这份克隆
+里」。2026-08-08 进来的 12 个英文标题提交是在别处产生、然后作为分支推进来的，
+`commit-msg` 从头到尾没有机会运行。只查分支名的话，原样重放一遍照样进得来。
+它只查本次推送**新增**的提交且晚于上线时刻，历史不翻旧账。
+
+两个 git 钩子分两层：`commit-msg` / `pre-push` 是 POSIX sh 启动层，只负责找一个能用
+的 Python 3（`python3` → `python` → `py -3`，逐个真跑版本检查）；实现在
+`commit_msg.py` / `pre_push.py`，判据在共用的 `_msgrules.py`。**找不到解释器、找不到
+实现、找不到判据、自身抛异常——四种情况一律放行并提示，不是拦下。** 缺个 Python 就
+让整个仓库提交不了，比它想强制的任何规则都糟糕。
+
+> 钩子不能是 `.bat`：git 找的是名为 `commit-msg`（无扩展名）的文件，在 Windows 上
+> 也用自带的 sh 执行它。能配 `.cmd` 的只有给人手动跑一次的安装动作。
+> 换行由 `.gitattributes` 钉成 LF——CRLF 会让 sh 报 `bad interpreter: ...^M`，
+> 同样是「合规的提交也提不了」。
+
+## 远端分支现状（2026-08-08 盘点）
+
+远端只剩三条分支，`tools/check-branch-hygiene.py` 可随时复核。
 
 | 分支 | 状态 |
 |---|---|
 | `main` | 唯一在维护的线 |
-| `archive/legacy-client-runtime-i18n-20260806` | **归档，只读**。原 `feature/legacy-client-runtime-i18n`，见下 |
 | `research/adv-native-evidence-20260807` | ADV 剧情播放器（`magiaexedralive2dviewer`）的取证，**不是本客户端的活**，停错仓库了，别动 |
 | `research/apk-image-classification` | APK 图像双层清单 + plist 图集拆解（4.4 万行）。目前没用上，**留着**——真要做图片汉化，起点就是它 |
+
+归档的那条**已经不是分支了**：
+
+| tag | 状态 |
+|---|---|
+| `archive/legacy-client-runtime-i18n-20260806` | **归档，只读**。原 `feature/legacy-client-runtime-i18n`，见下。改成 tag 是因为分支会被各种「列出所有分支」的流程扫到，而它已经没有任何在维护的内容 |
+
+> 打 tag 时注意 `git tag -a <名字> <名字>` 这种写法解析不到——裸名字既可能是分支
+> 也可能是 tag，`git rev-parse` 一类的解析静默偏向 tag，是个长期的歧义源。
+> 用 commit SHA 指定目标最稳。
+
+2026-08-08 另清掉了 6 条一次性分支（5 条 `ci/*-driver-*` 与
+`fix/runtime-startup-restart-ui-20260808`），内容已全部并入 `main`。
+`pre-push` 钩子现在会拦下同类分支的再次出现，见「提交与分支纪律」。
 
 ### `archive/legacy-client-runtime-i18n-20260806` 里有什么
 
