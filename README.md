@@ -715,27 +715,61 @@ debuggable 包就能用。
 > 加新开关前先问：它关掉之后，客户端是「少一个我们加的功能」，还是「少一道防线」？
 > 后者一律不做。
 
-### 现有开关
+### 两类开关
 
-| 开关名 | 侧 | 关掉之后 |
+| 前缀 | 干什么 | 什么时候用 |
 |---|---|---|
-| `no_font_hook` | native | 不重定向字体路径，UI 字体回到原包的 `MTF4a5kp` |
-| `no_i18n_label` | native | `LbUtility::initLabel` 不替换文案，引擎侧标签回日文 |
-| `no_i18n_setstring` | native | `Label`/`LabelAtlas`/`MenuItem::setString` 不替换文案 |
-| `no_tutorial_guard` | native | 序章期间不起 WebView 看门狗 |
-| `no_proxy_endpoint` | native | `UrlConfig::api`/`chat` 只观测不重写（直连） |
-| `no_http2_bump` | native | HTTP/2 并发数保持引擎原本的 4，不提到 10 |
-| `no_adx_samplerate` | native | 不锁 ADX2 采样率 48000，用设备实际值 |
-| `no_webproxy` | Java | 不安装 WebView 拦截层代理，一律透传直连 |
-| `no_hotupdate` | Java | 跳过启动时的热更检查，直接进游戏 |
-| `no_slow_ask` | Java | 网络慢时不弹询问框，退回静默 fail-open |
-| `no_overlay` | Java | 不显示安装/热更浮层（连带不下发 native 的引擎闸门标记） |
+| `skipXxx` | 跳过启动链上的某一步 | 二分定位「是哪一步把游戏搞挂的」 |
+| `failXxx` / `slowXxx` | 故障注入 | 验证错误处理路径本身——退避重试、换线、事务回滚、慢网询问框。这些平时**只有网络真的烂掉才跑得到**，没有注入手段就等于从没测过 |
+
+开关名一律**小驼峰**，native 与 Java 同一风格、同一个目录。
+
+### 启动链与对应开关
+
+```
+Application.onCreate
+ └─ CNDownloaderFix.triggerInstaller()          ← 独立线程
+     ├─ CNWebProxy.install()                     skipWebProxy
+     ├─ [FINAL_FLAG 不存在] runInstaller()       skipInstaller
+     │    ├─ CNCNDownloadUI.show()               skipOverlay
+     │    ├─ 15 个包下载                          failDownload
+     │    ├─ 序章询问                             skipTutorialPrompt
+     │    └─ noticeAndRestart()                   skipRestart
+     └─ [FINAL_FLAG 存在] CNVersionCheck          skipVersionCheck
+          └─ CNHotUpdateCheck.start()             skipHotUpdate
+               ├─ CNMirrors（config.json）        skipMirrorConfig / failConfigFetch
+               ├─ 版本查询（6s 总闸）              failVersionQuery / slowVersionQuery
+               ├─ 下载                             failDownload
+               ├─ CNHotUpdateTx.apply()            failHotUpdateApply
+               └─ 慢网询问框                       skipSlowAsk
+
+（native）JNI_OnLoad → 34 个 hook
+ ├─ pushSceneTop 浮层闸门                         noOverlayGate
+ ├─ 强制序章                                      noTutorialForce
+ ├─ 序章 WebView 看门狗                            noTutorialGuard
+ ├─ UrlConfig::api/chat 端点重写                   noProxyEndpoint
+ ├─ 字体路径重定向                                 noFontHook
+ ├─ initLabel / setString 文案替换                 noI18nLabel / noI18nSetString
+ └─ HTTP2 并发数、ADX2 采样率                      noHttp2Bump / noAdxSampleRate
+```
+
+`skip`/`no` 的区分只是习惯：Java 侧是「跳过某一步」，native 侧是「不装某个改动」。
+
+### 故障注入能验到什么
+
+| 开关 | 验的是哪条错误路径 |
+|---|---|
+| `failConfigFetch` | `CNMirrors` 的 5/15/45/90 秒退避重试，以及退避跑完那个「再试一次 / 用内置线路」询问框 |
+| `slowVersionQuery` | **慢网询问框**（注入 9 秒 > 6 秒总闸，必定触发），以及选「继续等待」后再给 15 秒的续期 |
+| `failVersionQuery` | 版本查询失败后 fail-open 进游戏，且「已是最新」不谎报 |
+| `failDownload` | 换线、冷却、重试上限 |
+| `failHotUpdateApply` | `CNHotUpdateTx` 的整体回滚与 journal 恢复 |
 
 ### 用法
 
 ```bash
 adb shell "run-as io.kamihama.totentanz mkdir -p files/madomagi/debug"
-adb shell "run-as io.kamihama.totentanz touch files/madomagi/debug/no_font_hook"
+adb shell "run-as io.kamihama.totentanz touch files/madomagi/debug/noFontHook"
 # 重启游戏，然后：
 adb logcat | grep "\[DEBUG\]"
 ```
