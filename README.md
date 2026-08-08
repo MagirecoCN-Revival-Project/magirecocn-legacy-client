@@ -712,8 +712,13 @@ debuggable 包就能用。
 配置来源校验、解压膨胀比上限等一概不做成开关。否则这个目录就从排查工具变成了
 攻击面——一旦有人能写进这里，就能把防线一条条关掉。
 
-> 加新开关前先问：它关掉之后，客户端是「少一个我们加的功能」，还是「少一道防线」？
-> 后者一律不做。
+> 加新开关前先问：它打开之后，客户端是「少一个我们加的功能 / 多走一条我们自己写的
+> 错误分支」，还是「少一道防线」？后者一律不做。
+
+**这条不靠自觉**：`tools/check-debug-flag-boundary.py` 在 CI 里断言几个安全判据
+（外链白名单、https 强制、代理域名最小粒度、解压膨胀比上限、代理改写的域名判据）
+的正文里不出现任何 `CNDebugFlags` / `g_dbg*`。保护区是**方法级**的——
+`CNMirrors.refresh()` 里加开关合法，`normalizeBase()` 里加就会被拦下。
 
 ### 两类开关
 
@@ -854,6 +859,7 @@ java -cp .build-test:.cache/deps/android.jar ResumeTest <base> <sha256> <size>
 | `check-so-deps.py` | 每个 `.so` 的 `DT_NEEDED` 都能在包内或系统里找到。踩过：`libMagiaLegacy.so` 链接 shadowhook，但 CI 只拷了前者，`libshadowhook.so` 落在构建目录没带上——**能打包、能签名、能安装，只在真机启动那一刻炸** |
 | `check-asset-compression.py` | BGM 的 ogg 在 APK 里必须是 Stored 而非 deflate。`AssetManager.openFd()` 打不开压缩过的 asset，后果是「界面一切正常、就是没声音」 |
 | `check-apk-freshness.py` | 产物确实是刚编译出来的那一份，不是上一版残留。踩过两次：`CNBgm` 编出了 `.class` 却不在任何一组 d8 输入里；`libMagiaLegacy.so` 编好了却忘了拷进 `lib/` |
+| `check-debug-flag-boundary.py` | 调试开关没有伸进安全判据（外链白名单、https 强制、代理域名粒度、解压膨胀比、代理改写判据）。保护区是**方法级**的，所以 `CNMirrors.refresh()` 里加开关合法、`normalizeBase()` 里加就会被拦。保护区方法被改名/删掉时**报错而不是放行**——否则改个名就等于悄悄取消了保护 |
 | `check-d8-pitfalls.py` | javac 之后、d8 之前跑，拦下会让 d8 崩掉的两种类形状（见「铁律 4」）。d8 撞上时只报一句 R8 内部的 `NullPointerException: Cannot invoke "String.length()"`，没有行号也没有别的线索；这个脚本把它换成「哪个类、什么形状、怎么改」 |
 | `check-branch-hygiene.py` | 远端分支是否只剩 `main` / `archive/*` / `research/*`（见 [`AGENTS.md`](AGENTS.md) §0） |
 
