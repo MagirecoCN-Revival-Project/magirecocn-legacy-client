@@ -758,6 +758,22 @@ Application.onCreate
  └─ HTTP2 并发数、ADX2 采样率                      noHttp2Bump / noAdxSampleRate
 ```
 
+### 「空转」与「根本不装」是两回事
+
+`noI18nLabel` / `noFontHook` 只让钩子**空转**——钩子照样装着，照样按我们声明的原型
+把参数转发回引擎。所以**原型声明本身写错时，这两个开关测不出来**。
+
+2026-08-08 那次战斗崩溃正是这类：`initLabel` 钩子的替身结构体 `CNColor4B` 少声明了
+alpha 字节，而空转那一支同样要按这个错原型转发。
+
+| 开关 | 关掉的是 |
+|---|---|
+| `noInitLabelHook` | **不安装** `LbUtility::initLabel` 钩子 |
+| `noTtfHooks` | **不安装** `createWithTTF` / `setTTFConfig` 三个钩子 |
+
+排查顺序因此是两级：先用「空转」版看是不是**行为**的锅，再用「不装」版看是不是
+**钩子存在本身**（含原型/ABI）的锅。
+
 `skip`/`no` 的区分只是习惯：Java 侧是「跳过某一步」，native 侧是「不装某个改动」。
 
 ### 故障注入能验到什么
