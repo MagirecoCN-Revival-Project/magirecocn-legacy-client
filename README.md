@@ -61,6 +61,7 @@ config.json                    ← 线上 config.json 的快照（真实配置�
 | `CNTutorialPrompt` | 「下次启动去播序章」的标记读写与「自动询问只问一次」的记忆，另含给 native 用的隐藏/恢复前端界面入口。真正的触发在 native 侧（拦 `pushSceneTop` 改调 `pushScenePrologue`） |
 | `CNBgm` | 安装浮层的 BGM。不用 `MediaPlayer`——它只能整文件循环，会放出尾部 235 帧 padding 且接缝有空隙；这里自己 `MediaExtractor`+`MediaCodec` 解码喂 `AudioTrack`，按 HCA 循环点做采样级无缝循环。全类绝不外抛 |
 | `CNLog` | 统一日志：logcat + 内存环形缓冲 + 文件，LOG 面板直接渲染同一份缓冲区 |
+| `CNDebugFlags` | 调试开关目录的 Java 侧读取（与 native 共用同一个目录，见「调试开关目录」一节）。首次查询时扫一遍并缓存，之后零 I/O；任何异常一律当作「没开」 |
 
 补丁类的 smali（`smali_classes2/…/CNCNDownloadUI*` 与整个 `smali_classes3/`）
 **每次 CI 构建都会用 Java 源码重新生成**，手工改这些 .smali 不会影响产物。
@@ -681,6 +682,66 @@ python3 tools/check-css-freeze.py <cn_js_update.zip>
 `fonts.css` 在豁免名单里，`common.css` 按「前 N 字节 == 服务端原文」校验。
 
 ---
+
+## 调试开关目录（排查用，玩家碰不到）
+
+```
+/data/data/io.kamihama.totentanz/files/madomagi/debug/<开关名>
+```
+
+**建一个同名空文件就是打开该开关，删掉就是关闭，重启游戏生效。**
+native 与 Java 两侧读的是同一个目录。
+
+### 为什么要有它
+
+本仓库反复遇到同一类问题：某个改动疑似干扰引擎，表现是黑屏 / 卡死 / 闪退，而定位
+手段只有「改代码 → 重打包 → 找人真机走一遍」。`setURI`、nghttp2 逐请求、web 端点、
+以及 2026-08-08 那次战斗崩溃，每次都烧掉整轮往返，**一次 CI 还只能验一个假设**。
+
+有了这个目录，**一次构建就能验多个假设**：装一次包，在设备上建/删文件、重启，逐个
+排除。排查可以交给手上有设备的人，不必每次都回到构建流程。
+
+放在 app 私有目录是有意的：非 root 的正式包上玩家**碰不到**（`run-as` 只对
+debuggable 包有效），不构成面向普通玩家的风险面；而有能力自查的人拿 root 或
+debuggable 包就能用。
+
+### 🔴 边界：只关我们自己加的东西
+
+这些开关一律只做一件事——**把客户端退回更接近原包的行为**。
+**绝不设置任何削弱安全判定的开关**：外链白名单（`CNSafeLink`）、https 强制、
+配置来源校验、解压膨胀比上限等一概不做成开关。否则这个目录就从排查工具变成了
+攻击面——一旦有人能写进这里，就能把防线一条条关掉。
+
+> 加新开关前先问：它关掉之后，客户端是「少一个我们加的功能」，还是「少一道防线」？
+> 后者一律不做。
+
+### 现有开关
+
+| 开关名 | 侧 | 关掉之后 |
+|---|---|---|
+| `no_font_hook` | native | 不重定向字体路径，UI 字体回到原包的 `MTF4a5kp` |
+| `no_i18n_label` | native | `LbUtility::initLabel` 不替换文案，引擎侧标签回日文 |
+| `no_i18n_setstring` | native | `Label`/`LabelAtlas`/`MenuItem::setString` 不替换文案 |
+| `no_tutorial_guard` | native | 序章期间不起 WebView 看门狗 |
+| `no_proxy_endpoint` | native | `UrlConfig::api`/`chat` 只观测不重写（直连） |
+| `no_http2_bump` | native | HTTP/2 并发数保持引擎原本的 4，不提到 10 |
+| `no_adx_samplerate` | native | 不锁 ADX2 采样率 48000，用设备实际值 |
+| `no_webproxy` | Java | 不安装 WebView 拦截层代理，一律透传直连 |
+| `no_hotupdate` | Java | 跳过启动时的热更检查，直接进游戏 |
+| `no_slow_ask` | Java | 网络慢时不弹询问框，退回静默 fail-open |
+| `no_overlay` | Java | 不显示安装/热更浮层（连带不下发 native 的引擎闸门标记） |
+
+### 用法
+
+```bash
+adb shell "run-as io.kamihama.totentanz mkdir -p files/madomagi/debug"
+adb shell "run-as io.kamihama.totentanz touch files/madomagi/debug/no_font_hook"
+# 重启游戏，然后：
+adb logcat | grep "\[DEBUG\]"
+```
+
+启动时**无论开没开都会打印全表**，所以「有哪些开关」看一眼日志就知道，不必回来翻
+源码。名字打错的文件会被单独点名——否则你只会以为「开关没用」。
 
 ## 测试
 
