@@ -524,6 +524,10 @@ apksigner → 上传 artifact。
 
 ## 前端资源汉化
 
+> 汉化的**操作手册**在 [`i18n/README.md`](i18n/README.md)：三条链路的分工、
+> 一句日文该归哪一层的判据、战斗文本的实证结论与操作步骤、`engine_i18n.tsv`
+> 的格式与陷阱、以及各张对照表的用途。本节只讲前端这一条链路的原理。
+
 前端（WebView 那一半）的汉化不走 APK，走热更包 `cn_js_update.zip`：
 `tools/i18n-extract.py` 抽取待译串 → `i18n-apply.py` 回填 → `i18n-package.py`
 打包。客户端不需要任何改动——`WebViewImpl$WebViewClientImpl.shouldInterceptRequest`
@@ -541,7 +545,7 @@ apksigner → 上传 artifact。
 | JS 里的按钮、确认框、错误提示、动态拼接文本 | 前端热更包（`magica/js/**`） | 已覆盖 |
 | HTML／EJS 模板里的静态标题、标签、按钮 | 前端热更包（`magica/template/**`） | 已覆盖，且确有 RequireJS 调用链（见上节） |
 | 数据 JSON 里的角色/道具/技能/章节等结构化字段 | 前端热更包（23 个 JSON + 注入器） | 已覆盖 |
-| cocos2d 原生弹窗、下载／网络错误 | **native 文本 hook**（`MagiaLegacy.cpp` 的 i18n 表） | 已做，实测「已加载 295 条 + 2 前缀规则」 |
+| cocos2d 原生弹窗、下载／网络错误、**战斗中与战斗结束的角色台词** | **native 文本 hook**（`MagiaLegacy.cpp` 的 i18n 表） | 已做，实测「已加载 295 条 + 2 前缀规则」。⚠ 表本身还没有版本控制的源，见 [`i18n/README.md`](i18n/README.md) |
 | 原生中文被渲染成日文字形 | **native 字体路径 hook**（`fontPathOverwrite`） | 已做，见 `check-fonts.py` |
 | 资源下载浮层 | Java 补丁（`CNCNDownloadUI`） | 已做 |
 | **烘焙进 PNG／plist 图集的英文** | **只能改图片资源** | 见下 |
@@ -843,6 +847,9 @@ adb logcat -d -s MagiaCN_Legacy \
 
 去重集上限 2000 条，撑满会打一条 `LOGE` 明说「这份清单不完整」——排查工具给出
 残缺结论却不声张，比没有工具更糟。
+
+抓到清单之后怎么填译文、怎么推回设备验证、以及 `engine_i18n.tsv` 那些会咬人的
+格式细节（空译文 = **删除该串**），见 [`i18n/README.md`](i18n/README.md)。
 
 ### 用法
 
