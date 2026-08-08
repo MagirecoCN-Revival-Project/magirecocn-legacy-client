@@ -719,16 +719,13 @@ native 与 Java 两侧读的是同一个目录。
   某次热更后集体消失，且查不出原因。
 - 找日志和找开关是同一件事，两个目录挨着放，说一次路径就够了。
 
-> ⚠ **2026-08-08 之前调试开关在 `files/madomagi/debug/`。** 旧目录里的文件**已经
-> 不起作用**，但两侧启动时都会点名提示，不会让你以为「开着却没生效」。搬过去：
+> ⚠ 设备上如果还留着 **`files/madomagi/debug/`**（2026-08-08 之前的落点）或
+> **`files/log/`**（`67ac26a9` 之前的日志落点），两个都已废弃、没有任何代码读写，
+> 直接删掉即可——留着只会让人对着一个死目录排查：
 >
 > ```bash
-> adb shell "run-as io.kamihama.totentanz sh -c \
->   'mkdir -p debug && mv files/madomagi/debug/* debug/ && rmdir files/madomagi/debug'"
+> adb shell "run-as io.kamihama.totentanz rm -rf files/madomagi/debug files/log"
 > ```
->
-> 同理，`files/log/` 是更早一代的日志落点（`67ac26a9` 之前），也已废弃，可直接
-> `rm -rf`。真日志里会提示。这两处残留都害人绕过弯路——**排查工具自己不能是坑**。
 
 ### 为什么要有它
 
