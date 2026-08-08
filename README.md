@@ -696,11 +696,39 @@ python3 tools/check-css-freeze.py <cn_js_update.zip>
 ## 调试开关目录（排查用，玩家碰不到）
 
 ```
-/data/data/io.kamihama.totentanz/files/madomagi/debug/<开关名>
+/data/data/io.kamihama.totentanz/debug/<开关名>
 ```
 
 **建一个同名空文件就是打开该开关，删掉就是关闭，重启游戏生效。**
 native 与 Java 两侧读的是同一个目录。
+
+### 排查工具的落点：两个目录，都在私有目录根下
+
+```
+/data/data/io.kamihama.totentanz/
+├── log/       ← 日志（CNLog），.seq 也在这里
+├── debug/     ← 调试开关（本节）
+└── files/     ← 热更解压根，**不要**把排查工具放这里
+```
+
+`log/` 与 `debug/` **平级**，都不在 `files/` 里面。两条理由：
+
+- **`files/` 是热更的解压根**，`CNHotUpdateTx` 会往那里解包，还会按前缀算孤儿并
+  删除。目前 `cleanupPrefixes("scenario")` 只清 `madomagi/resource/scenario/json/`，
+  碰不到调试目录——但那是**巧合而非保证**：哪天前缀放宽到 `madomagi/`，开关就会在
+  某次热更后集体消失，且查不出原因。
+- 找日志和找开关是同一件事，两个目录挨着放，说一次路径就够了。
+
+> ⚠ **2026-08-08 之前调试开关在 `files/madomagi/debug/`。** 旧目录里的文件**已经
+> 不起作用**，但两侧启动时都会点名提示，不会让你以为「开着却没生效」。搬过去：
+>
+> ```bash
+> adb shell "run-as io.kamihama.totentanz sh -c \
+>   'mkdir -p debug && mv files/madomagi/debug/* debug/ && rmdir files/madomagi/debug'"
+> ```
+>
+> 同理，`files/log/` 是更早一代的日志落点（`67ac26a9` 之前），也已废弃，可直接
+> `rm -rf`。真日志里会提示。这两处残留都害人绕过弯路——**排查工具自己不能是坑**。
 
 ### 为什么要有它
 
@@ -816,7 +844,7 @@ if (n <= 10 || n % 100 == 0)
 是为此加的：跑一局，把这一局**所有流经钩子却没翻到的串**一次抓全。
 
 ```bash
-adb shell "run-as io.kamihama.totentanz touch files/madomagi/debug/logI18nMiss"
+adb shell "run-as io.kamihama.totentanz touch debug/logI18nMiss"
 # 重启游戏，把要查的流程走一遍，然后：
 adb logcat -d -s MagiaCN_Legacy \
   | sed -n 's/.*\[i18n-miss\]\[[^]]*\] //p' | sort -u
@@ -855,8 +883,8 @@ adb logcat -d -s MagiaCN_Legacy \
 ### 用法
 
 ```bash
-adb shell "run-as io.kamihama.totentanz mkdir -p files/madomagi/debug"
-adb shell "run-as io.kamihama.totentanz touch files/madomagi/debug/noFontHook"
+adb shell "run-as io.kamihama.totentanz mkdir -p debug"
+adb shell "run-as io.kamihama.totentanz touch debug/noFontHook"
 # 重启游戏，然后：
 adb logcat | grep "\[DEBUG\]"
 ```
