@@ -966,7 +966,7 @@ java -cp .build-test:.cache/deps/android.jar ResumeTest <base> <sha256> <size>
 | `check-so-deps.py` | 每个 `.so` 的 `DT_NEEDED` 都能在包内或系统里找到。踩过：`libMagiaLegacy.so` 链接 shadowhook，但 CI 只拷了前者，`libshadowhook.so` 落在构建目录没带上——**能打包、能签名、能安装，只在真机启动那一刻炸** |
 | `check-asset-compression.py` | BGM 的 ogg 在 APK 里必须是 Stored 而非 deflate。`AssetManager.openFd()` 打不开压缩过的 asset，后果是「界面一切正常、就是没声音」 |
 | `check-apk-freshness.py` | 产物确实是刚编译出来的那一份，不是上一版残留。踩过两次：`CNBgm` 编出了 `.class` 却不在任何一组 d8 输入里；`libMagiaLegacy.so` 编好了却忘了拷进 `lib/` |
-| `check-debug-flag-boundary.py` | 调试开关没有伸进安全判据（外链白名单、https 强制、代理域名粒度、解压膨胀比、代理改写判据）。保护区是**方法级**的，所以 `CNMirrors.refresh()` 里加开关合法、`normalizeBase()` 里加就会被拦。保护区方法被改名/删掉时**报错而不是放行**——否则改个名就等于悄悄取消了保护 |
+| `check-debug-flag-boundary.py` | 两条不变量。**一、**调试开关没有伸进安全判据（外链白名单、https 强制、代理域名粒度、解压膨胀比、代理改写判据）。保护区是**方法级**的，所以 `CNMirrors.refresh()` 里加开关合法、`normalizeBase()` 里加就会被拦。**二、**跨 JNI 的四组路径常量逐字一致（调试开关目录、安装完成/强制序章/浮层活动三个标记）——写歪一个字符不会有任何报错，两边各写各的文件、各读各的。解析支持 `FILES_DIR + "..."` 这种拼接。保护区方法或常量被改名/删掉时**报错而不是放行**——否则改个名就等于悄悄取消了保护 |
 | `check-d8-pitfalls.py` | javac 之后、d8 之前跑，拦下会让 d8 崩掉的两种类形状（见「铁律 4」）。d8 撞上时只报一句 R8 内部的 `NullPointerException: Cannot invoke "String.length()"`，没有行号也没有别的线索；这个脚本把它换成「哪个类、什么形状、怎么改」 |
 | `check-branch-hygiene.py` | 远端分支是否只剩 `main` / `archive/*` / `research/*`（见 [`AGENTS.md`](AGENTS.md) §0） |
 
