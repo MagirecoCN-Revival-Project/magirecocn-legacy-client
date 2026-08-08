@@ -545,7 +545,7 @@ apksigner → 上传 artifact。
 | JS 里的按钮、确认框、错误提示、动态拼接文本 | 前端热更包（`magica/js/**`） | 已覆盖 |
 | HTML／EJS 模板里的静态标题、标签、按钮 | 前端热更包（`magica/template/**`） | 已覆盖，且确有 RequireJS 调用链（见上节） |
 | 数据 JSON 里的角色/道具/技能/章节等结构化字段 | 前端热更包（23 个 JSON + 注入器） | 已覆盖 |
-| cocos2d 原生弹窗、下载／网络错误、**战斗中与战斗结束的角色台词** | **native 文本 hook**（`MagiaLegacy.cpp` 的 i18n 表） | 已做，实测「已加载 295 条 + 2 前缀规则」。⚠ 表本身还没有版本控制的源，见 [`i18n/README.md`](i18n/README.md) |
+| cocos2d 原生弹窗、下载／网络错误、**战斗中与战斗结束的角色台词** | **native 文本 hook**（`MagiaLegacy.cpp` 的 i18n 表） | 已做，实测「已加载 295 条 + 2 前缀规则」。表的源在补丁仓库 `magireco-cn-patch`，随台词包下发，见 [`i18n/README.md`](i18n/README.md) |
 | 原生中文被渲染成日文字形 | **native 字体路径 hook**（`fontPathOverwrite`） | 已做，见 `check-fonts.py` |
 | 资源下载浮层 | Java 补丁（`CNCNDownloadUI`） | 已做 |
 | **烘焙进 PNG／plist 图集的英文** | **只能改图片资源** | 见下 |
